@@ -67,7 +67,7 @@
     <ClInclude Include="src\handHistoryParser.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="bla.cpp" />
+    <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
