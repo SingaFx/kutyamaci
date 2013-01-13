@@ -36,12 +36,12 @@ class Evaluator
 		return;
 	}
 
-	static bool compareCards(Card c1, Card c2)
+	static bool compareCards(Card &c1, Card &c2)
 	{
 		return c1.rank < c2.rank;
 	}
 
-	static bool flopStraightFlush(vector<Card> cards)
+	static bool flopStraightFlush(vector<Card> &cards)
 	{
 		assert(cards.size() == 5);
 		sort(cards.begin(), cards.end(), compareCards);
@@ -51,7 +51,7 @@ class Evaluator
 				(cards[0].suit == cards[1].suit) && (cards[1].suit == cards[2].suit) && (cards[2].suit == cards[3].suit) && (cards[3].suit == cards[4].suit));
 	}
 
-	static bool flopPoker(vector<Card> cards)
+	static bool flopPoker(vector<Card> &cards)
 	{
 		assert(cards.size() == 5);
 		sort(cards.begin(), cards.end(), compareCards);
@@ -60,7 +60,7 @@ class Evaluator
 				((cards[1].rank == cards[2].rank) && (cards[2].rank == cards[3].rank) && (cards[3].rank == cards[4].rank)));
 	}
 
-	static bool flopFullHouse(vector<Card> cards)
+	static bool flopFullHouse(vector<Card> &cards)
 	{
 		assert(cards.size() == 5);
 		sort(cards.begin(), cards.end(), compareCards);
@@ -69,7 +69,7 @@ class Evaluator
 				((cards[0].rank == cards[1].rank) && (cards[1].rank == cards[2].rank) && (cards[3].rank == cards[4].rank)));
 	}
 
-	static bool flopFlush(vector<Card> cards)
+	static bool flopFlush(vector<Card> &cards)
 	{
 		assert(cards.size() == 5);
 		sort(cards.begin(), cards.end(), compareCards);
@@ -79,7 +79,7 @@ class Evaluator
 		return ((cards[0].suit == cards[1].suit) && (cards[1].suit == cards[2].suit) && (cards[2].suit == cards[3].suit) && (cards[3].suit == cards[4].suit));
 	}
 
-	static bool flopStraight(vector<Card> cards)
+	static bool flopStraight(vector<Card> &cards)
 	{
 		assert(cards.size() == 5);
 		sort(cards.begin(), cards.end(), compareCards);
@@ -90,7 +90,7 @@ class Evaluator
 				((cards[0].rank == 2) && (cards[1].rank == 3) && (cards[2].rank == 4) && (cards[3].rank == 5) && (cards[4].rank == 14)));
 	}
 
-	static bool flopThreeofaKind(vector<Card> cards)
+	static bool flopThreeofaKind(vector<Card> &cards)
 	{
 		assert(cards.size() == 5);
 		sort(cards.begin(), cards.end(), compareCards);
@@ -102,7 +102,7 @@ class Evaluator
 				|| ((cards[2].rank == cards[3].rank) && (cards[3].rank == cards[4].rank)));
 	}
 
-	static bool flopTwoPair(vector<Card> cards)
+	static bool flopTwoPair(vector<Card> &cards)
 	{
 		assert(cards.size() == 5);
 		sort(cards.begin(), cards.end(), compareCards);
@@ -115,7 +115,7 @@ class Evaluator
 				|| ((cards[0].rank == cards[1].rank) && (cards[3].rank == cards[4].rank)));
 	}
 
-	static bool flopOnePair(vector<Card> cards)
+	static bool flopOnePair(vector<Card> &cards)
 	{
 		assert(cards.size() == 5);
 		sort(cards.begin(), cards.end(), compareCards);
@@ -128,7 +128,7 @@ class Evaluator
 		return ((cards[0].rank == cards[1].rank) || (cards[1].rank == cards[2].rank) || (cards[2].rank == cards[3].rank) || (cards[3].rank == cards[4].rank));
 	}
 
-	static Card flopHighestCard(Card b1, Card b2, Card b3)
+	static Card flopHighestCard(Card &b1, Card &b2, Card &b3)
 	{
 		if ((b1.rank >= b2.rank) && (b1.rank >= b3.rank))
 			return b1;
@@ -142,7 +142,7 @@ class Evaluator
 		cout << "Error in flopHighestCard : Script is supposed to terminate earlier." << endl;
 	}
 
-	static bool flopFlushDraw(Card h1, Card h2, Card b1, Card b2, Card b3)
+	static bool flopFlushDraw(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3)
 	{
 		Card cards[] = {h1,h2,b1,b2,b3};
 		vector<Card> vcards(cards, cards + sizeof(cards) / sizeof(Card));
@@ -157,12 +157,12 @@ class Evaluator
 			((h2.suit == b1.suit) && (b1.suit == b2.suit) && (b2.suit == b3.suit));
 	}
 
-	static bool flopTripleBoard(Card b1, Card b2, Card b3)
+	static bool flopTripleBoard(Card &b1, Card &b2, Card &b3)
 	{
 		return (b1.rank == b2.rank) && (b2.rank == b3.rank);
 	}
 
-	static bool flopDoubleBoard(Card b1, Card b2, Card b3)
+	static bool flopDoubleBoard(Card &b1, Card &b2, Card &b3)
 	{
 		if (flopTripleBoard(b1,b2,b3))
 			return false;
@@ -170,17 +170,17 @@ class Evaluator
 		return (b1.rank == b2.rank) || (b1.rank == b3.rank) || (b2.rank == b3.rank);
 	}
 
-	static bool flopSingleBoard(Card b1, Card b2, Card b3)
+	static bool flopSingleBoard(Card &b1, Card &b2, Card &b3)
 	{
 		return !(flopDoubleBoard(b1,b2,b3) || flopTripleBoard(b1,b2,b3));
 	}
 
-	static bool flopMonotoneBoard(Card b1, Card b2, Card b3)
+	static bool flopMonotoneBoard(Card &b1, Card &b2, Card &b3)
 	{
 		return (b1.suit == b2.suit) && (b2.suit == b3.suit);
 	}
 
-	static bool flopTwoToneBoard(Card b1, Card b2, Card b3)
+	static bool flopTwoToneBoard(Card &b1, Card &b2, Card &b3)
 	{
 		if (flopMonotoneBoard(b1,b2,b3))
 			return false;
@@ -188,7 +188,7 @@ class Evaluator
 		return ((b1.suit == b2.suit) || (b1.suit == b3.suit) || (b2.suit == b3.suit));
 	}
 
-	static int flopHiLoDistance(Card b1, Card b2, Card b3)
+	static int flopHiLoDistance(Card &b1, Card &b2, Card &b3)
 	{
 		int dist1 = abs(b1.rank - b2.rank);
 		int dist2 = abs(b1.rank - b3.rank);
@@ -197,7 +197,7 @@ class Evaluator
 		return (dist1 > dist2) ? ((dist1 > dist3) ? dist1 : dist3) : ((dist2 > dist3) ? dist2 : dist3);
 	}
 
-	static bool flopVeryConnectedBoard(Card b1, Card b2, Card b3)
+	static bool flopVeryConnectedBoard(Card &b1, Card &b2, Card &b3)
 	{
 		if (!flopSingleBoard(b1,b2,b3))
 			return false;
@@ -205,7 +205,7 @@ class Evaluator
 		return flopHiLoDistance(b1,b2,b3) == 2;
 	} 
 
-	static bool flopConnectedBoard(Card b1,Card b2,Card b3)
+	static bool flopConnectedBoard(Card &b1, Card &b2, Card &b3)
 	{
 		if (!flopSingleBoard(b1,b2,b3))
 			return false;
@@ -213,20 +213,20 @@ class Evaluator
 		return flopHiLoDistance(b1,b2,b3) <= 4;
 	}
 
-	static bool flopTwoUnderCards(Card h1, Card h2, Card b1, Card b2, Card b3)
+	static bool flopTwoUnderCards(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3)
 	{
 		return (h1.rank < b1.rank) && (h1.rank < b2.rank) && (h1.rank < b3.rank) &&
 				(h2.rank < b1.rank) && (h2.rank < b2.rank) && (h2.rank < b3.rank);
 	}
 
-	static bool flopTwoOverCards(Card h1, Card h2, Card b1, Card b2, Card b3)
+	static bool flopTwoOverCards(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3)
 	{
 		return (h1.rank > b1.rank) && (h1.rank > b2.rank) && (h1.rank > b3.rank) &&
 				(h2.rank > b1.rank) && (h2.rank > b2.rank) && (h2.rank > b3.rank);
 	}
 
 
-	static bool flopNutFlushDraw(Card h1, Card h2, Card b1, Card b2, Card b3)
+	static bool flopNutFlushDraw(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3)
 	{
 		if (!flopFlushDraw(h1,h2,b1,b2,b3))
 			return false;
@@ -288,12 +288,12 @@ class Evaluator
 		return (h1.rank == 12) || (h2.rank == 12);
 	}
 
-	static bool flopDangerousBoard(Card b1, Card b2, Card b3)
+	static bool flopDangerousBoard(Card &b1, Card &b2, Card b3)
 	{
 		 return flopMonotoneBoard(b1,b2,b3) || flopVeryConnectedBoard(b1,b2,b3) || (flopConnectedBoard(b1,b2,b3) && flopTwoToneBoard(b1,b2,b3));
 	}
 
-	static bool flopOESD(vector<Card> cards)
+	static bool flopOESD(vector<Card> &cards)
 	{
 		assert(cards.size() == 5);
 		sort(cards.begin(), cards.end(), compareCards);
@@ -319,7 +319,7 @@ class Evaluator
 				((cards[0].rank == 3) && (cards[1].rank == 4) && (cards[2].rank == 5) && (cards[3].rank == 7) && (cards[4].rank == 14)));
 	}
 
-	static bool flopGutshot(vector<Card> cards)
+	static bool flopGutshot(vector<Card> &cards)
 	{
 		assert(cards.size() == 5);
 		sort(cards.begin(), cards.end(), compareCards);
@@ -337,7 +337,7 @@ class Evaluator
 			(uniqueCards.size() >= 4 && uniqueCards[uniqueCards.size()-1].rank == 14 && uniqueCards[2].rank <= 5);
 	}
 
-	static bool flopNutOESD(Card h1, Card h2, Card b1, Card b2, Card b3)
+	static bool flopNutOESD(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3)
 	{
 		Card placeHolderCard;
 		placeHolderCard.rank = 20;
@@ -383,7 +383,7 @@ class Evaluator
 		return true;
 	}
 
-	static bool turnHandStrength(vector<Card> cards, bool fn(vector<Card>))
+	static bool turnHandStrength(vector<Card> &cards, bool fn(vector<Card>&))
 	{
 		assert(cards.size() == 6);
 
@@ -398,47 +398,47 @@ class Evaluator
 		return false;
 	}
 
-	static bool turnStraightFlush(vector<Card> cards)
+	static bool turnStraightFlush(vector<Card> &cards)
 	{
 		return turnHandStrength(cards,flopStraightFlush);
 	}
 
-	static bool turnPoker(vector<Card> cards)
+	static bool turnPoker(vector<Card> &cards)
 	{
 		return turnHandStrength(cards, flopPoker);
 	}
 
-	static bool turnFullHouse(vector<Card> cards)
+	static bool turnFullHouse(vector<Card> &cards)
 	{
 		return turnHandStrength(cards, flopFullHouse);
 	}
 
-	static bool turnFlush(vector<Card> cards)
+	static bool turnFlush(vector<Card> &cards)
 	{
 		return turnHandStrength(cards, flopFlush);
 	}
 
-	static bool turnStraight(vector<Card> cards)
+	static bool turnStraight(vector<Card> &cards)
 	{
 		return turnHandStrength(cards, flopStraight);
 	}
 
-	static bool turnThreeofaKind(vector<Card> cards)
+	static bool turnThreeofaKind(vector<Card> &cards)
 	{
 		return turnHandStrength(cards, flopThreeofaKind);
 	}
 
-	static bool turnTwoPair(vector<Card> cards)
+	static bool turnTwoPair(vector<Card> &cards)
 	{
 		return turnHandStrength(cards, flopTwoPair);
 	}
 
-	static bool turnOnePair(vector<Card> cards)
+	static bool turnOnePair(vector<Card> &cards)
 	{
 		return turnHandStrength(cards, flopOnePair);
 	}
 
-	static bool flopHandStrength(Card c1, Card c2, Card c3, Card c4, Card c5, bool fn(vector<Card>))
+	static bool flopHandStrength(Card &c1, Card &c2, Card &c3, Card &c4, Card &c5, bool fn(vector<Card>&))
 	{
 		vector<Card> temp;
 		temp.push_back(c1);temp.push_back(c2);temp.push_back(c3);temp.push_back(c4);temp.push_back(c5);
@@ -446,61 +446,61 @@ class Evaluator
 		return fn(temp);
 	}
 
-	static bool flopStraightFlush(Card c1, Card c2, Card c3, Card c4, Card c5)
+	static bool flopStraightFlush(Card &c1, Card &c2, Card &c3, Card &c4, Card &c5)
 	{
 		return flopHandStrength(c1, c2, c3, c4, c5, flopStraightFlush);
 	}
 
-	static bool flopPoker(Card c1, Card c2, Card c3, Card c4, Card c5)
+	static bool flopPoker(Card &c1, Card &c2, Card &c3, Card &c4, Card &c5)
 	{
 		return flopHandStrength(c1, c2, c3, c4, c5, flopPoker);
 	}
 
-	static bool flopFullHouse(Card c1, Card c2, Card c3, Card c4, Card c5)
+	static bool flopFullHouse(Card &c1, Card &c2, Card &c3, Card &c4, Card &c5)
 	{
 		return flopHandStrength(c1, c2, c3, c4, c5, flopFullHouse);
 	}
 
-	static bool flopFlush(Card c1, Card c2, Card c3, Card c4, Card c5)
+	static bool flopFlush(Card &c1, Card &c2, Card &c3, Card &c4, Card &c5)
 	{
 		return flopHandStrength(c1, c2, c3, c4, c5, flopFlush);
 	}
 
-	static bool flopStraight(Card c1, Card c2, Card c3, Card c4, Card c5)
+	static bool flopStraight(Card &c1, Card &c2, Card &c3, Card &c4, Card &c5)
 	{
 		return flopHandStrength(c1, c2, c3, c4, c5, flopStraight);
 	}
 
-	static bool flopThreeofaKind(Card c1, Card c2, Card c3, Card c4, Card c5)
+	static bool flopThreeofaKind(Card &c1, Card &c2, Card &c3, Card &c4, Card &c5)
 	{
 		return flopHandStrength(c1, c2, c3, c4, c5, flopThreeofaKind);
 	}
 
-	static bool flopTwoPair(Card c1, Card c2, Card c3, Card c4, Card c5)
+	static bool flopTwoPair(Card &c1, Card &c2, Card &c3, Card &c4, Card &c5)
 	{
 		return flopHandStrength(c1, c2, c3, c4, c5, flopTwoPair);
 	}
 
-	static bool flopOnePair(Card c1, Card c2, Card c3, Card c4, Card c5)
+	static bool flopOnePair(Card &c1, Card &c2, Card &c3, Card &c4, Card &c5)
 	{
 		return flopHandStrength(c1, c2, c3, c4, c5, flopOnePair);
 	}
 
-	static bool turnDoublePairedBoard(vector<Card> board)
+	static bool turnDoublePairedBoard(vector<Card> &board)
 	{
 		assert(board.size() == 4);
 
 		return (board[0].rank == board[1].rank) && (board[1].rank != board[2].rank) && (board[2].rank == board[3].rank);
 	}
 
-	static bool turnQuadBoard(vector<Card> board)
+	static bool turnQuadBoard(vector<Card> &board)
 	{
 		assert(board.size() == 4);
 
 		return (board[0].rank == board[1].rank) && (board[1].rank == board[2].rank) && (board[2].rank == board[3].rank);
 	}
 
-	static bool turnTripleBoard(vector<Card> board)
+	static bool turnTripleBoard(vector<Card> &board)
 	{
 		assert(board.size() == 4);
 
@@ -510,7 +510,7 @@ class Evaluator
 		return ((board[0].rank == board[1].rank) && (board[1].rank == board[2].rank)) || ((board[1].rank == board[2].rank) && (board[2].rank == board[3].rank));
 	}
 
-	static bool turnDoubleBoard(vector<Card> board)
+	static bool turnDoubleBoard(vector<Card> &board)
 	{
 		if (turnQuadBoard(board) || turnTripleBoard(board))
 			return false;
@@ -518,17 +518,17 @@ class Evaluator
 		return ((board[0].rank == board[1].rank) || (board[1].rank == board[2].rank) || (board[2].rank == board[3].rank));
 	}
 
-	static bool turnSingleBoard(vector<Card> board)
+	static bool turnSingleBoard(vector<Card> &board)
 	{
 		return !turnQuadBoard(board) && !turnTripleBoard(board) && !turnDoubleBoard(board);
 	}
 
-	static bool turnMonotoneBoard(vector<Card> board)
+	static bool turnMonotoneBoard(vector<Card> &board)
 	{
 		return (board[0].suit == board[1].suit) && (board[1].suit == board[2].suit) && (board[2].suit == board[3].suit);
 	}
 
-	static bool turnOneCardStrBoard(vector<Card> board)
+	static bool turnOneCardStrBoard(vector<Card> &board)
 	{
 		if (!turnSingleBoard(board))
 			return false;
@@ -536,7 +536,7 @@ class Evaluator
 		return (board[3].rank - board[0].rank <= 4) || (board[3].rank == 14 && board[2].rank <= 5);
 	}
 
-	static bool turnOneCardNutFlush(Card h1, Card h2, vector<Card> board)
+	static bool turnOneCardNutFlush(Card &h1, Card &h2, vector<Card> &board)
 	{
 		if (!turnMonotoneBoard(board))
 			return false;
@@ -559,7 +559,7 @@ class Evaluator
 			(board[3].rank == 14 && board[2].rank == 13 && board[1].rank == 12 && suitedCard.rank == 11);
 	}
 
-	static bool turnOneCardStr(Card h1, Card h2, vector<Card> board)
+	static bool turnOneCardStr(Card &h1, Card &h2, vector<Card> &board)
 	{
 		vector<Card> temp2;
 		temp2.push_back(board[1]);temp2.push_back(board[2]);temp2.push_back(board[3]);temp2.push_back(h1);temp2.push_back(h2);
@@ -585,7 +585,7 @@ class Evaluator
 		return false;
 	}
 
-	static bool turnOneCardLowStr(Card h1, Card h2, vector<Card> board)
+	static bool turnOneCardLowStr(Card &h1, Card &h2, vector<Card> &board)
 	{
 		if (!turnOneCardStr(h1,h2,board))
 			return false;
@@ -603,7 +603,7 @@ class Evaluator
 		return h2.rank < board[0].rank && h2.rank < board[1].rank && h2.rank < board[2].rank && h2.rank < board[3].rank; 
 	}
 
-	static bool turnOneCardNutStraight(Card h1, Card h2, vector<Card> board)
+	static bool turnOneCardNutStraight(Card &h1, Card &h2, vector<Card> &board)
 	{
 		if (!turnOneCardStr(h1,h2,board))
 			return false;
@@ -642,7 +642,7 @@ class Evaluator
 		return straight[4].rank == 14 && straight[3].rank == 13;
 	}
 
-	static bool turnOneCardNutFlushDraw(Card h1, Card h2, vector<Card> board)
+	static bool turnOneCardNutFlushDraw(Card &h1, Card &h2, vector<Card> &board)
 	{
 		if (!turnThreeToneBoard(board))
 			return false;
@@ -661,7 +661,7 @@ class Evaluator
 		return (suitedCard.rank == 14) || (temp[2].rank == 14 && suitedCard.rank == 13) || (temp[1].rank == 13 && suitedCard.rank == 12) || (temp[1].rank == 12 && suitedCard.rank == 11);
 	}
 
-	static bool turnLowTwoCardStraight(Card h1, Card h2, vector<Card> board)
+	static bool turnLowTwoCardStraight(Card &h1, Card &h2, vector<Card> &board)
 	{
 		bool result = false;
 
@@ -689,18 +689,18 @@ class Evaluator
 		cout << "Error in turnLowTwoCardStraight : script is supposed to terminate earlier." << endl;
 	}
 
-	static bool turnThreeToneBoard(vector<Card> board)
+	static bool turnThreeToneBoard(vector<Card> &board)
 	{
 		return (board[0].suit == board[1].suit && board[1].suit == board[2].suit) || (board[0].suit == board[2].suit && board[2].suit == board[3].suit) ||
 			(board[1].suit == board[2].suit && board[2].suit == board[3].suit) || (board[0].suit == board[1].suit && board[1].suit == board[3].suit);
 	}
 
-	static bool turnDangerousBoard(Card b1, Card b2, Card b3, Card b4)
+	static bool turnDangerousBoard(Card &b1, Card &b2, Card &b3, Card &b4)
 	{
 		return flopDangerousBoard(b1,b2,b3) || flopDangerousBoard(b1,b2,b4) || flopDangerousBoard(b1,b3,b4) || flopDangerousBoard(b2,b3,b4);
 	}
 
-	static bool existsOnBoard(int rank, vector<Card> board)
+	static bool existsOnBoard(int rank, vector<Card> &board)
 	{
 		for (int i = 0; i < board.size(); ++i)
 		{
@@ -711,50 +711,50 @@ class Evaluator
 		return false;
 	}
 
-	static bool turnVeryDangerousBoard(vector<Card> board)
+	static bool turnVeryDangerousBoard(vector<Card> &board)
 	{
 		return ((board[0].suit == board[1].suit) && (board[1].suit == board[2].suit) && (board[2].suit == board[3].suit)) || (turnOneCardStrBoard(board));
 	}
 
-	static bool turnFlushDraw(Card h1, Card h2, Card b1, Card b2, Card b3, Card b4)
+	static bool turnFlushDraw(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3, Card &b4)
 	{
 		return flopFlushDraw(h1,h2,b1,b2,b3) || flopFlushDraw(h1,h2,b1,b3,b4) || flopFlushDraw(h1,h2,b1,b2,b4) || flopFlushDraw(h1,h2,b2,b3,b4);
 	}
 
-	static bool turnTwoCardFlushDraw(Card h1, Card h2, Card b1, Card b2, Card b3, Card b4)
+	static bool turnTwoCardFlushDraw(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3, Card &b4)
 	{
 		return turnFlushDraw(h1,h2,b1,b2,b3,b4) && (h1.suit == h2.suit); 
 	}
 
-	static bool turnStrongFlushDraw(Card h1, Card h2, vector<Card> board)
+	static bool turnStrongFlushDraw(Card &h1, Card &h2, vector<Card> &board)
 	{
 		return turnTwoCardFlushDraw(h1,h2,board[0],board[1],board[2],board[3]) || turnOneCardNutFlushDraw(h1,h2,board);
 	}
 
-	static bool turnStrongOESD(Card h1, Card h2, Card b1, Card b2, Card b3, Card b4)
+	static bool turnStrongOESD(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3, Card &b4)
 	{
 		return flopNutOESD(h1,h2,b1,b2,b3) || flopNutOESD(h1,h2,b1,b2,b4) || flopNutOESD(h1,h2,b1,b3,b4) || flopNutOESD(h1,h2,b2,b3,b4);
 	}
 
-	static vector<Card> createVector(Card h1, Card h2, Card b1, Card b2, Card b3)
+	static vector<Card> createVector(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3)
 	{
 		vector<Card> temp; temp.push_back(h1); temp.push_back(h2); temp.push_back(b1); temp.push_back(b2); temp.push_back(b3);
 		return temp;
 	}
 
-	static bool turnOESD(Card h1, Card h2, Card b1, Card b2, Card b3, Card b4)
+	static bool turnOESD(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3, Card &b4)
 	{
 		return flopOESD(createVector(h1,h2,b1,b2,b3)) || flopOESD(createVector(h1,h2,b1,b2,b4)) || flopOESD(createVector(h1,h2,b1,b3,b4)) || 
 			flopOESD(createVector(h1,h2,b2,b3,b4));
 	}
 
-	static bool turnGutShot(Card h1, Card h2, Card b1, Card b2, Card b3, Card b4)
+	static bool turnGutShot(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3, Card &b4)
 	{
 		return flopGutshot(createVector(h1,h2,b1,b2,b3)) || flopGutshot(createVector(h1,h2,b1,b2,b4)) || flopGutshot(createVector(h1,h2,b1,b3,b4)) ||
 			flopGutshot(createVector(h1,h2,b2,b3,b4));
 	}
 
-	static int turnSuitedNumber(Card b1, Card b2, Card b3, Card b4)
+	static int turnSuitedNumber(Card &b1, Card &b2, Card &b3, Card &b4)
 	{
 		int temp[255];
 		temp['c'] = 0; temp['d'] = 0; temp['h'] = 0; temp['s'] = 0;
@@ -764,7 +764,7 @@ class Evaluator
 		return maxim(temp['c'],maxim(temp['d'],maxim(temp['h'],temp['s'])));
 	}
 
-	static bool riverHandStrength(vector<Card> cards, bool fn(vector<Card>))
+	static bool riverHandStrength(vector<Card> &cards, bool fn(vector<Card>&))
 	{
 		assert(cards.size() == 7);
 
@@ -783,42 +783,42 @@ class Evaluator
 		return false;
 	}
 
-	static bool riverStraightFlush(vector<Card> cards)
+	static bool riverStraightFlush(vector<Card> &cards)
 	{
 		return riverHandStrength(cards, flopStraightFlush);
 	}
 
-	static bool riverPoker(vector<Card> cards)
+	static bool riverPoker(vector<Card> &cards)
 	{
 		return riverHandStrength(cards, flopPoker);
 	}
 
-	static bool riverFullHouse(vector<Card> cards)
+	static bool riverFullHouse(vector<Card> &cards)
 	{
 		return riverHandStrength(cards, flopFullHouse);
 	}
 
-	static bool riverFlush(vector<Card> cards)
+	static bool riverFlush(vector<Card> &cards)
 	{
 		return riverHandStrength(cards, flopFlush);
 	}
 
-	static bool riverStraight(vector<Card> cards)
+	static bool riverStraight(vector<Card> &cards)
 	{
 		return riverHandStrength(cards, flopStraight);
 	}
 
-	static bool riverThreeofaKind(vector<Card> cards)
+	static bool riverThreeofaKind(vector<Card> &cards)
 	{
 		return riverHandStrength(cards, flopThreeofaKind);
 	}
 
-	static bool riverTwoPair(vector<Card> cards)
+	static bool riverTwoPair(vector<Card> &cards)
 	{
 		return riverHandStrength(cards, flopTwoPair);
 	}
 
-	static bool riverOnePair(vector<Card> cards)
+	static bool riverOnePair(vector<Card> &cards)
 	{
 		return riverHandStrength(cards, flopOnePair);
 	}
