@@ -1,0 +1,1139 @@
+##2012-12-10 00:09:33##
+
+##notes##
+
+
+##dll##
+
+
+##bankroll##
+0.000000
+
+##defcon##
+0.000000
+
+##rake##
+0.000000
+
+##nit##
+0
+
+##f$alli##
+
+
+##f$swag##
+f$srai ? 
+	f$BetSize > 0.4 * f$ActualStack ? f$TotalBalance
+    :((f$BetSize/sblind)^0)*sblind
+:0
+
+##f$srai##
+nhandshi <= 1 ? 1
+:br == 1 ? f$PreflopRaise
+:br == 2 ? f$FlopBet
+:br == 3 ? f$TurnBet
+:br == 4 ? f$RiverBet
+:0
+
+##f$rais##
+
+
+##f$call##
+f$srai ||
+(
+(call/(call+pot) <= 1/15 ? 1
+:br == 1 ? f$PreflopCall
+:br == 2 ? f$FlopCall
+:br == 3 ? f$TurnCall
+:br == 4 ? f$RiverCall
+:0) && call > 0)
+
+##f$prefold##
+
+
+##f$rebuy##
+
+
+##f$delay##
+//br == 0 ? 
+//	f$PreflopRaise ? randomround * 200 : 0 :
+//br == 1 ? randomround * 400 :
+//randomround * 400
+
+##f$chat##
+
+
+##f$P##
+
+
+##f$play##
+nopponentsseated < 3 || nopponentsdealt < 2 ? -2
+: 1
+
+##f$test##
+
+
+##f$debug##
+                 = elapsed
+
+                 = sblind
+                 = bblind
+                 = bet
+
+                 = call
+                 = currentbet
+                 = balance
+
+
+                 = potplayer
+                 = potcommon
+                 = pot
+                 = rake
+
+                 = chair
+                 = handrank2652
+                 = pokerval
+                 = prwin
+                 = prlos
+                 = prtie
+                 = nopponents
+
+##list01##
+AA  KK  QQ  JJ  TT  99  88  77  
+AKs AQs AJs KQs 
+KA  QA  QK  JA  
+
+##list02##
+AA  KK  QQ  JJ  TT  99  88  77  66  55  
+AKs AQs AJs KQs KJs QJs 
+KA  QA  QK  JA  
+
+##list03##
+AA  KK  QQ  JJ  TT  99  88  77  66  55  44  33  22  
+AKs AQs AJs ATs A9s A8s A7s A6s A5s A4s A3s A2s KQs KJs KTs K9s K8s QJs QTs Q9s Q8s JTs J9s J8s T9s T8s 98s 
+KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  9A  
+
+##list04##
+AA  KK  QQ  JJ  TT  99  88  77  66  55  44  33  22  
+AKs AQs AJs ATs A9s A8s A7s A6s A5s A4s A3s A2s KQs KJs KTs K9s K8s K7s K6s K5s K4s K3s K2s QJs QTs Q9s Q8s Q7s Q6s Q5s Q4s Q3s Q2s JTs J9s J8s J7s J6s T9s T8s T7s T6s 98s 97s 87s 76s 65s 54s 
+KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  9A  9T  8A  89  7A  78  6A  67  5A  4A  3A  2A  
+
+##list12##
+AA  KK  QQ  JJ  TT  99  88  77  
+AKs AQs AJs ATs KQs KJs KTs QJs QTs JTs 
+KA  QA  QK  JA  JK  JQ  TA  TK  
+
+##list13##
+AA  KK  QQ  JJ  TT  99  88  77  
+AKs AQs AJs ATs A9s A8s KQs KJs KTs QJs QTs JTs 
+KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  
+
+##list14##
+AA  KK  QQ  JJ  TT  99  88  77  66  55  44  33  22  
+AKs AQs AJs ATs A9s A8s A7s A6s A5s A4s A3s A2s KQs KJs KTs K9s K8s K7s QJs QTs Q9s Q8s JTs J9s T9s 
+KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  
+
+##list15##
+AA  KK  QQ  JJ  TT  99  
+AKs AQs AJs KQs KJs QJs 
+KA  QA  QK  JA  
+
+##list24##
+AA  KK  QQ  JJ  TT  
+AKs AQs AJs KQs 
+KA  QA  
+
+##list21##
+AA  KK  QQ  JJ  
+AKs AQs 
+KA  QA  
+
+##list22##
+AA  KK  QQ  JJ  TT  99  
+AKs AQs AJs 
+KA  QA  JA  
+
+##list23##
+AA  KK  QQ  JJ  TT  
+AKs AQs 
+KA  QA  
+
+##list25##
+AA  KK  QQ  
+AKs 
+KA  
+
+##list30##
+AA  KK  QQ  JJ  TT  99  88  77  66  55  44  33  22  
+AKs AQs AJs ATs A9s A8s A7s A6s A5s A4s A3s A2s KQs KJs KTs K9s K8s K7s K6s K5s K4s K3s K2s QJs QTs Q9s JTs J9s T9s 98s 87s 76s 
+KA  QA  QK  9T  
+
+##list26##
+AA  KK  QQ  
+
+##f$BetSize##
+br == 1 ? 
+  f$PreflopUnopened ? //OpenRaiseSize
+    f$PositionBU && f$PreflopFirstIn ? 3 * bblind
+    :f$PositionSB || f$PositionBB ? (5 + nopponentscalling) * bblind
+    :(4 + nopponentscalling) * bblind //IsoSize
+  :f$PreflopFacing1Raise ?  //3BET
+    f$3Betsize > 15 * bblind ? 15 * bblind : f$3Betsize
+  :f$PreflopFacingReRaise || f$PreflopFacing2Raise ? 
+			($KK || $AA) ? 2.5 * ncallbets * bblind
+			:f$TotalBalance
+  :0
+:br == 2 ? 
+  call == 0 || ncallbets <= 2 ? //cbet
+		f$LimpedPot ? pot + 2 * ncallbets * bblind
+	  :f$Is3BetPotPFR || f$Is3BetPotCaller ? 1/2 * pot + 2*ncallbets  * bblind
+	  :(nrankedcommon == 2 && nopponentsplaying <= 1) ? 2/3 * pot + 2*ncallbets  * bblind
+	  :f$IsFlopDryBoard ? 2/3 * pot + 2*ncallbets  * bblind
+	  :3/4 * pot + 2*ncallbets  * bblind
+  :ncallbets * 3.5 * bblind //raise
+:br == 3 ?
+  ncallbets <= 2 ? 
+		  f$IsFlopDryBoard ? 2/3 * pot + 2*ncallbets  * bblind
+			:3/4 * pot + 2*ncallbets  * bblind
+  : ncallbets * 3.5 * bblind
+:br == 4 ?
+	 (f$RiverAIRange && f$StackSize < 5) ? f$TotalBalance
+  :ncallbets <= 2 ?
+	  pot > 80 * bblind ? 1/2*pot + 2*ncallbets * bblind
+	  :3/4 * pot + 2*ncallbets * bblind
+  : ncallbets * 3.5 * bblind
+:0
+
+##f$OpponentIsSB##
+(callbits1 == 0x0001 && ac_dealpos0 == 1) ||
+(callbits1 == 0x0002 && ac_dealpos1 == 1) ||
+(callbits1 == 0x0004 && ac_dealpos2 == 1) ||
+(callbits1 == 0x0008 && ac_dealpos3 == 1) ||
+(callbits1 == 0x0010 && ac_dealpos4 == 1) ||
+(callbits1 == 0x0020 && ac_dealpos5 == 1) ||
+(callbits1 == 0x0040 && ac_dealpos6 == 1) ||
+(callbits1 == 0x0080 && ac_dealpos7 == 1) ||
+(callbits1 == 0x0100 && ac_dealpos8 == 1) ||
+(callbits1 == 0x0200 && ac_dealpos9 == 1)
+
+##f$EffectivStack##
+br==1 ? f$TotalStackRaiser < f$TotalBalance ? f$TotalStackRaiser : f$TotalBalance
+: f$TotalStackOpponent < f$TotalBalance ? f$TotalStackOpponent + potcommon/nplayersplaying : f$TotalBalance + potcommon/nplayersplaying
+
+##f$RaiserStack##
+(raischair==0) ? balance0: 
+(raischair==1) ? balance1: 
+(raischair==2) ? balance2: 
+(raischair==3) ? balance3: 
+(raischair==4) ? balance4:
+(raischair==5) ? balance5:
+(raischair==6) ? balance6:
+(raischair==7) ? balance7:
+(raischair==8) ? balance8: 
+(raischair==9) ? balance9: 0
+
+##f$IsTopPair##
+(isonepair && !ispair && ($$pr0 == rankhicommon || $$pr1 == rankhicommon)) ||
+(istwopair && nrankedcommon == 2 && ($$pr0 == rankhicommon || $$pr1 == rankhicommon)) ||
+(isfullhouse && nrankedcommon == 3 && ($$pr0 == rankhicommon || $$pr1 == rankhicommon))
+
+##f$IsStrongTopPair##
+f$IsTopPair && $$pr0 > 10 && $$pr1 > 10
+
+##f$IsTwoPair##
+(istwopair && (nrankedcommon < 2))
+
+##f$IsStrongTwoPair##
+f$IsTwoPair && ($$pr0 == rankhicommon || $$pr1 == rankhicommon)
+
+##f$IsDrill##
+isthreeofakind && !ispair && nrankedcommon < 3
+
+##f$IsStrongDrill##
+(f$IsDrill && (nhandshi < 10))  //IDE MEG KELL VALAMI
+
+##f$IsSet##
+isthreeofakind && ispair
+
+##f$IsFull##
+isfullhouse && (nrankedcommon < 3)
+
+##f$IsStrongFull##
+f$IsFull && (nhandshi < 24) 
+
+##f$IsStraight##
+(isstraight && !((nstraight==5) && (pcbits==1)) && nstraightfillcommon != 0)
+//sor nem alulrol, a boardon nincs 4 egyszinu
+
+##f$IsFlush##
+isflush && (nsuitedcommon < 4 || prwin > 0.92) //K high + flush
+
+##f$IsStrongFlush##
+isflush && (nsuitedcommon < 4) && nrankedcommon < 2
+
+##f$IsFlushDraw##
+(nsuited == 4 && nsuitedcommon < 3) || f$Is1CardFlushDraw 
+
+##f$IsMonsterDraw##
+(isonepair && nrankedcommon < 2 && f$IsFlushDraw) ||
+(f$IsGutShot && f$IsFlushDraw) ||
+(f$IsOESD && f$IsFlushDraw)
+
+##f$IsOESD##
+nstraight == 4 && nrankedcommon == 1 &&
+(
+	br == 2 ?
+		(f$FlopCard1+1 == f$FlopCard2 && f$FlopCard2+1 == f$LowerPocketCard && f$LowerPocketCard+1 == f$HigherPocketCard && f$HigherPocketCard < 14) ||
+		(f$FlopCard2+1 == f$FlopCard3 && f$FlopCard3+1 == f$LowerPocketCard && f$LowerPocketCard+1 == f$HigherPocketCard && f$HigherPocketCard < 14) ||
+		(f$FlopCard1+1 == f$LowerPocketCard && f$LowerPocketCard+1 == f$FlopCard2 && f$FlopCard2+1 == f$HigherPocketCard && f$HigherPocketCard < 14) ||
+		(f$FlopCard2+1 == f$LowerPocketCard && f$LowerPocketCard+1 == f$FlopCard3 && f$FlopCard3+1 == f$HigherPocketCard && f$HigherPocketCard < 14) ||
+		(f$LowerPocketCard+1 == f$HigherPocketCard && f$HigherPocketCard+1 == f$FlopCard1 && f$FlopCard1+1 == f$FlopCard2 && f$FlopCard2 < 14) ||
+		(f$LowerPocketCard+1 == f$HigherPocketCard && f$HigherPocketCard+1 == f$FlopCard2 && f$FlopCard2+1 == f$FlopCard3 && f$FlopCard3 < 14) ||
+		(f$LowerPocketCard+1 == f$FlopCard1 && f$FlopCard1+1 == f$FlopCard2 && f$FlopCard2+1 == f$HigherPocketCard && f$HigherPocketCard < 14) ||
+		(f$LowerPocketCard+1 == f$FlopCard2 && f$FlopCard2+1 == f$FlopCard3 && f$FlopCard3+1 == f$HigherPocketCard && f$HigherPocketCard < 14) ||
+		(f$LowerPocketCard+1 == f$FlopCard1 && f$FlopCard1+1 == f$HigherPocketCard && f$HigherPocketCard+1 == f$FlopCard2 && f$FlopCard2 < 14) ||
+		(f$LowerPocketCard+1 == f$FlopCard2 && f$FlopCard2+1 == f$HigherPocketCard && f$HigherPocketCard+1 == f$FlopCard3 && f$FlopCard3 < 14)
+	: br == 3 ? 
+		(f$TurnCard1+1 == f$TurnCard2 && f$TurnCard2+1 == f$LowerPocketCard && f$LowerPocketCard+1 == f$HigherPocketCard && f$HigherPocketCard < 14) ||
+		(f$TurnCard2+1 == f$TurnCard3 && f$TurnCard3+1 == f$LowerPocketCard && f$LowerPocketCard+1 == f$HigherPocketCard && f$HigherPocketCard < 14) ||
+		(f$TurnCard3+1 == f$TurnCard4 && f$TurnCard4+1 == f$LowerPocketCard && f$LowerPocketCard+1 == f$HigherPocketCard && f$HigherPocketCard < 14) ||
+		(f$TurnCard1+1 == f$LowerPocketCard && f$LowerPocketCard+1 == f$TurnCard2 && f$TurnCard2+1 == f$HigherPocketCard && f$HigherPocketCard < 14) ||
+		(f$TurnCard2+1 == f$LowerPocketCard && f$LowerPocketCard+1 == f$TurnCard3 && f$TurnCard3+1 == f$HigherPocketCard && f$HigherPocketCard < 14) ||
+		(f$TurnCard3+1 == f$LowerPocketCard && f$LowerPocketCard+1 == f$TurnCard4 && f$TurnCard4+1 == f$HigherPocketCard && f$HigherPocketCard < 14) ||
+		(f$LowerPocketCard+1 == f$HigherPocketCard && f$HigherPocketCard+1 == f$TurnCard1 && f$TurnCard1+1 == f$TurnCard2 && f$TurnCard2 < 14) ||
+		(f$LowerPocketCard+1 == f$HigherPocketCard && f$HigherPocketCard+1 == f$TurnCard2 && f$TurnCard2+1 == f$TurnCard3 && f$TurnCard3 < 14) ||
+		(f$LowerPocketCard+1 == f$HigherPocketCard && f$HigherPocketCard+1 == f$TurnCard3 && f$TurnCard3+1 == f$TurnCard4 && f$TurnCard4 < 14) ||
+		(f$LowerPocketCard+1 == f$TurnCard1 && f$TurnCard1+1 == f$TurnCard2 && f$TurnCard2+1 == f$HigherPocketCard && f$HigherPocketCard < 14) ||
+		(f$LowerPocketCard+1 == f$TurnCard2 && f$TurnCard2+1 == f$TurnCard3 && f$TurnCard3+1 == f$HigherPocketCard && f$HigherPocketCard < 14) ||
+		(f$LowerPocketCard+1 == f$TurnCard3 && f$TurnCard3+1 == f$TurnCard4 && f$TurnCard4+1 == f$HigherPocketCard && f$HigherPocketCard < 14) ||
+		(f$LowerPocketCard+1 == f$TurnCard1 && f$TurnCard1+1 == f$HigherPocketCard && f$HigherPocketCard+1 == f$TurnCard2 && f$TurnCard2 < 14) ||
+		(f$LowerPocketCard+1 == f$TurnCard2 && f$TurnCard2+1 == f$HigherPocketCard && f$HigherPocketCard+1 == f$TurnCard3 && f$TurnCard3 < 14) ||
+		(f$LowerPocketCard+1 == f$TurnCard3 && f$TurnCard3+1 == f$HigherPocketCard && f$HigherPocketCard+1 == f$TurnCard4 && f$TurnCard4 < 14)
+	: 0
+)
+
+##f$PotOdds##
+0
+
+##f$PreflopFirstIn##
+(br == 1) && (ncallbets <= 1) && (nopponentscalling <= 0)
+
+##f$PreflopLimpers##
+(br == 1) && (ncallbets <= 1) && (nopponentscalling > 1)
+
+##f$PreflopFacing1Raise##
+br == 1 && f$BitsPlayersRaisingPreflop == 1 && ncallbets < 6
+&& ncallbets > 1
+
+##f$PreflopFacing2Raise##
+f$BitsPlayersRaisingPreflop > 1 || ncallbets >= 6
+
+##f$PreflopFacingReRaise##
+br == 1 && (didcall || didswag || didrais ) && call > 0
+
+##f$PositionSB##
+dealposition == 1
+
+##f$PositionBB##
+dealposition == 2
+
+##f$PositionBU##
+nplayersdealt >= 3 && nplayersdealt-dealposition == 0
+
+##f$PositionCO##
+nplayersdealt >= 4 && nplayersdealt-dealposition == 1
+
+##f$PositionEP##
+nplayersdealt == 6 && dealposition == 3
+
+##f$PositionMP##
+nplayersdealt >= 5 && nplayersdealt-dealposition == 2
+
+##f$IsFlopWetBoard##
+(nrankedcommon == 1) && (
+(rankhicommon - ranklocommon <= 5) || 
+(nsuitedcommon > 2 && rankhicommon - ranklocommon <= 7 && rankhicommon < 11))
+
+##f$IsFlopDryBoard##
+(nsuitedcommon == 1 && rankhicommon - ranklocommon > 5) || (nrankedcommon >= 2)
+
+##f$IsRiverDryBoard##
+nsuitedcommon < 3 && nstraightfillcommon > 1
+
+##f$PreflopUnopened##
+(br == 1) && (ncallbets <= 1)
+
+##f$PreflopRaise##
+f$PreflopFirstIn ?
+		f$PositionEP ? islist01 
+  :f$PositionMP ? islist02 
+  :f$PositionCO ? islist03 
+  :f$PositionBU ? islist04
+  :f$PositionSB ? islist03
+	 :f$PositionBB ? islist12
+  :0
+:f$Preflop1Limper ? 
+		f$PositionMP ? islist12
+  :f$PositionCO ? islist14
+  :f$PositionBU ? islist14 
+  :f$PositionSB ? islist12
+  :f$PositionBB ? f$OpponentIsSB ? islist15
+											 : islist12
+  :0
+:f$PreflopLimpers ?
+		f$PositionMP ? islist12
+  :f$PositionCO ? islist13
+  :f$PositionBU ? islist13 
+  :f$PositionSB || f$PositionBB ? islist15
+  :0
+:f$PreflopFacing1Raise ?
+  f$PositionBU ? islist24
+		:f$StackSize == 0 ? islist22  //0..30
+		:f$StackSize == 1 ? islist23 //30..70 
+		:islist21 
+:f$PreflopFacingReRaise ?
+    f$StackSize == 0 ? islist22  //0..30
+			:f$StackSize == 1 ? islist23 //30..70
+    :f$StackSize == 2 ? islist26 //70..120
+    :f$StackSize == 3 ? ($KK || $AA)
+    :$AA
+:f$PreflopFacing2Raise ?
+    f$StackSize == 0 ? islist22  //0..30
+			:f$StackSize == 1 ? islist23 //30..70
+    :f$StackSize == 2 ? islist26 //70..120
+    :f$StackSize == 3 ? ($KK || $AA)
+    :$AA
+:0
+
+##f$StackSize##
+br==1 ? 
+		f$EffectivStack < 30 * bblind ? 0
+		: f$EffectivStack < 70 * bblind ? 1
+		: f$EffectivStack < 120 * bblind ? 2
+		: f$EffectivStack < 220 * bblind ? 3
+		: 4
+
+: 
+		f$EffectivStack < 40 * bblind ? 0
+		: f$EffectivStack < 70 * bblind ? 1
+		: f$EffectivStack < 120 * bblind ? 2
+		: f$EffectivStack < 160 * bblind ? 3
+		: f$EffectivStack < 220 * bblind ? 4
+		: 5
+
+##f$BitsPlayersMoreThanOneBet##
+((currentbet0 > bblind) ? 0x0001 : 0)
+| ((currentbet1 > bblind) ? 0x0002 : 0)
+| ((currentbet2 > bblind) ? 0x0004 : 0)
+| ((currentbet3 > bblind) ? 0x0008 : 0)
+| ((currentbet4 > bblind) ? 0x0010 : 0)
+| ((currentbet5 > bblind) ? 0x0020 : 0)
+| ((currentbet6 > bblind) ? 0x0040 : 0)
+| ((currentbet7 > bblind) ? 0x0080 : 0)
+| ((currentbet8 > bblind) ? 0x0100 : 0)
+| ((currentbet9 > bblind) ? 0x0200 : 0)
+
+##f$BitsPlayersRaisingPreflop##
+`(raisbits1 & f$BitsPlayersMoreThanOneBet)
+
+##f$BitsPlayersRaisingFlop##
+(raisbits2 & f$BitsPlayersMoreThanOneBet)
+
+##f$BitsPlayersRaisingTurn##
+(raisbits3 & f$BitsPlayersMoreThanOneBet)
+
+##f$BitsPlayersRaisingRiver##
+(raisbits3 & f$BitsPlayersMoreThanOneBet)
+
+##f$TotalStackOpponent##
+br <= 2 ? f$StackOpponent == ncallbets * bblind ? f$StackOpponent 
+	: f$StackOpponent + ncallbets * bblind 
+: f$StackOpponent == ncallbets * bblind ? f$StackOpponent
+	: f$StackOpponent + ncallbets * bblind 
+
+##f$IsGutShot##
+nstraightfill == 1 && nstraightfillcommon > 1
+
+##f$Is1CardFlushDraw##
+(nsuited == 4 && nsuitedcommon == 3 && 
+(($$cs0 == $$cs1 && f$HigherPocketCardSuit == $$cs0 && f$HigherPocketCard == 14) ||
+($$cs1 == $$cs2 && f$HigherPocketCardSuit == $$cs1 && f$HigherPocketCard == 14)))
+
+##f$HigherPocketCard##
+$$pr0 > $$pr1 ? $$pr0
+:$$pr1
+
+##f$HigherPocketCardSuit##
+$$pr0 > $$pr1 ? $$ps0
+:$$ps1 
+
+##f$StackOpponent##
+nopponentsplaying > 1 ? stack0 == balance0 ? stack1 : stack0
+:
+(opponentsplayingbits==1)  ? balance0 :
+(opponentsplayingbits==2)  ? balance1 :
+(opponentsplayingbits==4)  ? balance2 :
+(opponentsplayingbits==8)  ? balance3 :
+(opponentsplayingbits==16) ? balance4 :
+(opponentsplayingbits==32) ? balance5 :
+(opponentsplayingbits==64) ? balance6 :
+(opponentsplayingbits==128) ? balance7 :
+(opponentsplayingbits==256) ? balance8 :
+(opponentsplayingbits==512) ? balance9 : stack0
+
+##f$Is3BetPotCaller##
+didcallround1 && didswaground1 
+
+##f$Is3BetPotPFR##
+didswaground1 && nbetsround1 >= 9
+
+##f$IsRaisedPotCaller##
+(didcallround1 && nbetsround1 > 1) && !didswaground1 
+
+##f$IsRaisedPotPFR##
+didswaground1 && nbetsround1 < 9
+
+##f$IsStrongPoker##
+isfourofakind && (nrankedcommon < 4 || ($$pr0 == 14 || $$pr1 == 14))
+
+##f$IsSecondPair##
+(isonepair &&  ($$pr0 > ranklocommon && $$pr1 > ranklocommon && $$pr0 > 7 && $$pr1 > 7 && nrankedcommon < 2)) || 
+(f$FlopBigPocketTwoPair && $$pr0 > 7 && $$pr1 > 7)
+
+##f$FlopBigPocketTwoPair##
+ispair &&
+($$cr0 == $$cr1 ? $$pr0 > $$cr2 :
+ $$cr1 == $$cr2 ? $$pr0 > $$cr0 :
+ $$cr0 == $$cr2 ? $$pr0 > $$cr1 : 0)
+
+##f$TotalBalance##
+//balance
+br <= 2 ? balance + ncurrentbets * bblind
+: balance + ncurrentbets * bblind 
+
+##f$TotalStackRaiser##
+f$RaiserStack + ncallbets * bblind
+
+##f$IsAceHigh##
+$$pr0 == 14 || $$pr1 == 14
+
+##f$Preflop1Limper##
+(br == 1) && (ncallbets <= 1) && (nopponentscalling == 1)
+
+##f$IsOverPair##
+(ispair && $$pr0 > rankhicommon && $$pr0 > 5)
+
+##f$IsTurnDryBoard##
+nsuitedcommon == 1 && (rankhicommon - ranklocommon > 6 || nrankedcommon >= 2)
+
+##f$IsRiverWetBoard##
+
+
+##f$IsTurnDangerousBoard##
+nsuitedcommon == 4 || nstraightfillcommon == 1 
+
+##f$FlopBet##
+f$Is3BetPotCaller ? f$FlopCalledPot
+:f$Is3BetPotPFR ? f$Flop3BetPotPFR
+:f$IsRaisedPotCaller ? f$FlopCalledPot
+:f$IsRaisedPotPFR ? f$FlopRaisedPot
+:f$FlopLimpedPot 
+
+##f$TurnBet##
+f$TurnRaisedPot
+//f$Is3BetPotCaller ? f$TurnRaisedPot
+//:f$Is3BetPotPFR ? f$TurnRaisedPot
+//:f$IsRaisedPotCaller ? f$TurnRaisedPot
+//:f$IsRaisedPotPFR ? f$TurnRaisedPot
+//:f$TurnRaisedPot 
+
+##f$RiverBet##
+ncallbets < 3 ?  //CBET
+	nopponentsplaying <= 1 ? 
+		f$OpponentHandStrength == 0 ?
+			f$IsTwoPair || f$IsDrill ||
+			f$IsSet || f$IsStraight || f$IsFlush || f$IsFull || f$IsStrongPoker || isstraightflush ||
+			f$IsTurnTopPair || f$IsTurnOverPair || f$IsTurnSecondPair
+		:f$OpponentHandStrength == 1 ?
+					pot < 30 * bblind ? f$IsTurnTwoPair || 
+							f$IsTurnDrill ||
+							f$IsTurnSet || 
+							f$IsTurnStraight || 
+							f$IsTurnFlush || 
+							f$IsTurnFull || 
+							f$IsTurnStrongPoker || 
+							isstraightflush ||
+							f$IsTurnTopPair || 
+							f$IsTurnOverPair
+
+					:f$IsTurnTwoPair || 
+					f$IsTurnDrill ||
+					f$IsTurnSet || 
+					f$IsTurnStraight || 
+					f$IsTurnFlush || 
+					f$IsTurnFull || 
+					f$IsTurnStrongPoker || 
+					isstraightflush ||
+					f$IsTurnStrongTopPair || 
+					f$IsTurnOverPair
+			:f$OpponentHandStrength == 2 ?
+					pot < 50 * bblind ?
+						f$IsTurnTwoPair || f$IsTurnDrill ||
+						f$IsTurnSet || f$IsTurnStraight || f$IsTurnFlush || f$IsTurnFull || f$IsTurnStrongPoker || isstraightflush ||
+						f$IsTurnStrongTopPair || f$IsTurnOverPair
+					:pot < 80 * bblind ?	
+						f$IsTurnStrongTwoPair || f$IsTurnStrongDrill ||
+						f$IsTurnStrongSet || f$IsTurnStrongStraight || f$IsTurnFlush || f$IsTurnFull || f$IsTurnStrongPoker || isstraightflush ||
+						((f$IsTurnStrongTopPair || f$IsTurnStrongOverPair) && nsuitedcommon < 3)
+				 :
+						f$IsTurnStrongTwoPair || f$IsTurnStrongDrill ||
+						f$IsTurnStrongSet || f$IsTurnStrongStraight || f$IsTurnStrongFlush || f$IsTurnFull || f$IsTurnStrongPoker || isstraightflush ||
+						f$IsTurnStrongTopPair || f$IsTurnStrongOverPair
+			:f$OpponentHandStrength > 2 ?
+						f$StackSize == 0 ?
+							f$IsTurnTwoPair || f$IsTurnDrill ||
+							f$IsTurnSet || f$IsTurnStraight || f$IsTurnFlush || f$IsTurnFull || f$IsTurnStrongPoker || isstraightflush ||
+							f$IsTurnTopPair || f$IsTurnOverPair
+						:f$StackSize > 1 ?
+							f$IsTurnStrongDrill ||
+							f$IsTurnStrongSet || f$IsTurnStrongStraight || f$IsTurnStrongFlush || f$IsStrongFull || f$IsTurnStrongPoker || isstraightflush
+						:0
+			:0
+	:
+		f$IsTurnTwoPair || f$IsTurnDrill ||
+		f$IsTurnSet || f$IsTurnStraight || f$IsTurnFlush || f$IsTurnFull || f$IsTurnStrongPoker || isstraightflush ||
+		((f$IsTurnStrongTopPair || f$IsTurnStrongOverPair) && nsuitedcommon < 3)
+: //RAISE
+	f$StackSize == 0 ?
+			f$IsTurnTwoPair || f$IsTurnDrill ||
+			f$IsTurnSet || f$IsTurnStraight || f$IsTurnFlush || f$IsTurnFull || f$IsTurnStrongPoker || isstraightflush ||
+			f$IsTurnTopPair || f$IsTurnOverPair
+	:f$StackSize == 1 ?
+			f$IsTurnStrongTwoPair || f$IsTurnDrill ||
+			f$IsTurnSet || f$IsTurnStraight || f$IsTurnFlush || f$IsTurnFull || f$IsTurnStrongPoker || isstraightflush ||
+			((f$IsTurnStrongTopPair || f$IsTurnStrongOverPair) && nsuitedcommon < 3)
+	:f$StackSize == 2 ?
+			pot < 85 * bblind ?
+				(f$IsTurnStrongTwoPair && !f$IsFlopDangerousBoard) || (f$IsTurnStrongDrill && !f$IsFlopDangerousBoard) ||
+				f$IsTurnStrongSet || (f$IsTurnStrongStraight && nsuitedcommon < 3) || f$IsTurnStrongFlush || f$IsStrongFull || f$IsTurnStrongPoker || isstraightflush ||
+				(f$IsTurnStrongOverPair && !f$IsFlopDangerousBoard)
+		 :
+				f$IsTurnStrongTwoPair || f$IsTurnDrill ||
+				f$IsTurnSet || f$IsTurnStraight || f$IsTurnFlush || f$IsTurnFull || f$IsTurnStrongPoker || isstraightflush ||
+				((f$IsTurnStrongTopPair || f$IsTurnStrongOverPair) && nsuitedcommon < 3)
+	:f$StackSize == 3 || f$StackSize == 4  ?
+			(f$IsTurnStrongDrill && !f$IsFlopDangerousBoard) || (f$IsTurnStrongSet && !f$IsFlopDangerousBoard) || 
+			(f$IsTurnStrongStraight && nsuitedcommon < 3) || f$IsTurnStrongFlush || f$IsStrongFull || f$IsTurnStrongPoker || 
+			isstraightflush  
+	 :f$StackSize > 4 ?
+		f$IsUltraStrongFull
+:0
+
+##f$FlopCall##
+currentbet == 0 && call <= 1/8 * potcommon ?
+	1
+: currentbet == 0 && call <= 1/4 * potcommon ?
+  f$IsAceHigh || f$IsSecondPair || f$Is2OverCard || f$IsPair || f$IsGutShot || f$IsFlushDraw || f$IsOESD || f$IsOverPair || f$IsTopPair ||
+	f$IsSet || f$IsTwoPair || f$IsStraight || f$IsFlush || f$IsStrongPoker || f$IsFull || f$IsMonsterDraw || f$IsDrill
+: currentbet == 0 && call <= 1/3 * potcommon ?
+  f$IsSecondPair || f$IsGutShot || f$IsFlushDraw || f$IsOESD || f$IsOverPair || f$IsTopPair ||
+	f$IsSet || f$IsTwoPair || f$IsStraight || f$IsFlush || f$IsStrongPoker || f$IsFull || f$IsMonsterDraw || f$IsDrill
+: currentbet == 0 && call <= 1/2 * potcommon ?
+  f$IsSecondPair || f$IsGutShot || f$IsFlushDraw || (f$IsOESD && !(nsuitedcommon == 3)) || f$IsOverPair || f$IsTopPair ||
+	f$IsSet || f$IsTwoPair || f$IsStraight || f$IsFlush || f$IsStrongPoker || f$IsFull || f$IsMonsterDraw || f$IsDrill
+: currentbet == 0 && call <= 3/4 * potcommon ?
+	f$IsOverPair || f$IsStrongTopPair || f$IsFlushDraw || f$IsTurnOESD ||
+	f$IsSet || f$IsStrongTwoPair || f$IsStraight || f$IsFlush || f$IsStrongPoker || f$IsFull || f$IsMonsterDraw || f$IsDrill
+: currentbet == 0 && call <= potcommon ?
+	f$IsStrongOverPair || f$IsSet || f$IsStrongTwoPair || f$IsStraight || f$IsFlush || f$IsStrongPoker || f$IsFull || f$IsMonsterDraw || f$IsStrongDrill
+
+
+:call / (call + pot) <= 0.25 && f$StackSize < 3 && f$ActualStack < 2 * bblind?
+	f$IsTopPair || f$IsOverPair || f$IsFlushDraw || f$IsOESD || f$IsFlush ||
+	f$IsTwoPair || f$IsSet || f$IsDrill || f$IsStraight
+:f$StackSize < 2 ? 
+	call / (call + pot) <= 0.20 ?
+		f$IsFlushDraw || f$IsTurnOESD || f$IsSet
+	:0
+:f$StackSize == 2 ?
+	call / (call + pot) <= 0.25 ?
+		f$IsFlushDraw || f$IsTurnOESD || f$IsSet
+	:0
+:f$StackSize >= 3 ? 
+	call / (call + pot) <= 0.30 ?
+		f$IsFlushDraw || f$IsTurnOESD || f$IsSet
+	:0
+:0
+
+##f$TurnCall##
+currentbet == 0 && call <= 1/8 * potcommon ?
+	f$IsTurnAceHigh || f$IsTurnGutShot || f$IsFlushDraw || f$IsOESD || f$IsTurnWeakSecondPair || f$IsTurnOverPair || f$IsTurnStrongTopPair ||
+	f$IsSet || f$IsTwoPair || f$IsTurnStraight || f$IsSemiGoodFlush || f$IsStrongPoker || f$IsTurnFull || f$IsMonsterDraw || f$IsDrill
+: currentbet == 0 && call <= 1/3 * potcommon ?
+	f$OpponentHandStrength == 0 ?
+		f$IsTurnSecondPair ||
+		f$IsOverPair || f$IsTopPair || f$IsFlushDraw || f$IsOESD ||
+		f$IsSet || f$IsTwoPair || f$IsStraight || f$IsFlush || f$IsTurnStrongPoker || f$IsFull || f$IsMonsterDraw || f$IsTurnDrill
+	:f$IsOverPair || f$IsStrongTopPair || f$IsFlushDraw || f$IsOESD ||
+	f$IsSet || f$IsStrongTwoPair || f$IsStraight || f$IsSemiGoodFlush || f$IsStrongPoker || f$IsFull || f$IsMonsterDraw || f$IsTurnDrill
+: currentbet == 0 && call <= 1/2 * potcommon ?
+	f$OpponentHandStrength == 0 ?
+		f$IsTurnSecondPair ||
+		f$IsOverPair || f$IsTopPair || f$IsFlushDraw || f$IsOESD ||
+		f$IsSet || f$IsTwoPair || f$IsStraight || f$IsFlush || f$IsTurnStrongPoker || f$IsFull || f$IsMonsterDraw || f$IsTurnDrill
+	:f$IsOverPair || f$IsStrongTopPair || f$IsFlushDraw || f$IsOESD ||
+	f$IsSet || f$IsStrongTwoPair || f$IsStraight || f$IsSemiGoodFlush || f$IsStrongPoker || f$IsFull || f$IsMonsterDraw || f$IsTurnDrill
+: currentbet == 0 && call <= 3/4 * potcommon ?
+	f$IsTurnOverPair || f$IsTurnStrongTopPair ||
+	f$IsSet || f$IsTurnStrongTwoPair || f$IsTurnStraight || f$IsSemiGoodFlush || f$IsTurnStrongPoker || f$IsStrongFull || f$IsStrongDrill
+: currentbet == 0 && call <= potcommon ?
+	f$IsTurnSet || f$IsTurnStrongTwoPair || f$IsTurnStraight || f$IsTurnFlush || f$IsStrongPoker || f$IsStrongFull || f$IsStrongDrill
+
+:call / (call + pot) <= 0.20 && f$StackSize < 3 && f$ActualStack < 2 * bblind?
+	f$IsTurnTopPair || f$IsTurnOverPair || f$IsTurnFlushDraw || f$IsTurnOESD || f$IsTurnFlush ||
+	f$IsTurnTwoPair || f$IsSet || f$IsTurnDrill || f$IsTurnStraight
+:f$StackSize < 2 ? 
+	call / (call + pot) <= 0.20 ?
+		f$IsTurnFlushDraw || f$IsTurnOESD
+	:0
+:f$StackSize == 2 ?
+	call / (call + pot) <= 0.20 ?
+		f$IsTurnFlushDraw || f$IsTurnOESD
+	:0
+:f$StackSize >= 3 ? 
+	call / (call + pot) <= 0.25 ?
+		f$IsTurnFlushDraw || f$IsTurnOESD
+	:0
+:0
+
+##f$RiverCall##
+currentbet == 0 && call <= 1/8 * potcommon ?
+	f$IsTurnAceHigh || f$IsTurnWeakSecondPair || f$IsTurnOverPair || f$IsTurnStrongTopPair ||
+	f$IsSet || f$IsTwoPair || f$IsStraight || f$IsFlush || f$IsStrongPoker || f$IsFull || f$IsDrill
+: currentbet == 0 && call <= 1/3 * potcommon ?
+	f$OpponentHandStrength == 0 ?
+		f$IsTurnSecondPair || f$IsTurnOverPair || f$IsTurnTopPair ||
+		f$IsTurnSet || f$IsTurnTwoPair || f$IsTurnStraight || f$IsTurnFlush || f$IsStrongPoker || f$IsTurnFull || f$IsTurnDrill
+	:f$OpponentHandStrength == 1 ?
+		f$IsTurnOverPair || f$IsTurnTopPair ||
+		f$IsTurnSet || f$IsTurnTwoPair || f$IsTurnStraight || f$IsSemiGoodFlush || f$IsStrongPoker || f$IsTurnFull || f$IsTurnDrill
+	:f$OpponentHandStrength == 2 ?
+		f$IsTurnOverPair || f$IsTurnStrongTopPair ||
+		f$IsTurnSet || f$IsTurnTwoPair || f$IsTurnStraight || f$IsSemiGoodFlush || f$IsStrongPoker || f$IsTurnFull || f$IsTurnDrill
+	:f$OpponentHandStrength > 2 ?
+		f$IsTurnSet || f$IsTurnTwoPair || f$IsTurnStraight || f$IsSemiGoodFlush || f$IsStrongPoker || f$IsTurnFull
+	:f$IsTurnStrongSet || f$IsTurnStrongTwoPair || f$IsTurnStrongStraight || f$IsTurnStrongFlush || f$IsStrongPoker || f$IsStrongFull || f$IsStrongDrill
+: currentbet == 0 && call <= 1/2 * potcommon + 4 * bblind ?
+	f$OpponentHandStrength <= 1 ?
+		f$IsTurnSecondPair || f$IsTurnOverPair || f$IsTurnStrongTopPair ||
+		f$IsTurnSet || f$IsTurnTwoPair || f$IsTurnStraight || f$IsSemiGoodFlush || f$IsStrongPoker || f$IsTurnFull || f$IsTurnDrill
+	:f$OpponentHandStrength == 2 ?
+		f$IsTurnOverPair || f$IsTurnStrongTopPair || (f$FlopBigPocketTwoPair && nsuitedcommon < 3) ||
+		f$IsTurnSet || f$IsTurnTwoPair || f$IsTurnStraight || f$IsSemiGoodFlush || f$IsStrongPoker || f$IsTurnFull || f$IsTurnDrill
+	:	f$IsTurnStrongSet || f$IsTurnStrongTwoPair || f$IsTurnStrongStraight || f$IsTurnStrongFlush || f$IsStrongPoker || f$IsStrongFull || f$IsStrongDrill
+: currentbet == 0 && call <= 3/4 * potcommon ?
+	f$OpponentHandStrength <= 1 ?
+		f$IsTurnOverPair || f$IsTurnStrongTopPair ||
+		f$IsTurnSet || f$IsTurnTwoPair || f$IsTurnStraight || f$IsTurnFlush || f$IsStrongPoker || f$IsStrongFull || f$IsTurnDrill
+	: 
+	f$IsTurnSet || f$IsTurnStrongTwoPair || f$IsTurnStrongStraight || f$IsTurnStrongFlush || f$IsStrongPoker || f$IsStrongFull || f$IsStrongDrill
+: currentbet == 0 && call <= potcommon ?
+	f$IsTurnSet || f$IsTurnStrongTwoPair || f$IsTurnStraight || f$IsTurnFlush || f$IsTurnStrongPoker || f$IsTurnFull || f$IsStrongDrill
+
+:call / (call + pot) <= 0.20 && f$StackSize < 3 && f$ActualStack < 2 * bblind?
+	f$IsTurnStrongTopPair || f$IsTurnOverPair || f$IsTurnFlush ||
+	f$IsTurnTwoPair || f$IsTurnSet || f$IsTurnDrill || f$IsTurnStraight
+:0
+
+##f$PreflopCall##
+(ispair && f$EffectivStack >= 20 * call) ||
+(call/(call + pot) <= 0.25 && islist30)
+
+##f$OpponentHandStrength##
+br == 3 ? f$OpponentTurnStrength
+:br == 4 ? f$OpponentRiverStrength
+:0
+
+##f$OpponentTurnStrength##
+!didcallround2 && !(didswaground2 || didraisround2) ? 0 //AIR
+:((didswaground2 || didraisround2) && (nbetsround2 > 2 || nbetsround2 == 0 || f$LimpedPot)) && !didcallround2 ? 1 //WEAK/NORMAL
+:((didswaground2 || didraisround2) && (nbetsround2 > 2 || nbetsround2 == 0 || f$LimpedPot)) && didcallround2 ? 2 //NORMAL/STRONG
+: didcallround2 && (nbetsround2 > 2 || nbetsround2 == 0 || f$LimpedPot) ? 1
+: 0
+
+##f$OpponentRiverStrength##
+f$OpponentTurnStrength +
+(!didcallround3 && !(didswaground3 || didraisround3) ? 0 //AIR
+:((didswaground3 || didraisround3) && (nbetsround3 > 2 || nbetsround3 == 0 || f$LimpedPot)) && !didcallround3 ? 1 //WEAK/NORMAL
+:((didswaground3 || didraisround3) && (nbetsround3 > 2 || nbetsround3 == 0 || f$LimpedPot)) && didcallround3 ? 2 //NORMAL/STRONG
+: didcallround3 && (nbetsround3 > 2 || nbetsround3 == 0 || f$LimpedPot) > 2 ? 1
+: 0)
+
+##f$RiverAIRange##
+((f$IsTurnStrongStraight && nrankedcommon < 2 && nsuitedcommon <= 2 && nstraightfillcommon != 1) ||
+(f$IsTurnStrongFlush && nrankedcommon < 2) ||
+(f$IsStrongFull) ||
+(f$IsStrongPoker) ||
+isstraightflush) || nhandshi == 0
+
+##f$IsStrongOverPair##
+f$IsOverPair && ($$pr0 > 11 && $$pr1 > 11)
+
+##f$FlopRaisedPot##
+ncallbets < 3 ?  //CBET
+	nopponentsplaying <= 1 ? 
+		(f$IsSecondPair) || ((f$IsOESD) && !nsuitedcommon == 3) || f$IsFlushDraw || f$IsTwoPair || f$IsDrill ||
+		f$IsSet || f$IsStraight || f$IsFlush || f$IsFull || f$IsStrongPoker || isstraightflush ||
+		f$IsFlopDryBoard
+	:
+		((f$IsOESD) && !nsuitedcommon == 3) || f$IsFlushDraw || f$IsTwoPair || f$IsDrill ||
+		f$IsSet || f$IsStraight || f$IsFlush || f$IsFull || f$IsStrongPoker || isstraightflush ||
+		f$IsTopPair || f$IsOverPair 
+: //RAISE
+	f$StackSize == 0 ? 
+		f$IsFlushDraw || (f$IsOESD && nsuitedcommon < 3) || f$IsTwoPair || f$IsDrill ||
+		f$IsSet || f$IsStraight || f$IsFlush || f$IsFull || f$IsStrongPoker || isstraightflush ||
+		f$IsTopPair || f$IsOverPair
+	:f$StackSize == 1 ? 
+		f$IsMonsterDraw || f$IsTwoPair || f$IsDrill ||
+		f$IsSet || f$IsStraight || f$IsFlush || f$IsFull || f$IsStrongPoker || isstraightflush ||
+		f$IsStrongTopPair || f$IsOverPair
+	:f$StackSize == 2 ?
+		(f$IsStrongTwoPair && !f$IsFlopDangerousBoard) || (f$IsDrill && !f$IsFlopDangerousBoard) ||
+		f$IsSet || (f$IsStraight && nsuitedcommon < 3) || f$IsFlush || f$IsStrongFull || f$IsStrongPoker || isstraightflush
+	:f$StackSize == 3 || f$StackSize == 4 ?
+		(f$IsStrongDrill && !f$IsFlopDangerousBoard) || (f$IsSet && !f$IsFlopDangerousBoard) || 
+		(f$IsStraight && nsuitedcommon < 3) || (f$IsFlush && (f$HigherPocketCard >= 12)) || f$IsFull || f$IsStrongPoker || 
+		isstraightflush || f$IsStrongFull
+	:f$StackSize > 4 ?
+		f$IsUltraStrongFull
+:0
+
+##f$FlopCalledPot##
+ncallbets < 3  ? 
+	f$PositionSB || (f$PositionBB && !(nopponentsplaying == 1 && f$OpponentIsSB)) ?
+		!f$IsFlopWetBoard || nopponentsplaying == 1 ?
+				f$IsTopPair || f$IsOverPair
+		:
+				f$IsTopPair || f$IsOverPair || f$IsSet || f$IsDrill || f$IsFull || f$IsFlush || f$IsStrongPoker 
+				|| isstraightflush || f$IsStraight || f$IsFlushDraw || f$IsOESD
+	:
+		f$IsTopPair || f$IsOverPair || f$IsSet || f$IsDrill || f$IsFull || f$IsFlush || f$IsStrongPoker 
+		|| isstraightflush || f$IsStraight || f$IsFlushDraw || f$IsOESD
+:
+	f$StackSize == 0 ? 
+		f$IsFlushDraw || (f$IsOESD && nsuitedcommon < 3) || f$IsTwoPair || f$IsDrill ||
+		f$IsSet || f$IsStraight || f$IsFlush || f$IsFull || f$IsStrongPoker || isstraightflush ||
+		f$IsTopPair || f$IsOverPair
+	:f$StackSize == 1 ? 
+		f$IsMonsterDraw || f$IsTwoPair || f$IsDrill ||
+		f$IsSet || f$IsStraight || f$IsFlush || f$IsFull || f$IsStrongPoker || isstraightflush ||
+		f$IsStrongTopPair || f$IsOverPair
+	:f$StackSize == 2 ?
+		(f$IsStrongTwoPair && !f$IsFlopDangerousBoard) || (f$IsDrill && !f$IsFlopDangerousBoard) ||
+		f$IsSet || (f$IsStraight && nsuitedcommon < 3) || f$IsFlush || f$IsStrongFull || f$IsStrongPoker || isstraightflush ||
+		(f$IsStrongOverPair && !f$IsFlopDangerousBoard) 
+	:f$StackSize == 3 || f$StackSize == 4 ?
+		(f$IsStrongDrill && !f$IsFlopDangerousBoard) || (f$IsSet && !f$IsFlopDangerousBoard) || 
+		(f$IsStraight && nsuitedcommon < 3) || (f$IsFlush && (f$HigherPocketCard >= 12)) || f$IsFull || f$IsStrongPoker || 
+		isstraightflush || f$IsStrongFull
+	:0
+
+##f$Flop3BetPotPFR##
+ncallbets < 3 ?  //CBET
+	nopponentsplaying <= 1 ? 
+		f$IsOESD || f$IsFlushDraw || f$IsTwoPair || f$IsDrill ||
+		f$IsSet || f$IsStraight || f$IsFlush || f$IsFull || f$IsStrongPoker || isstraightflush ||
+		f$IsFlopDryBoard
+	:
+		f$IsOESD || f$IsFlushDraw || f$IsTwoPair || f$IsDrill ||
+		f$IsSet || f$IsStraight || f$IsFlush || f$IsFull || f$IsStrongPoker || isstraightflush ||
+		f$IsTopPair || f$IsOverPair 
+: //RAISE
+	f$StackSize == 0 ? 
+		f$IsFlushDraw || (f$IsOESD && nsuitedcommon < 3) || f$IsTwoPair || f$IsDrill ||
+		f$IsSet || f$IsStraight || f$IsFlush || f$IsFull || f$IsStrongPoker || isstraightflush ||
+		f$IsTopPair || f$IsOverPair
+	:f$StackSize == 1 ? 
+		f$IsMonsterDraw || f$IsTwoPair || f$IsDrill ||
+		f$IsSet || f$IsStraight || f$IsFlush || f$IsFull || f$IsStrongPoker || isstraightflush ||
+		f$IsStrongTopPair || f$IsOverPair || 		f$IsFlushDraw
+	:f$StackSize == 2 || f$StackSize == 3?
+		f$IsMonsterDraw || f$IsTwoPair || f$IsDrill ||
+		f$IsSet || (f$IsStraight && nsuitedcommon < 3) || f$IsFlush || f$IsFull || f$IsStrongPoker || isstraightflush ||
+		f$IsOverPair || f$IsStrongTopPair || 	f$IsFlushDraw
+	:f$StackSize == 3?
+		(f$IsStrongTwoPair && !f$IsFlopDangerousBoard)|| f$IsDrill ||
+		f$IsSet || (f$IsStraight && nsuitedcommon < 3) || f$IsFlush || f$IsFull || f$IsStrongPoker || isstraightflush
+	: f$StackSize == 4 ?
+		(f$IsStrongDrill && !f$IsFlopDangerousBoard) || (f$IsSet && !f$IsFlopDangerousBoard) || 
+		(f$IsStraight && nsuitedcommon < 3) || f$IsFlush || f$IsFull || f$IsStrongPoker || 
+		isstraightflush
+	//:f$StackSize == 4 ?
+:0
+
+##f$FlopLimpedPot##
+ncallbets == 0 ?  //CBET
+	nopponentsplaying <= 1 ? 
+		f$IsTopPair || f$IsOverPair || f$IsOESD || f$IsFlushDraw || f$IsTwoPair || f$IsDrill ||
+		f$IsSet || f$IsStraight || f$IsFlush || f$IsFull || f$IsStrongPoker || isstraightflush || f$IsSecondPair
+	:
+		f$IsTwoPair || f$IsDrill || f$IsNutFlushDraw || f$IsMonsterDraw ||
+		f$IsSet || f$IsStraight || f$IsFlush || f$IsFull || f$IsStrongPoker || isstraightflush ||
+		f$IsTopPair || f$IsOverPair
+: //RAISE
+	f$StackSize == 0 ? 
+		f$IsFlushDraw || (f$IsOESD && nsuitedcommon < 3) || f$IsTwoPair || f$IsDrill ||
+		f$IsSet || f$IsStraight || f$IsFlush || f$IsFull || f$IsStrongPoker || isstraightflush ||
+		f$IsTopPair || f$IsOverPair
+	:f$StackSize == 1 ? 
+		f$IsMonsterDraw || f$IsTwoPair || f$IsDrill ||
+		f$IsSet || f$IsStraight || f$IsFlush || f$IsFull || f$IsStrongPoker || isstraightflush ||
+		f$IsStrongTopPair || f$IsOverPair
+	:f$StackSize == 2 ?
+		f$IsMonsterDraw || (f$IsStrongTwoPair && !f$IsFlopDangerousBoard) || (f$IsDrill && !f$IsFlopDangerousBoard) ||
+		f$IsSet || (f$IsStraight && nsuitedcommon < 3) || (f$IsFlush && f$HigherPocketCard >= 9) || f$IsStrongFull || f$IsStrongPoker || isstraightflush ||
+		(f$IsStrongOverPair && !f$IsFlopDangerousBoard)
+	:f$StackSize == 3 || f$StackSize == 4 ?
+		(f$IsStrongDrill && !f$IsFlopDangerousBoard) || (f$IsSet && !f$IsFlopDangerousBoard) || 
+		(f$IsStraight && nsuitedcommon < 3) || (f$IsFlush && f$HigherPocketCard >= 12) || f$IsStrongFull || f$IsStrongPoker || 
+		isstraightflush
+	//:f$StackSize == 4 ?
+:0
+
+##f$IsFlopDangerousBoard##
+nsuitedcommon == 3 || nstraightcommon == 3
+
+##f$TurnRaisedPot##
+ncallbets < 3 ?  //CBET
+	nopponentsplaying <= 1 ? 
+		f$OpponentHandStrength == 0 ?
+			f$IsTopPair || f$IsOverPair || f$IsSecondPair || f$IsOESD || f$IsFlushDraw || f$IsTwoPair || f$IsDrill ||
+			f$IsSet || f$IsStraight || f$IsFlush || f$IsFull || f$IsStrongPoker || isstraightflush
+		:f$OpponentHandStrength == 1 ?
+			(pot < 40*bblind) ?
+					f$IsTurnTwoPair || 
+					f$IsTurnDrill ||
+					f$IsTurnSet || 
+					f$IsTurnStraight || 
+					f$IsTurnFlush || 
+					f$IsTurnFull || 
+					f$IsTurnStrongPoker || 
+					isstraightflush ||
+					f$IsTurnTopPair || 
+					f$IsTurnOverPair
+			:
+					f$IsTurnTwoPair || f$IsTurnDrill ||
+					f$IsTurnSet || f$IsTurnStraight || f$IsTurnFlush || f$IsTurnFull || f$IsTurnStrongPoker || isstraightflush ||
+					f$IsTurnStrongTopPair || f$IsTurnOverPair
+			:f$OpponentHandStrength == 2 ?
+					f$StackSize == 0 ? 
+						f$IsFlushDraw || (f$IsOESD && nsuitedcommon < 3) || f$IsTurnTwoPair || f$IsTurnDrill ||
+						f$IsTurnSet || f$IsTurnStraight || f$IsTurnFlush || f$IsTurnFull || f$IsTurnStrongPoker || isstraightflush ||
+						f$IsTurnTopPair || f$IsTurnOverPair
+					:f$StackSize == 1 ? 
+						f$IsMonsterDraw || f$IsTurnTwoPair || f$IsTurnDrill ||
+						f$IsTurnSet || f$IsTurnStraight || f$IsTurnFlush || f$IsTurnFull || f$IsTurnStrongPoker || isstraightflush ||
+						f$IsTurnStrongTopPair || f$IsTurnOverPair
+					:f$StackSize == 2 ?
+						(f$IsTurnStrongTwoPair && !f$IsFlopDangerousBoard) || (f$IsTurnStrongDrill && !f$IsFlopDangerousBoard) ||
+						f$IsTurnSet || (f$IsTurnStrongStraight && nsuitedcommon < 3) || f$IsTurnStrongFlush || f$IsStrongFull || f$IsTurnStrongPoker || isstraightflush ||
+						(f$IsTurnStrongOverPair && !f$IsTurnDangerousBoard)
+					:f$StackSize == 3 || f$StackSize == 4 ?
+						(f$IsTurnStrongDrill && !f$IsFlopDangerousBoard) || (f$IsTurnSet && !f$IsFlopDangerousBoard) || 
+						(f$IsTurnStrongStraight && nsuitedcommon < 3) || f$IsTurnStrongFlush || f$IsStrongFull || f$IsTurnStrongPoker || 
+						isstraightflush
+					:0
+		:0
+	:f$OpponentHandStrength == 0 ?
+			f$IsTopPair || f$IsOverPair || f$IsTwoPair || f$IsDrill ||
+			f$IsSet || f$IsStraight || f$IsFlush || f$IsFull || f$IsStrongPoker || isstraightflush
+		
+		:f$IsTurnTwoPair || f$IsTurnDrill ||
+		f$IsTurnSet || f$IsTurnStraight || f$IsTurnFlush || f$IsTurnFull || f$IsTurnStrongPoker || isstraightflush ||
+		f$IsTurnTopPair || f$IsTurnOverPair 
+: //RAISE
+	f$StackSize == 0 ?
+			f$IsFlushDraw || f$IsTurnTwoPair || f$IsTurnDrill ||
+			f$IsTurnSet || f$IsTurnStraight || f$IsTurnFlush || f$IsTurnFull || f$IsTurnStrongPoker || isstraightflush ||
+			f$IsTurnStrongTopPair || f$IsTurnOverPair
+	:f$StackSize == 1 ?
+			f$IsTurnTwoPair || f$IsTurnDrill ||
+			f$IsTurnSet || f$IsTurnStraight || f$IsTurnFlush || f$IsTurnFull || f$IsTurnStrongPoker || isstraightflush ||
+			f$IsTurnStrongTopPair || f$IsTurnOverPair
+	:f$StackSize == 2 ?
+			pot < 40 * bblind ?
+				(f$IsTurnStrongTwoPair && !f$IsFlopDangerousBoard) || (f$IsTurnStrongDrill && !f$IsFlopDangerousBoard) ||
+				f$IsTurnSet || (f$IsTurnStrongStraight && nsuitedcommon < 3) || f$IsTurnStrongFlush || f$IsStrongFull || f$IsTurnStrongPoker || isstraightflush
+		 :
+				(f$IsTurnStrongTwoPair && !f$IsFlopDangerousBoard) || f$IsTurnDrill ||
+				f$IsTurnSet || f$IsTurnStraight || f$IsTurnFlush || f$IsTurnFull || f$IsTurnStrongPoker || isstraightflush ||
+				f$IsTurnStrongTopPair || f$IsTurnOverPair
+	:f$StackSize == 3 || f$StackSize == 4 ?
+			(f$IsTurnStrongDrill && !f$IsFlopDangerousBoard) || (f$IsTurnSet && nsuitedcommon < 3 && nstraightcommon < 3) || 
+			(f$IsTurnStrongStraight && nsuitedcommon < 3) || f$IsTurnStrongFlush || f$IsStrongFull || f$IsTurnStrongPoker || 
+			isstraightflush  
+		:f$StackSize > 4 ?
+		f$IsUltraStrongFull
+:0
+
+##f$IsTurnTwoPair##
+f$IsTwoPair && nsuitedcommon < 4 && nstraightfillcommon > 1
+
+##f$IsTurnDrill##
+f$IsDrill && nsuitedcommon < 4 && nstraightfillcommon > 1
+
+##f$IsTurnFlush##
+f$IsFlush && nsuitedcommon < 4 || (nsuitedcommon == 4 && nhandshi < 13)
+
+##f$IsTurnSet##
+f$IsSet && nsuitedcommon < 4 && nstraightfillcommon > 1
+
+##f$IsTurnTopPair##
+f$IsTopPair && nsuitedcommon < 4 && nstraightfillcommon > 1
+
+##f$IsTurnStrongTopPair##
+f$IsStrongTopPair && nsuitedcommon < 4 && nstraightfillcommon > 1
+
+##f$IsTurnFull##
+f$IsFull
+
+##f$IsTurnStraight##
+f$IsStraight && nsuitedcommon < 4
+
+##f$IsTurnStrongTwoPair##
+f$IsStrongTwoPair && nsuitedcommon < 4 && nstraightfillcommon > 1
+
+##f$IsTurnStrongFlush##
+f$IsTurnFlush && nrankedcommon < 2 
+
+##f$IsTurnStrongStraight##
+f$IsTurnStraight && nrankedcommon < 2 && nsuitedcommon < 3
+
+##f$IsTurnOverPair##
+f$IsOverPair && nsuitedcommon < 4 && nstraightfillcommon > 1
+
+##f$IsTurnStrongOverPair##
+f$IsStrongOverPair && nsuitedcommon < 3 && nstraightfillcommon > 1
+
+##f$IsTurnStrongPoker##
+f$IsStrongPoker
+
+##f$IsTurnSecondPair##
+f$IsSecondPair && nsuitedcommon < 3 && nstraightfillcommon > 1
+
+##f$IsTurnStrongDrill##
+f$IsStrongDrill && nsuitedcommon < 4 && nstraightfillcommon > 1
+
+##f$ActualStack##
+balance < f$ActualOpponentBalance ? balance : f$ActualOpponentBalance
+
+##f$ActualOpponentBalance##
+f$StackOpponent + call
+
+##f$IsTurnVeryDangerousBoard##
+nsuitedcommon <= 3 || nstraightfillcommon == 1
+
+##f$IsTurnStrongSet##
+f$IsTurnSet && nsuitedcommon < 3
+
+##f$3Betsize##
+f$StackSize > 2 ? (4 + nopponentscalling/1.5) * ncallbets * bblind //DEEP 3bet
+    :f$PositionSB || f$PositionBB ? (3.5 + nopponentscalling/1.5) * ncallbets < 11 ? 11*bblind
+      :(3.5 + nopponentscalling/1.5) * ncallbets * bblind
+    :(3 + nopponentscalling/1.5) * ncallbets  < 10 ? 10*bblind
+:(3 + nopponentscalling/1.5) * ncallbets * bblind
+
+##f$LimpedPot##
+f$Is3BetPotCaller ? 0
+:f$Is3BetPotPFR ? 0
+:f$IsRaisedPotCaller ? 0
+:f$IsRaisedPotPFR ? 0
+:1 
+
+##f$IsTurnGutShot##
+f$IsGutShot && nsuitedcommon < 4 && nstraightfillcommon > 1 && nrankedcommon < 2
+
+##f$IsTurnOESD##
+f$IsOESD && nsuitedcommon < 3 && nrankedcommon < 2
+
+##f$IsTurnFlushDraw##
+f$IsFlushDraw && nrankedcommon < 2
+
+##f$IsTurnAceHigh##
+f$IsAceHigh && nsuitedcommon < 4 && nstraightfillcommon > 1
+
+##f$DoublePairedBoard##
+nrankedcommon == 2
+
+##f$SmallPocket##
+ispair && $$pr0 < 7
+
+##f$IsNutFlushDraw##
+f$IsFlushDraw && mh_nsuitedbetter == 0
+
+##f$IsUltraStrongFull##
+f$IsFull && (nhandshi < 12) 
+
+##f$IsWeakSecondPair##
+(isonepair &&  ($$pr0 > ranklocommon && $$pr1 > ranklocommon && nrankedcommon < 2)) || 
+(f$FlopBigPocketTwoPair)
+
+##f$IsTurnWeakSecondPair##
+f$IsWeakSecondPair && nsuitedcommon < 3 && nstraightfillcommon > 1
+
+##f$FlopCard1##
+ranklocommon 
+
+##f$FlopCard2##
+$$cr0 > f$FlopCard1 && $$cr0 < f$FlopCard3 ? $$cr0 :
+$$cr1 > f$FlopCard1 && $$cr1 < f$FlopCard3 ? $$cr1 :
+$$cr2 > f$FlopCard1 && $$cr2 < f$FlopCard3 ? $$cr2 : 0
+
+##f$FlopCard3##
+rankhicommon 
+
+##f$TurnCard1##
+ranklocommon 
+
+##f$TurnCard2##
+$$cr0 > f$TurnCard1 && (($$cr0 < $$cr1 && $$cr0 < $$cr2) || ($$cr0 < $$cr1 && $$cr0 < $$cr3) || ($$cr0 < $$cr2 && $$cr0 < $$cr3)) ? $$cr0 :
+$$cr1 > f$TurnCard1 && (($$cr1 < $$cr0 && $$cr1 < $$cr2) || ($$cr1 < $$cr0 && $$cr1 < $$cr3) || ($$cr1 < $$cr2 && $$cr1 < $$cr3)) ? $$cr1 :
+$$cr2 > f$TurnCard1 && (($$cr2 < $$cr0 && $$cr2 < $$cr1) || ($$cr2 < $$cr0 && $$cr2 < $$cr3) || ($$cr2 < $$cr1 && $$cr2 < $$cr3)) ? $$cr2 :
+$$cr3 > f$TurnCard1 && (($$cr3 < $$cr0 && $$cr3 < $$cr1) || ($$cr3 < $$cr0 && $$cr3 < $$cr2) || ($$cr3 < $$cr1 && $$cr3 < $$cr2)) ? $$cr3 : 0
+
+##f$TurnCard3##
+$$cr0 > f$TurnCard2 && $$cr0 < f$TurnCard4 ? $$cr0 :
+$$cr1 > f$TurnCard2 && $$cr1 < f$TurnCard4 ? $$cr1 :
+$$cr2 > f$TurnCard2 && $$cr2 < f$TurnCard4 ? $$cr2 :
+$$cr3 > f$TurnCard2 && $$cr3 < f$TurnCard4 ? $$cr3 : 0
+
+##f$TurnCard4##
+rankhicommon 
+
+##f$IsWeakOESD##
+nstraight == 4 && 
+(nstraightcommon <= 2 || 
+(nstraightcommon == 3 && $$pr0 > rankhicommon && $$pr1 > rankhicommon))
+
+##f$LowerPocketCard##
+$$pr0 > $$pr1 ? $$pr1
+:$$pr0
+
+##f$RiverBetFold##
+f$IsTurnTwoPair || f$IsTurnDrill ||
+f$IsTurnSet || f$IsTurnStraight || f$IsTurnFlush || f$IsTurnFull || f$IsTurnStrongPoker || isstraightflush ||
+f$IsTurnStrongTopPair || f$IsTurnOverPair 
+
+##f$IsSemiGoodFlush##
+isflush && (nsuitedcommon < 4 || nhandshi < 60) && nrankedcommon < 2 //K high + flush
+
+##f$IsFish##
+//@TODO
+
+##f$Is2OverCard##
+$$pr0 > rankhicommon && $$pr1 > rankhicommon 
+
+##f$IsPair##
+isonepair && nrankedcommon == 1
+
