@@ -23,5 +23,8 @@
     <ClInclude Include="src\evaluatorTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="bayesTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

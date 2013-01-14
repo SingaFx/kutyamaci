@@ -14,6 +14,7 @@
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="bayesTest.h" />
     <ClInclude Include="src\evaluatorTest.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
