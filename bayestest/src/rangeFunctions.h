@@ -2,50 +2,9 @@
 #include "handHistoryParser.h"
 #include "evaluator.h"
 #include "validator.h"
+#include "bayesUtils.h"
 #include <set>
 #include <vector>
-
-char numberToCard(int num)
-{
-	char card;
-
-	if (num < 10)
-	{
-		card = '0' + num;
-	}
-	else
-	{
-		switch(num)
-		{
-		case 10: card = 'T'; break;
-		case 11: card = 'J'; break;
-		case 12: card = 'Q'; break;
-		case 13: card = 'K'; break;
-		case 14: card = 'A'; break;
-		}
-	}
-	return card;
-}
-
-int convertRankToNumbers(Card c)
-{
-	int map[100];
-	map['A'] = 14;
-	map['K'] = 13;
-	map['Q'] = 12;
-	map['J'] = 11;
-	map['T'] = 10;
-
-	if ((c.rank >= '2') && (c.rank <= '9'))
-	{
-		c.rank = c.rank - '0';
-	}
-	else
-	{
-		c.rank = map[c.rank];
-	}
-	return c.rank;
-}
 
 class PlayerRange
 {
@@ -63,25 +22,41 @@ public:
 		}
 		printf("Total = %lf\n", total);
 	}
+
+	double totalPercentage()
+	{
+		std::set<pair<Hand, double> >::iterator it;
+		double total = 0;
+		for (it = range.begin(); it != range.end(); ++it)
+		{
+			total += it->second;
+		}
+		
+		return total;
+	}
+
+	PlayerRange normalize()
+	{
+		PlayerRange res;
+		double total = totalPercentage();
+		std::set<pair<Hand, double> >::iterator it;
+		for (it = range.begin(); it != range.end(); ++it)
+		{
+			double x = it->second;
+			x *= 1 / total;
+			res.range.insert(make_pair(it->first, x));
+		}
+
+		return res;
+	}
 };
 
 class RangeUtils
 {
-public:
+private:
 
-	//create range from HS
-	static PlayerRange createRange(int n, double HS[], std::vector<Card>& v, Hand own)
+	static void calculateStrengths(int n, int hsn[], vector<Card>& v, Hand& own, char map[])
 	{
-		double FOLD = HS[n];
-		PlayerRange res;
-		char map[4];
-		map[0] = 's';
-		map[1] = 'h';
-		map[2] = 'd';
-		map[3] = 'c';
-
-		int hsn[20];
-		memset(hsn, 0, sizeof(hsn));
 		int total = 0;
 		int count1 = 0;
 		for (int i1 = 0; i1 < 4; ++i1)
@@ -135,56 +110,11 @@ public:
 				}
 			}
 		}
+	}
 
-		//AMIK NEM LEHETNEK EGY ADOTT BOARDON!
-		int cnt = 0;
-		double totalProb = 0;
-		for (int i = 0; i < n; ++i)
-		{
-			if (hsn[i] == 0 && HS[i] > 0)
-			{
-				totalProb += HS[i];
-				HS[i] = 0;
-			}
-			else
-			{
-				cnt++;
-			}
-		}
-		for (int i = 0; i < n; ++i)
-		{
-			if (hsn[i] != 0)
-			{
-				HS[i] += totalProb / cnt;
-			}
-		}
-
-		//add FOLD
-		int div = ((cnt + 1) * cnt) / 2;
-		double egyseg = FOLD / (double) div;
-
-		cnt = 1;
-		if (hsn[0] != 0) HS[0] += cnt++ * egyseg; //nagyon eros
-		if (hsn[1] != 0) HS[1] += cnt++ * egyseg; //eros
-		if (hsn[7] != 0) HS[7] += cnt++ * egyseg; //monster draw
-		if (hsn[2] != 0) HS[2] += cnt++ * egyseg; //kozepesen eros
-		if (hsn[6] != 0) HS[6] += cnt++ * egyseg; //jo draw
-		if (hsn[3] != 0) HS[3] += cnt++ * egyseg; //gyenge
-		if (hsn[5] != 0) HS[5] += cnt++ * egyseg; //GS
-		if (hsn[4] != 0) HS[4] += cnt++ * egyseg; //AIR	
-
-		totalProb = 0;
-		for (int i = 0; i < n; ++i)
-		{
-			totalProb += HS[i];
-		}
-		//normalize
-		for (int i = 0; i < n; ++i)
-		{
-			HS[i] *= 1 / totalProb;
-		}
-
-		count1 = 0;
+	static void calculateRanges(int n, double HS[], int hsn[], vector<Card>& v, Hand& own, char map[], PlayerRange& res)
+	{
+		int count1 = 0;
 		for (int i1 = 0; i1 < 4; ++i1)
 		{
 			for (int j1 = 0; j1 < 13; ++j1)
@@ -238,6 +168,137 @@ public:
 				}
 			}
 		}
+	}
+
+	static void normalize(int n, double HS[])
+	{
+		double totalProb = 0;
+		for (int i = 0; i < n; ++i)
+		{
+			totalProb += HS[i];
+		}
+		for (int i = 0; i < n; ++i)
+		{
+			HS[i] *= 1 / totalProb;
+		}
+	}
+
+	static int totalTypes(int n, int hsn[])
+	{
+		int cnt = 0;
+
+		for (int i = 0; i < n; ++i)
+		{
+			if (hsn[i] != 0)
+			{
+				cnt++;
+			}
+		}
+
+		return cnt;
+	}
+
+	static void distributeRanges(int n, double HS[], int hsn[])
+	{
+		for (int i = 0; i < 5; ++i)
+		{
+			int mini = -1;
+			int min = 1000;
+			if (hsn[i] == 0)
+			{
+				for (int j = 0; j < 5; ++j)
+				{
+					if (hsn[j] != 0)
+					{
+						if (min > abs(i - j))
+						{
+							min = abs(i - j);
+							mini = j;
+						}
+					}
+				}
+				if (mini != -1)
+				{
+					HS[mini] += HS[i];
+					HS[i] = 0;
+				}
+			}
+		}
+
+		for (int i = 5; i < 8; ++i)
+		{
+			int mini = -1;
+			int min = 1000;
+			if (hsn[i] == 0)
+			{
+				for (int j = 5; j < 8; ++j)
+				{
+					if (hsn[j] != 0)
+					{
+						if (min > abs(i - j))
+						{
+							min = abs(i - j);
+							mini = j;
+						}
+					}
+				}
+				if (mini != -1)
+				{
+					HS[mini] += HS[i];
+					HS[i] = 0;
+				}
+			}
+		}
+
+		//add to FOLD otherwise
+		for (int i = 0; i < 8; ++i)
+		{
+			if (hsn[i] == 0)
+			{
+				HS[8] += HS[i];
+				HS[i] = 0;
+			}
+		}
+	}
+
+public:
+
+	//create range from HS
+	static PlayerRange createRange(int n, double HS[], std::vector<Card>& v, Hand own)
+	{
+		char map[4];
+		map[0] = 's';
+		map[1] = 'h';
+		map[2] = 'd';
+		map[3] = 'c';
+
+		PlayerRange res;
+
+		int hsn[20];
+		memset(hsn, 0, sizeof(hsn));
+		
+		calculateStrengths(n, hsn, v, own, map);
+		int cnt = totalTypes(n, hsn);
+		distributeRanges(n, HS, hsn);
+
+		//add FOLD
+		double FOLD = HS[n];
+		int div = ((cnt + 1) * cnt) / 2;
+		double egyseg = FOLD / (double) div;
+
+		cnt = 1;
+		if (hsn[0] != 0) HS[0] += cnt++ * egyseg; //nagyon eros
+		if (hsn[1] != 0) HS[1] += cnt++ * egyseg; //eros
+		if (hsn[7] != 0) HS[7] += cnt++ * egyseg; //monster draw
+		if (hsn[2] != 0) HS[2] += cnt++ * egyseg; //kozepesen eros
+		if (hsn[6] != 0) HS[6] += cnt++ * egyseg; //jo draw
+		if (hsn[3] != 0) HS[3] += cnt++ * egyseg; //gyenge
+		if (hsn[5] != 0) HS[5] += cnt++ * egyseg; //GS
+		if (hsn[4] != 0) HS[4] += cnt++ * egyseg; //AIR	
+		HS[8] = 0;
+	
+		normalize(n, HS);
+		calculateRanges(n, HS, hsn, v, own, map, res);
 
 		return res;
 	}

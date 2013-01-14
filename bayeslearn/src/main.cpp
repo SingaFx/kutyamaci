@@ -52,9 +52,9 @@ player line -> 4
 540
 */
 
-BayesPreflop* preflop;
-BayesFlop* flop;
-BayesTurn* turn;
+BayesLearnPreflop* preflop;
+BayesLearnFlop* flop;
+BayesLearnTurn* turn;
 
 int total;
 
@@ -247,9 +247,9 @@ int main(int argc, char* argv[])
 {
 	try
 	{
-		preflop = new BayesPreflop();
-		flop = new BayesFlop();
-		turn = new BayesTurn();
+		preflop = new BayesLearnPreflop();
+		flop = new BayesLearnFlop();
+		turn = new BayesLearnTurn();
 		parseHands("d:\\pokerbot\\hh.txt");
 		//preflop->write("preflopBayes");
 		//flop->write("flopBayes");
