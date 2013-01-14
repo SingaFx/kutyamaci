@@ -861,6 +861,75 @@ class Evaluator
 
 		return flopThreeofaKind(board);
 	}
+
+	static bool riverDoubleBoard(vector<Card> &board)
+	{
+		assert(board.size() == 5);
+
+		return flopOnePair(board[0], board[1], board[2], board[3], board[4]);
+	}
+
+	static int riverSuitedNumber(Card &b1, Card &b2, Card &b3, Card &b4, Card &b5)
+	{
+		int temp[255];
+		temp['c'] = 0; temp['d'] = 0; temp['h'] = 0; temp['s'] = 0;
+
+		temp[b1.suit]++;temp[b2.suit]++;temp[b3.suit]++;temp[b4.suit]++;temp[b5.suit]++;
+
+		return maxim(temp['c'],maxim(temp['d'],maxim(temp['h'],temp['s'])));
+	}
+
+	static bool riverOneCardNutFlush(Card &h1, Card &h2, vector<Card> &board)
+	{
+		if (riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) < 4)
+			return false;
+
+		char suit = board[0].suit;
+		if ((board[0].suit != board[1].suit) && (board[1].suit == board[2].suit))
+			suit = board[1].suit;
+
+		if ((h1.suit != suit) && (h2.suit != suit))
+			return false;
+		Card suitedCard = (h1.suit == suit && (h2.suit != suit || h2.rank < h1.rank)) ? h1 : h2;
+
+		vector<Card> suiteds = board;
+		for (int i = 0; i < suiteds.size(); ++i)
+			if (suiteds[i].suit != suit)
+				suiteds.erase(suiteds.begin() + i);
+
+		return suitedCard.rank == 14 || (suitedCard.rank == 13 && suiteds[3].rank == 14) || (suitedCard.rank == 12 && suiteds[2].rank == 13 && suiteds[3].rank == 14)
+			|| (suitedCard.rank == 11 && suiteds[1].rank == 12 && suiteds[2].rank == 13 && suiteds[3].rank == 14);
+	}
+
+	static bool riverOneCardStrBoard(vector<Card> &board)
+	{
+		for (int i = 0; i < board.size(); ++i)
+		{
+			vector<Card> temp = board;
+			temp.erase(temp.begin() + i);
+			if (turnOneCardStrBoard(temp))
+				return true;
+		}
+
+		return false;
+	}
+
+	static bool riverPossibleOneCardStrFlush(vector<Card> &board)
+	{
+		if (riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) < 4)
+			return false;
+
+		char suit = board[0].suit;
+		if ((board[0].suit != board[1].suit) && (board[1].suit == board[2].suit))
+			suit = board[1].suit;
+
+		vector<Card> temp = board;
+		for (int i = 0; i < temp.size(); ++i)
+			if (temp[i].suit != suit)
+				temp.erase(temp.begin() + i);
+
+		return (temp.size() == 4 && turnOneCardStrBoard(temp)) || (temp.size() == 5 && riverOneCardStrBoard(temp)); 
+	}
 public:
 	// Flop
 	static int cardStrength(Card h1, Card h2, Card b1, Card b2, Card b3)
@@ -1213,7 +1282,7 @@ public:
 			if (!turnMonotoneBoard(board) && turnDoubleBoard(board))
 				return 1;
 
-			Card suitedCard = (h1.suit == b1.suit) ? h1 : h2;
+			Card suitedCard = (h1.suit == b1.suit && (h2.suit != b1.suit || h2.rank < h1.rank)) ? h1 : h2;
 
 			if (turnOneCardNutFlush(h1,h2,board))
 			{
@@ -1703,7 +1772,56 @@ public:
 		}
 		else if (riverFlush(cards))
 		{
-			cout << "Flush" << endl;
+			if (flopFlush(b1,b2,b3,b4,b5))
+			{
+				if (riverOneCardNutFlush(h1,h2,board))
+				{
+					if (riverPossibleOneCardStrFlush(board))
+						return 1;
+					return 0;
+				}
+				if ((h1.suit == b1.suit) || (h2.suit == b2.suit))
+				{
+					Card suitedCard = (h1.suit == b1.suit && (h2.suit != b1.suit || h2.rank < h1.rank)) ? h1 : h2;
+					if (suitedCard.rank >= 11)
+						return 3;
+					return 4;
+				}
+
+				if ((board[4].rank == 14) && (!riverPossibleOneCardStrFlush(board)))
+					return 8;
+				return 4;
+			}
+
+			if (riverTripleBoard(board))
+				return 4;
+
+			if (riverDoublePairedBoard(board))
+				return 3;
+
+			if (riverSuitedNumber(b1,b2,b3,b4,b5) == 3 && !riverDoubleBoard(board))
+				return 0;
+
+			if (riverSuitedNumber(b1,b2,b3,b4,b5) == 3 && riverDoubleBoard(board))
+				return 1;
+
+			char suit = board[1].suit;
+			if ((board[1].suit != board[2].suit) && (board[2].suit == board[3].suit))
+				suit = board[2].suit;
+			Card suitedCard = (h1.suit == suit && (h2.suit != suit || h2.rank < h1.rank)) ? h1 : h2;
+
+			if (riverOneCardNutFlush(h1,h2,board))
+			{
+				if (riverDoubleBoard(board))
+					return 1;
+				if (riverPossibleOneCardStrFlush(board))
+					return 1;
+				return 0;
+			}
+
+			if (suitedCard.rank >= 11)
+				return 3;
+			return 4;
 		}
 		else if (riverStraight(cards))
 		{
