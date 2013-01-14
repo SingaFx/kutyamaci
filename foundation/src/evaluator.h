@@ -225,7 +225,6 @@ class Evaluator
 				(h2.rank > b1.rank) && (h2.rank > b2.rank) && (h2.rank > b3.rank);
 	}
 
-
 	static bool flopNutFlushDraw(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3)
 	{
 		if (!flopFlushDraw(h1,h2,b1,b2,b3))
@@ -742,6 +741,12 @@ class Evaluator
 		return temp;
 	}
 
+	static vector<Card> createVector(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3, Card &b4)
+	{
+		vector<Card> temp; temp.push_back(h1); temp.push_back(h2); temp.push_back(b1); temp.push_back(b2); temp.push_back(b3); temp.push_back(b4);
+		return temp;
+	}
+
 	static bool turnOESD(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3, Card &b4)
 	{
 		return flopOESD(createVector(h1,h2,b1,b2,b3)) || flopOESD(createVector(h1,h2,b1,b2,b4)) || flopOESD(createVector(h1,h2,b1,b3,b4)) || 
@@ -821,6 +826,26 @@ class Evaluator
 	static bool riverOnePair(vector<Card> &cards)
 	{
 		return riverHandStrength(cards, flopOnePair);
+	}
+
+	static bool riverOneCardLowStrFlush(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3, Card &b4, Card &b5)
+	{
+		Card strcard = h1;
+		if (turnStraightFlush(createVector(h2,b1,b2,b3,b4,b5)))
+			strcard = h2;
+
+		if (flopStraightFlush(strcard, b1, b2, b3, b4))
+			return strcard.rank < b1.rank && strcard.rank < b2.rank && strcard.rank < b3.rank && strcard.rank < b4.rank;
+		if (flopStraightFlush(strcard, b1, b2, b3, b5))
+			return strcard.rank < b1.rank && strcard.rank < b2.rank && strcard.rank < b3.rank && strcard.rank < b5.rank;
+		if (flopStraightFlush(strcard, b1, b2, b4, b5))
+			return strcard.rank < b1.rank && strcard.rank < b2.rank && strcard.rank < b4.rank && strcard.rank < b5.rank;
+		if (flopStraightFlush(strcard, b1, b3, b4, b5))
+			return strcard.rank < b1.rank && strcard.rank < b3.rank && strcard.rank < b4.rank && strcard.rank < b5.rank;
+		if (flopStraightFlush(strcard, b2, b3, b4, b5))
+			return strcard.rank < b2.rank && strcard.rank < b3.rank && strcard.rank < b4.rank && strcard.rank < b5.rank;
+
+		cout << "Error in riverOneCardLowStrFlush : script is supposed to terminate earlier." << endl;
 	}
 public:
 	// Flop
@@ -1516,7 +1541,24 @@ public:
 
 		if (riverStraightFlush(cards))
 		{
-			cout << "Straight flush" << endl;
+			if (flopStraightFlush(b1,b2,b3,b4,b5))
+			{
+				if (flopStraightFlush(h1,h2,board[2],board[3],board[4]))
+					return 0;
+				if (flopStraightFlush(h1,board[1],board[2],board[3],board[4]) || flopStraightFlush(h2,board[1],board[2],board[3],board[4]))
+					return 0;
+				if ((board[4].rank == 14) && (board[3].rank == 13))
+					return 8;
+				return 4;
+			}
+			if (turnStraightFlush(createVector(h1,b1,b2,b3,b4,b5)) || turnStraightFlush(createVector(h2,b1,b2,b3,b4,b5)))
+			{
+				if (riverOneCardLowStrFlush(h1,h2,b1,b2,b3,b4,b5))
+					return 1;
+
+				return 0;
+			}
+			return 0;
 		}
 		else if (riverPoker(cards))
 		{
