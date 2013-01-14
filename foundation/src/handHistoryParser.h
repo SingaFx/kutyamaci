@@ -13,6 +13,17 @@ class Card
 public:
 	char rank,suit;
 
+	Card()
+	{
+		rank = suit = 0;
+	}
+
+	Card(char rank, char suit)
+	{
+		this->rank = rank;
+		this->suit = suit;
+	}
+
 	bool operator==(const Card& c) const
 	{
 		return c.rank == rank && c.suit == suit; 
@@ -23,6 +34,16 @@ class Hand
 {
 public:
 	Card card1,card2;
+
+	Hand()
+	{
+	}
+
+	Hand(Card card1, Card card2)
+	{
+		this->card1 = card1;
+		this->card2 = card2;
+	}
 
 	bool operator<(const Hand& h) const
 	{

@@ -13,7 +13,19 @@ int main()
 {
     try
     {
-		double VPIP = 20;
+		//nev
+		//poz
+		//balance
+		//potcommon
+		//c, r, x
+		//betsize(currentbet)
+
+		//Rangek
+		//mennyit kell call-olni ha van bet
+		//potcommon
+		//pot
+
+		double VPIP = 21.5;
 		double PFR = 10;
 		double betsize = 0.2;
 		int poz = 0;
@@ -97,14 +109,13 @@ int main()
 
 		//======TURN===================================================
 
-		nStackSize = 3;  //110 - 150bblin
+		nStackSize = 2;  //110 - 150bblin
 		nBetSize = 1;  //3/4pot
 		nLine = 1; //raise
 		nVPIP = 2;  //20 - 30
 		nPFR = 1; //10 - 20
 		nAF = 1;
-		nPotSize = 2; //35*bblin
-		poz = 4;
+		nPotSize = 2; //30 - 70 *bblind
 
 		v[1] = nPotSize;	
 		v[2] = nStackSize;
