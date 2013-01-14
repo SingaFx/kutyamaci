@@ -1562,7 +1562,17 @@ public:
 		}
 		else if (riverPoker(cards))
 		{
-			cout << "Poker" << endl;
+			if (flopPoker(b1,b2,b3,b4,b5))
+			{
+				if ((board[4].rank == 14 && board[3].rank < 14) || (board[4].rank == 14 && board[3].rank == 14 && board[0].rank == 13))
+					return 8;
+				if (h1.rank == 14 || h2.rank == 14 || (board[4].rank == 14 && board[3].rank == 14 && (h1.rank == 13 || h2.rank == 13)))
+					return 0;
+				if (((h1.rank == 13 || h2.rank == 13) && (board[4].rank < 13)) || (board[4].rank == 14 && board[3].rank == 14 && (h1.rank == 12 || h2.rank == 12) && (board[0].rank < 12)))
+					return 3;
+				return 4;
+			}
+			return 0;
 		}
 		else if (riverFullHouse(cards))
 		{
