@@ -847,6 +847,20 @@ class Evaluator
 
 		cout << "Error in riverOneCardLowStrFlush : script is supposed to terminate earlier." << endl;
 	}
+
+	static bool riverDoublePairedBoard(vector<Card> &board)
+	{
+		assert(board.size() == 5);
+
+		return flopTwoPair(board);
+	}
+
+	static bool riverTripleBoard(vector<Card> &board)
+	{
+		assert(board.size() == 5);
+
+		return flopThreeofaKind(board);
+	}
 public:
 	// Flop
 	static int cardStrength(Card h1, Card h2, Card b1, Card b2, Card b3)
@@ -1168,9 +1182,12 @@ public:
 			}
 
 			Card standAloneCard = (board[0].rank == board[1].rank) ? board[3] : board[0];
+			Card trips = (board[0].rank == board[1].rank) ? board[0] : board[3];
 
 			if (h1.rank == h2.rank)
 			{
+				if (h1.rank == standAloneCard.rank && h1.rank > trips.rank)
+					return 0;
 				if (h1.rank > standAloneCard.rank)
 				{
 					if (h1.rank >= 11)
@@ -1576,7 +1593,113 @@ public:
 		}
 		else if (riverFullHouse(cards))
 		{
-			cout << "Full House" << endl;
+			if (flopFullHouse(b1,b2,b3,b4,b5))
+			{
+				Card pair = board[0];
+				Card trips = board[4];
+				if (board[1].rank == board[2].rank)
+				{
+					pair = board[4];
+					trips = board[0];
+				}
+
+				if ((pair.rank > trips.rank) && (h1.rank == pair.rank || h2.rank == pair.rank))
+					return 0;
+				if ((h1.rank == h2.rank) && (h1.rank > pair.rank))
+				{
+					if (h1.rank >= 12)
+						return 1;
+					if (h1.rank >= 88)
+						return 2;
+					return 3;
+				}
+
+				return 4;
+			}
+			
+			if (!riverDoublePairedBoard(board) && !riverTripleBoard(board))
+				return 0;
+
+			if (riverDoublePairedBoard(board))
+			{
+				Card bigpair = board[4];
+				Card lowpair = board[2];
+				Card standAloneCard = board[0];
+				if (board[4].rank != board[3].rank)
+				{
+					bigpair = board[3];
+					lowpair = board[1];
+					standAloneCard = board[4];
+				}
+				if ((board[0].rank == board[1].rank) && (board[4].rank == board[3].rank))
+				{
+					bigpair = board[4];
+					lowpair = board[0];
+					standAloneCard = board[2];
+				}
+
+				if ((bigpair.rank == h1.rank) || (bigpair.rank == h2.rank))
+					return 0;
+				if ((lowpair.rank == h1.rank) || (lowpair.rank == h2.rank))
+					return 2;
+
+				if ((h1.rank == h2.rank) && (h1.rank == standAloneCard.rank))
+				{
+					if (h1.rank > bigpair.rank)
+						return 0;
+					if (h1.rank > lowpair.rank)
+						return 2;
+					return 3;
+				}
+
+				cout << "Error in cardStrength(river, full house) : script is supposed to terminate earlier" << endl;
+			}
+
+			Card highStandAloneCard = board[0];
+			Card lowStandAloneCard = board[1];
+			Card trips = board[2];
+			if (board[0].rank == board[1].rank)
+			{
+				highStandAloneCard = board[3];
+				lowStandAloneCard = board[4];
+			}
+			if ((board[1].rank == board[2].rank) && (board[2].rank == board[3].rank))
+			{
+				highStandAloneCard = board[0];
+				lowStandAloneCard = board[4];
+			}
+
+			if (highStandAloneCard.rank > lowStandAloneCard.rank)
+			{
+				Card temp = highStandAloneCard;
+				highStandAloneCard = lowStandAloneCard;
+				lowStandAloneCard = temp;
+			}
+
+			if (h1.rank == h2.rank)
+			{
+				if ((h1.rank == highStandAloneCard.rank || h1.rank == lowStandAloneCard.rank) && (h1.rank > trips.rank))
+					return 0;
+				if (h1.rank > highStandAloneCard.rank)
+				{
+					if (h1.rank >= 11)
+						return 1;
+					if (h1.rank >= 8)
+						return 2;
+					return 3;
+				}
+				return 3;
+			}
+
+			if (h1.rank == highStandAloneCard.rank || h2.rank == highStandAloneCard.rank)
+			{
+				if (highStandAloneCard.rank >= 12)
+					return 1;
+				if (highStandAloneCard.rank >= 8)
+					return 2;
+				return 3;
+			}
+			return 3;
 		}
 		else if (riverFlush(cards))
 		{
