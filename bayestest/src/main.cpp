@@ -4,9 +4,9 @@
 
 using namespace std;
 
-BayesPreflop preflop;
-BayesFlop flop;
-BayesTurn turn;
+BayesUserPreflop preflop;
+BayesUserFlop flop;
+BayesUserTurn turn;
 
 
 int main()
@@ -57,6 +57,7 @@ int main()
 		v[6] = poz;
 		
 		PlayerRange rangePre = preflop.getRange(v, 0);
+		rangePre = rangePre.normalize();
 		preflop.printRange(v);
 		v[0] = 0;
 		cout << "FOLD = " << preflop.getProbability(v, 0) << endl;
@@ -82,6 +83,9 @@ int main()
 		v[6] = nPFR;
 		v[7] = nAF;
 		
+
+		printf("FLOP RANGE\n");
+
 		cout << "FE = " << flop.getProbabilityFE(v, 0) << endl;
 		flop.printRange(v); 
 
@@ -101,7 +105,7 @@ int main()
 
 		Hand own;
 		PlayerRange range1 = RangeUtils::createRange(8, HS, cards, own);
-		printf("FLOP RANGE\n");
+		
 		range1.printRange();
 		range1 = RangeUtils::mergeRange(rangePre, range1, cards);
 		printf("MERGED PREFLOP-FLOP RANGE\n");
@@ -125,6 +129,8 @@ int main()
 		v[6] = nPFR;
 		v[7] = nAF;
 
+		printf("TURN RANGE\n");
+
 		cout << "FE = " << turn.getProbabilityFE(v, 0) << endl;
 		turn.printRange(v);
 
@@ -140,7 +146,7 @@ int main()
 		cards.push_back(card4);
 
 		PlayerRange rangeTurn = RangeUtils::createRange(8, HS, cards, own);
-		printf("TURN RANGE\n");
+		
 		rangeTurn.printRange();
 
 		range1 = RangeUtils::mergeRange(range1, rangeTurn, cards);
