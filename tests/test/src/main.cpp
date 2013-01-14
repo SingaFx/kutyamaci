@@ -18,9 +18,7 @@ enum OutputType
 	TextTerse,
 	TextVerbose
 };
-
-static void
-usage()
+static void usage()
 {
 	cout << "usage: mytest [MODE]\n"
 		 << "where MODE may be one of:\n"
@@ -30,9 +28,7 @@ usage()
 		 << "  --text-verbose\n";
 	exit(0);
 }
-
-static auto_ptr<Test::Output>
-cmdline(int argc, char* argv[])
+static auto_ptr<Test::Output> cmdline(int argc, char* argv[])
 {
 	if (argc > 2)
 		usage(); // will not return
@@ -61,11 +57,7 @@ cmdline(int argc, char* argv[])
 	
 	return auto_ptr<Test::Output>(output);
 }
-
-// Main test program
-//
-int
-main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
 	try
 	{
