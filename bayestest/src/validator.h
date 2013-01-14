@@ -14,6 +14,8 @@ public:
 			if (cards[i].rank == hand.card2.rank && cards[i].suit == hand.card2.suit) return false;
 		}
 
+		if (hand.card1 == own.card1 || hand.card2 == own.card2) return false;
+
 		return true;
 	}
 
