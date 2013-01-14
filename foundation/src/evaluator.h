@@ -930,6 +930,120 @@ class Evaluator
 
 		return (temp.size() == 4 && turnOneCardStrBoard(temp)) || (temp.size() == 5 && riverOneCardStrBoard(temp)); 
 	}
+	
+	static int highestStrCard(Card &c1, Card &c2, Card &c3, Card &c4, Card &c5)
+	{
+		vector<Card> temp = createVector(c1,c2,c3,c4,c5);
+		sort(temp.begin(), temp.end(), compareCards);
+		return (temp[0].rank > 2 || temp[4].rank < 14) ? temp[4].rank : 5;
+	}
+
+	static bool riverOneCardStr(Card &h1, Card &h2, vector<Card> &board)
+	{
+		assert(board.size() == 5);
+
+		if (flopStraight(board))
+			return false;
+
+		int maxstr = 0;
+		for (int i = 0; i < board.size(); ++i)
+		{
+			for (int j = i+1; j < board.size(); ++j)
+			{
+				vector<Card> temp = board;
+				temp.erase(temp.begin() + i);
+				temp.erase(temp.begin() + j - 1);
+				if (flopStraight(h1,h2,temp[0],temp[1],temp[2]) && (highestStrCard(h1,h2,temp[0],temp[1],temp[2]) > maxstr))
+					maxstr = highestStrCard(h1,h2,temp[0],temp[1],temp[2]);
+			}
+		}
+
+		if (maxstr == 0)
+			return true;
+
+		for (int i = 0; i < board.size(); ++i)
+		{
+			vector<Card> temp = board;
+			temp.erase(temp.begin() + i);
+			if (flopStraight(h1,temp[0],temp[1],temp[2],temp[3]) && highestStrCard(h1,temp[0],temp[1],temp[2],temp[3]) >= maxstr)
+				return true;
+			if (flopStraight(h2,temp[0],temp[1],temp[2],temp[3]) && highestStrCard(h2,temp[0],temp[1],temp[2],temp[3]) >= maxstr)
+				return true;
+		}
+
+		return false;
+	}
+
+	static bool riverOneCardLowStr(Card &h1, Card &h2, vector<Card> &board)
+	{
+		if (!riverOneCardStr(h1,h2,board))
+			return false;
+
+		int maxstr = 0;
+		bool result;
+
+		for (int i = 0; i < board.size(); ++i)
+		{
+			vector<Card> temp = board;
+			temp.erase(temp.begin() + i);
+			if (flopStraight(h1,temp[0],temp[1],temp[2],temp[3]) && highestStrCard(h1,temp[0],temp[1],temp[2],temp[3]) >= maxstr)
+			{
+				maxstr = highestStrCard(h1,temp[0],temp[1],temp[2],temp[3]);
+				result = h1.rank < temp[0].rank;
+			}
+			if (flopStraight(h2,temp[0],temp[1],temp[2],temp[3]) && highestStrCard(h2,temp[0],temp[1],temp[2],temp[3]) >= maxstr)
+			{
+				maxstr = highestStrCard(h2,temp[0],temp[1],temp[2],temp[3]);
+				result = h2.rank < temp[0].rank;
+			}
+		}
+
+		return result;
+	}
+
+	static bool riverTwoCardLowStr(Card &h1, Card &h2, vector<Card> &board)
+	{
+		for (int i = 0; i < board.size(); ++i)
+		{
+			for (int j = i+1; j < board.size(); ++j)
+			{
+				vector<Card> temp = board;
+				temp.erase(temp.begin() + i);
+				temp.erase(temp.begin() + j - 1);
+				if (flopStraight(h1,h2,temp[0],temp[1],temp[2]))
+					return flopTwoUnderCards(h1,h2,temp[0],temp[1],temp[2]);
+			}
+		}
+
+		cout << "Error in riverTwoCardLowStr : script is supposed to terminate earlier." << endl;
+	}
+
+	static bool riverOneCardNutStraight(Card &h1, Card &h2, vector<Card> &board)
+	{
+		if (!riverOneCardStr(h1,h1,board))
+			return false;
+
+		int maxstr = 0;
+		bool result;
+
+		for (int i = 0; i < board.size(); ++i)
+		{
+			vector<Card> temp = board;
+			temp.erase(temp.begin() + i);
+			if (flopStraight(h1,temp[0],temp[1],temp[2],temp[3]) && highestStrCard(h1,temp[0],temp[1],temp[2],temp[3]) > maxstr)
+			{
+				maxstr = highestStrCard(h1,temp[0],temp[1],temp[2],temp[3]);
+				result = turnOneCardNutStraight(h1,h2,board);
+			}
+			if (flopStraight(h2,temp[0],temp[1],temp[2],temp[3]) && highestStrCard(h2,temp[0],temp[1],temp[2],temp[3]) > maxstr)
+			{
+				maxstr = highestStrCard(h2,temp[0],temp[1],temp[2],temp[3]);
+				result = turnOneCardNutStraight(h1,h2,board);
+			}
+		}
+
+		return result;
+	}
 public:
 	// Flop
 	static int cardStrength(Card h1, Card h2, Card b1, Card b2, Card b3)
@@ -1825,7 +1939,83 @@ public:
 		}
 		else if (riverStraight(cards))
 		{
-			cout << "Straight" << endl;
+			if (riverSuitedNumber(b1,b2,b3,b4,b5) == 4)
+				return 4;
+
+			if (flopStraight(b1,b2,b3,b4,b5))
+			{
+				if ((h1.rank == board[4].rank + 1) || (h2.rank == board[4].rank + 1))
+				{
+					Card str = (h1.rank == board[4].rank + 1) ? h1 : h2;
+					Card other = (h1.rank == board[4].rank + 1) ? h2 : h1;
+
+					if (other.rank == str.rank + 1)
+					{
+						if (riverSuitedNumber(b1,b2,b3,b4,b5) == 3)
+							return 1;
+						return 0;
+					}
+
+					if (riverSuitedNumber(b1,b2,b3,b4,b5) == 3)
+						return 2;
+					if (str.rank == 14)
+						return 0;
+					return 1;
+				}
+
+				if ((board[0].rank == 10) && (riverSuitedNumber(b1,b2,b3,b4,b5) < 3))
+					return 8;
+				return 4;
+			}
+
+			if (riverTripleBoard(board))
+				return 4;
+			if (riverDoublePairedBoard(board))
+				return 3;
+
+			if (riverOneCardStr(h1,h2,board))
+			{
+				if (riverOneCardLowStr(h1, h2, board))
+					return 3;
+				if (!riverDoubleBoard(board))
+				{
+					if (riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) < 3)
+					{
+						if (riverOneCardNutStraight(h1,h2,board))
+							return 0;
+						return 1;
+					}
+
+					return 2;
+				}
+
+				if (riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) == 3)
+					return 3;
+				return 2;
+			}
+
+			if (riverTwoCardLowStr(h1,h2,board))
+			{
+				if (riverDoubleBoard(board))
+					return 2;
+
+				if (riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) < 3)
+					return 1;
+
+				return 2;
+			}
+
+			if (riverDoubleBoard(board))
+			{
+				if (riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) == 3)
+					return 2;
+				return 1;
+			}
+
+			if (riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) < 3)
+				return 0;
+
+			return 1;
 		}
 		else if (riverThreeofaKind(cards))
 		{
