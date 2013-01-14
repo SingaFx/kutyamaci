@@ -68,17 +68,20 @@ void parseHands(string filename)
 	logfile = fopen("logfile","w");
 	char s[100];
 
-	while(fgets(s, sizeof(s), f))
+	int historyNumber;
+	//while(fgets(s, sizeof(s), f))
+	while (fscanf(f,"%d\n", &historyNumber) == 1 && historyNumber != 0)
 	{
-		int historyNumber;
-		sscanf(s,"%d", &historyNumber);
+		//int historyNumber;
+		//sscanf(s,"%d", &historyNumber);
+
 		std::vector<HandHistory> history = HandHistoryUtils::importFromFile(f, historyNumber);
 		total += history.size();
 		printf("Total number of parsed hands = %d\n", total);
 		for (int i = 0; i < history.size(); ++i)
 		{
-			//preflop->updateProbabilities(history[i]);
-			//flop->updateProbabilities(history[i]);
+			preflop->updateProbabilities(history[i]);
+			flop->updateProbabilities(history[i]);
 			turn->updateProbabilities(history[i]);
 		}
 		//if (total > 50000) return ;
@@ -250,9 +253,11 @@ int main(int argc, char* argv[])
 		preflop = new BayesLearnPreflop();
 		flop = new BayesLearnFlop();
 		turn = new BayesLearnTurn();
-		parseHands("d:\\pokerbot\\hh.txt");
-		//preflop->write("preflopBayes");
-		//flop->write("flopBayes");
+		//parseHands("d:\\pokerbot\\hh.txt");
+		parseHands("..\\tests\\resource\\bayes\\testhh.txt");
+		
+		preflop->write("preflopBayes");
+		flop->write("flopBayes");
 		turn->write("turnBayes");
 
 		/*BAYES NETWORK

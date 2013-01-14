@@ -32,16 +32,16 @@ int main()
 		double stacksize = 2;
 		
 
-		preflop.read("preflopBayes");
-		flop.read("flopBayes");
-		turn.read("turnBayes");
+		preflop.read("..\\..\\tests\\resource\\bayes\\preflopBayes");
+		flop.read("..\\..\\tests\\resource\\bayes\\flopBayes");
+		turn.read("..\\..\\tests\\resource\\bayes\\turnBayes");
 
 
 		//======PREFLOP===================================================
 
-		int nStackSize = 3; //150
-		int nBetSize = 2;  //betsize 0 - limp, 1 - emeles, 2 - 3bet
-		int nLine = 1;
+		int nStackSize = 2; //150
+		int nBetSize = 0;  //betsize 0 - limp, 1 - emeles, 2 - 3bet
+		int nLine = 0;
 		int nVPIP = 2;
 		int nPFR = 1;
 		poz = 4;

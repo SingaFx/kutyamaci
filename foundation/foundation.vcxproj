@@ -62,6 +62,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\bayesFunctions.h" />
+    <ClInclude Include="src\bayesUtils.h" />
     <ClInclude Include="src\database.h" />
     <ClInclude Include="src\evaluator.h" />
     <ClInclude Include="src\handHistoryParser.h" />
