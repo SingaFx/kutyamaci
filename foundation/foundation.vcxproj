@@ -68,6 +68,8 @@
     <ClInclude Include="src\evaluator.h" />
     <ClInclude Include="src\handHistoryParser.h" />
     <ClInclude Include="src\logger.h" />
+    <ClInclude Include="src\rangeFunctions.h" />
+    <ClInclude Include="src\validator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\logger.cpp" />

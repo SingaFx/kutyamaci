@@ -31,10 +31,13 @@ int main()
 		int poz = 0;
 		double stacksize = 2;
 		
+		preflop.read("preflopBayes");
+		flop.read("flopBayes");
+		turn.read("turnBayes");
 
-		preflop.read("..\\..\\tests\\resource\\bayes\\preflopBayes");
-		flop.read("..\\..\\tests\\resource\\bayes\\flopBayes");
-		turn.read("..\\..\\tests\\resource\\bayes\\turnBayes");
+		//preflop.read("..\\..\\tests\\resource\\bayes\\preflopBayes");
+		//flop.read("..\\..\\tests\\resource\\bayes\\flopBayes");
+		//turn.read("..\\..\\tests\\resource\\bayes\\turnBayes");
 
 
 		//======PREFLOP===================================================
