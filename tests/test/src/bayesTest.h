@@ -1,4 +1,5 @@
-#include "cpptest.h"
+#pragma once
+
 #include "bayesPreflopTestSuite.h"
 
 class BayesFlopTestSuite : public Test::Suite

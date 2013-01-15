@@ -1,10 +1,9 @@
 #pragma once
+
 #include <string>
 #include <vector>
-#include "handHistoryParser.h"
-#include "rangeFunctions.h"
-#include "bayesUtils.h"
-#include "bayesFunctions.h"
+
+#include "foundation/src/bayesFunctions.h"
 
 using namespace std;
 

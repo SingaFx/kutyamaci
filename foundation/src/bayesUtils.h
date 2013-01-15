@@ -1,7 +1,7 @@
 #pragma once
 #include "handHistoryParser.h"
 
-char numberToCard(int num)
+static char numberToCard(int num)
 {
 	char card;
 
@@ -22,7 +22,7 @@ char numberToCard(int num)
 	}
 	return card;
 }
-int convertRankToNumbers(Card c)
+static int convertRankToNumbers(Card c)
 {
 	int map[100];
 	map['A'] = 14;
@@ -41,7 +41,7 @@ int convertRankToNumbers(Card c)
 	}
 	return c.rank;
 }
-int normalizeHand(Hand hand) //-> 1..169
+static int normalizeHand(Hand hand) //-> 1..169
 {
 	if (convertRankToNumbers(hand.card1) > convertRankToNumbers(hand.card2))
 	{
@@ -76,7 +76,7 @@ int normalizeHand(Hand hand) //-> 1..169
 
 	return -1;
 }
-int normalizeVPIP(double VPIP)
+static int normalizeVPIP(double VPIP)
 {
 	if (VPIP < 14) //ultra nit
 	{
@@ -100,7 +100,7 @@ int normalizeVPIP(double VPIP)
 
 	return 4; //huge fish
 }
-int normalizePFR(double PFR)
+static int normalizePFR(double PFR)
 {
 	if (PFR < 10) //nit
 	{
@@ -114,7 +114,7 @@ int normalizePFR(double PFR)
 
 	return 2; //huge
 }
-int normalizeAF(double AF)
+static int normalizeAF(double AF)
 {
 	if (AF <= 1) //passive
 	{
@@ -128,7 +128,7 @@ int normalizeAF(double AF)
 
 	return 2;
 }
-int normalizeBetSize(int street, double betsize, double potcommon, double bblind)
+static int normalizeBetSize(int street, double betsize, double potcommon, double bblind)
 {
 	if (street == 1)
 	{
@@ -203,7 +203,7 @@ int normalizeBetSize(int street, double betsize, double potcommon, double bblind
 
 	return 5;
 }
-int normalizePotSize(int street, double potcommon, double bblind)
+static int normalizePotSize(int street, double potcommon, double bblind)
 {
 	if (street == 2)//flop
 	{
@@ -282,7 +282,7 @@ int normalizePotSize(int street, double potcommon, double bblind)
 
 	return 0;
 }
-int normalizeStackSize(double stacksize, double bblind)
+static int normalizeStackSize(double stacksize, double bblind)
 {
 	if (stacksize < 30 * bblind)
 	{

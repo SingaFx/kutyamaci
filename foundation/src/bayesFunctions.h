@@ -1,5 +1,9 @@
 #pragma once
 
+#include "handHistoryParser.h"
+#include "rangeFunctions.h"
+#include "bayesUtils.h"
+
 class BayesPreflop
 {
 public:

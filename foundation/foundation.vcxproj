@@ -73,7 +73,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\logger.cpp" />
-    <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
