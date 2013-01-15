@@ -225,6 +225,16 @@ class Evaluator
 				(h2.rank > b1.rank) && (h2.rank > b2.rank) && (h2.rank > b3.rank);
 	}
 
+	static bool flopStraightTwoUnderCards(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3)
+	{
+		if (h1.rank < 14 && h2.rank < 14)
+			return flopTwoUnderCards(h1,h2,b1,b2,b3);
+
+		if (h1.rank == 14)
+			return h2.rank == 2 && b1.rank <= 5 && b2.rank <= 5 && b3.rank <=5;
+		return h1.rank == 2 && b1.rank <= 5 && b2.rank <= 5 && b3.rank <=5;
+	}
+
 	static bool flopNutFlushDraw(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3)
 	{
 		if (!flopFlushDraw(h1,h2,b1,b2,b3))
@@ -584,6 +594,14 @@ class Evaluator
 		return false;
 	}
 
+	static bool turnLowCardinStraight(Card &h, vector<Card> &board)
+	{
+		if (h.rank < 14)
+			return h.rank < board[0].rank && h.rank < board[1].rank && h.rank < board[2].rank && h.rank < board[3].rank;
+
+		return board[0].rank == 2 && board[1].rank == 3 && board[2].rank == 4 && board[3].rank == 5; 
+	}
+
 	static bool turnOneCardLowStr(Card &h1, Card &h2, vector<Card> &board)
 	{
 		if (!turnOneCardStr(h1,h2,board))
@@ -594,12 +612,11 @@ class Evaluator
 		temp.push_back(h1);
 		temp2.push_back(h2);
 		if (flopStraight(temp) && flopStraight(temp2))
-			return h1.rank < board[0].rank && h1.rank < board[1].rank && h1.rank < board[2].rank && h1.rank < board[3].rank && 
-				h2.rank < board[0].rank && h2.rank < board[1].rank && h2.rank < board[2].rank && h2.rank < board[3].rank;
+			return turnLowCardinStraight(h1,board) && turnLowCardinStraight(h2,board);
 		if (flopStraight(temp))
-			return h1.rank < board[0].rank && h1.rank < board[1].rank && h1.rank < board[2].rank && h1.rank < board[3].rank;
+			return turnLowCardinStraight(h1,board);
 
-		return h2.rank < board[0].rank && h2.rank < board[1].rank && h2.rank < board[2].rank && h2.rank < board[3].rank; 
+		return turnLowCardinStraight(h2,board); 
 	}
 
 	static bool turnOneCardNutStraight(Card &h1, Card &h2, vector<Card> &board)
@@ -668,19 +685,19 @@ class Evaluator
 		temp1.clear();
 		temp1.push_back(h1);temp1.push_back(h2);temp1.push_back(board[0]);temp1.push_back(board[1]);temp1.push_back(board[2]);
 		if (flopStraight(temp1))
-			if (flopTwoUnderCards(h1,h2,board[0],board[1],board[2]) && (h1.rank < 10 || h2.rank < 10))
+			if (flopStraightTwoUnderCards(h1,h2,board[0],board[1],board[2]) && (h1.rank < 10 || h2.rank < 10))
 				result = true;
 
 		temp1.clear();
 		temp1.push_back(h1);temp1.push_back(h2);temp1.push_back(board[0]);temp1.push_back(board[2]);temp1.push_back(board[3]);
 		if (flopStraight(temp1))
-			if (flopTwoUnderCards(h1,h2,board[0],board[2],board[3]) && (h1.rank < 10 || h2.rank < 10))
+			if (flopStraightTwoUnderCards(h1,h2,board[0],board[2],board[3]) && (h1.rank < 10 || h2.rank < 10))
 				result = true;
 
 		temp1.clear();
 		temp1.push_back(h1);temp1.push_back(h2);temp1.push_back(board[1]);temp1.push_back(board[2]);temp1.push_back(board[3]);
 		if (flopStraight(temp1))
-			if (flopTwoUnderCards(h1,h2,board[1],board[2],board[3]) && (h1.rank < 10 || h2.rank < 10))
+			if (flopStraightTwoUnderCards(h1,h2,board[1],board[2],board[3]) && (h1.rank < 10 || h2.rank < 10))
 				result = true;
 
 		return result;
@@ -835,15 +852,15 @@ class Evaluator
 			strcard = h2;
 
 		if (flopStraightFlush(strcard, b1, b2, b3, b4))
-			return strcard.rank < b1.rank && strcard.rank < b2.rank && strcard.rank < b3.rank && strcard.rank < b4.rank;
+			return (strcard.rank < b1.rank && strcard.rank < b2.rank && strcard.rank < b3.rank && strcard.rank < b4.rank) || (strcard.rank == 14 && b1.rank <= 5);
 		if (flopStraightFlush(strcard, b1, b2, b3, b5))
-			return strcard.rank < b1.rank && strcard.rank < b2.rank && strcard.rank < b3.rank && strcard.rank < b5.rank;
+			return (strcard.rank < b1.rank && strcard.rank < b2.rank && strcard.rank < b3.rank && strcard.rank < b5.rank) || (strcard.rank == 14 && b1.rank <= 5);
 		if (flopStraightFlush(strcard, b1, b2, b4, b5))
-			return strcard.rank < b1.rank && strcard.rank < b2.rank && strcard.rank < b4.rank && strcard.rank < b5.rank;
+			return (strcard.rank < b1.rank && strcard.rank < b2.rank && strcard.rank < b4.rank && strcard.rank < b5.rank) || (strcard.rank == 14 && b1.rank <= 5);
 		if (flopStraightFlush(strcard, b1, b3, b4, b5))
-			return strcard.rank < b1.rank && strcard.rank < b3.rank && strcard.rank < b4.rank && strcard.rank < b5.rank;
+			return (strcard.rank < b1.rank && strcard.rank < b3.rank && strcard.rank < b4.rank && strcard.rank < b5.rank) || (strcard.rank == 14 && b1.rank <= 5);
 		if (flopStraightFlush(strcard, b2, b3, b4, b5))
-			return strcard.rank < b2.rank && strcard.rank < b3.rank && strcard.rank < b4.rank && strcard.rank < b5.rank;
+			return (strcard.rank < b2.rank && strcard.rank < b3.rank && strcard.rank < b4.rank && strcard.rank < b5.rank) || (strcard.rank == 14 && b2.rank <= 5);
 
 		cout << "Error in riverOneCardLowStrFlush : script is supposed to terminate earlier." << endl;
 	}
@@ -989,12 +1006,12 @@ class Evaluator
 			if (flopStraight(h1,temp[0],temp[1],temp[2],temp[3]) && highestStrCard(h1,temp[0],temp[1],temp[2],temp[3]) >= maxstr)
 			{
 				maxstr = highestStrCard(h1,temp[0],temp[1],temp[2],temp[3]);
-				result = h1.rank < temp[0].rank;
+				result = h1.rank < temp[0].rank || (h1.rank == 14 && temp[0].rank <= 5);
 			}
 			if (flopStraight(h2,temp[0],temp[1],temp[2],temp[3]) && highestStrCard(h2,temp[0],temp[1],temp[2],temp[3]) >= maxstr)
 			{
 				maxstr = highestStrCard(h2,temp[0],temp[1],temp[2],temp[3]);
-				result = h2.rank < temp[0].rank;
+				result = h2.rank < temp[0].rank || (h1.rank == 14 && temp[0].rank <= 5);
 			}
 		}
 
@@ -1011,7 +1028,7 @@ class Evaluator
 				temp.erase(temp.begin() + i);
 				temp.erase(temp.begin() + j - 1);
 				if (flopStraight(h1,h2,temp[0],temp[1],temp[2]))
-					return flopTwoUnderCards(h1,h2,temp[0],temp[1],temp[2]);
+					return flopStraightTwoUnderCards(h1,h2,temp[0],temp[1],temp[2]);
 			}
 		}
 
