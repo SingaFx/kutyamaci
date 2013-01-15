@@ -597,7 +597,7 @@ class Evaluator
 	static bool turnLowCardinStraight(Card &h, vector<Card> &board)
 	{
 		if (h.rank < 14)
-			return h.rank < board[0].rank && h.rank < board[1].rank && h.rank < board[2].rank && h.rank < board[3].rank;
+			return h.rank < board[0].rank && h.rank < board[1].rank && h.rank < board[2].rank && h.rank < board[3].rank && (h.rank > 2 || board[3].rank < 14);
 
 		return board[0].rank == 2 && board[1].rank == 3 && board[2].rank == 4 && board[3].rank == 5; 
 	}
@@ -1006,12 +1006,12 @@ class Evaluator
 			if (flopStraight(h1,temp[0],temp[1],temp[2],temp[3]) && highestStrCard(h1,temp[0],temp[1],temp[2],temp[3]) >= maxstr)
 			{
 				maxstr = highestStrCard(h1,temp[0],temp[1],temp[2],temp[3]);
-				result = h1.rank < temp[0].rank || (h1.rank == 14 && temp[0].rank <= 5);
+				result = (h1.rank < temp[0].rank && (h1.rank > 2 || temp[3].rank < 14)) || (h1.rank == 14 && temp[0].rank <= 5);
 			}
 			if (flopStraight(h2,temp[0],temp[1],temp[2],temp[3]) && highestStrCard(h2,temp[0],temp[1],temp[2],temp[3]) >= maxstr)
 			{
 				maxstr = highestStrCard(h2,temp[0],temp[1],temp[2],temp[3]);
-				result = h2.rank < temp[0].rank || (h1.rank == 14 && temp[0].rank <= 5);
+				result = (h2.rank < temp[0].rank && (h2.rank > 2 || temp[3].rank < 14)) || (h1.rank == 14 && temp[0].rank <= 5);
 			}
 		}
 
@@ -1050,12 +1050,12 @@ class Evaluator
 			if (flopStraight(h1,temp[0],temp[1],temp[2],temp[3]) && highestStrCard(h1,temp[0],temp[1],temp[2],temp[3]) > maxstr)
 			{
 				maxstr = highestStrCard(h1,temp[0],temp[1],temp[2],temp[3]);
-				result = turnOneCardNutStraight(h1,h2,board);
+				result = turnOneCardNutStraight(h1,h2,temp);
 			}
 			if (flopStraight(h2,temp[0],temp[1],temp[2],temp[3]) && highestStrCard(h2,temp[0],temp[1],temp[2],temp[3]) > maxstr)
 			{
 				maxstr = highestStrCard(h2,temp[0],temp[1],temp[2],temp[3]);
-				result = turnOneCardNutStraight(h1,h2,board);
+				result = turnOneCardNutStraight(h1,h2,temp);
 			}
 		}
 
