@@ -65,7 +65,6 @@ void parseHands(string filename)
 	printf("Begin parsing hands\n");
 	
 	FILE *f = fopen(filename.c_str(),"r");
-	logfile = fopen("logfile","w");
 	char s[100];
 
 	int historyNumber;
