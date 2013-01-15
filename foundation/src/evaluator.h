@@ -228,7 +228,7 @@ class Evaluator
 	static bool flopStraightTwoUnderCards(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3)
 	{
 		if (h1.rank < 14 && h2.rank < 14)
-			return flopTwoUnderCards(h1,h2,b1,b2,b3);
+			return flopTwoUnderCards(h1,h2,b1,b2,b3) && (h1.rank < 10 || h2.rank < 10);
 
 		if (h1.rank == 14)
 			return h2.rank == 2 && b1.rank <= 5 && b2.rank <= 5 && b3.rank <=5;
@@ -1020,6 +1020,8 @@ class Evaluator
 
 	static bool riverTwoCardLowStr(Card &h1, Card &h2, vector<Card> &board)
 	{
+		bool result = false;
+
 		for (int i = 0; i < board.size(); ++i)
 		{
 			for (int j = i+1; j < board.size(); ++j)
@@ -1028,11 +1030,12 @@ class Evaluator
 				temp.erase(temp.begin() + i);
 				temp.erase(temp.begin() + j - 1);
 				if (flopStraight(h1,h2,temp[0],temp[1],temp[2]))
-					return flopStraightTwoUnderCards(h1,h2,temp[0],temp[1],temp[2]);
+					if (flopStraightTwoUnderCards(h1,h2,temp[0],temp[1],temp[2]))
+						result = true;
 			}
 		}
 
-		cout << "Error in riverTwoCardLowStr : script is supposed to terminate earlier." << endl;
+		return result;
 	}
 
 	static bool riverOneCardNutStraight(Card &h1, Card &h2, vector<Card> &board)
@@ -2003,6 +2006,8 @@ public:
 						return 1;
 					}
 
+					if (riverOneCardNutStraight(h1,h2,board))
+							return 1;
 					return 2;
 				}
 
