@@ -14,11 +14,9 @@ using namespace std;
 class BayesLearnPreflop : public BayesPreflop
 {
 public:
-	FILE* logfile;
 	Database* database;
 
 public:
-	//BayesPreflop(Database* database, FILE* logfile)
 	BayesLearnPreflop()
 	{
 		preflop_nums[0] = PREFLOP_HAND_STRENGTH_NUM;
@@ -30,7 +28,6 @@ public:
 		preflop_nums[6] = PREFLOP_PLAYER_POZ_NUM;
 
 		database = new Database("127.0.0.1", "root", "root", "kutya");
-		logfile = fopen("preflopbayeslog", "w");
 		memset(totalPreflop, 0, sizeof(totalPreflop));
 		memset(probabilityPreflop, 0, sizeof(probabilityPreflop));
 	}
@@ -80,9 +77,6 @@ public:
 			{
 				printf("ERROR VPIP: %lf\n", VPIP);
 				printf("NAME: %s\n", player.player.name.c_str());
-				fprintf(logfile,"ERROR VPIP: %lf\n", VPIP);
-				fprintf(logfile,"NAME: %s\n", player.player.name.c_str());
-				//exit(1);
 			}
 		
 			double PFR = database->getPFR(player.player.name);
@@ -90,18 +84,12 @@ public:
 			{
 				printf("ERROR PFR: %lf\n", PFR);
 				printf("NAME: %s\n", player.player.name.c_str());
-				fprintf(logfile,"ERROR PFR: %lf\n", PFR);
-				fprintf(logfile,"NAME: %s\n", player.player.name.c_str());
-				//exit(1);
 			}
 
 			int poz = player.position + 3;
 			if (poz < 0 || poz > 5)
 			{
 				printf("ERROR poz\n");
-				fprintf(logfile,"ERROR POZ: %d\n", poz);
-				fprintf(logfile,"NAME: %s\n", player.player.name.c_str());
-				//exit(1);
 			}
 
 			int nVPIP = normalizeVPIP(VPIP);
@@ -112,8 +100,7 @@ public:
 
 			if (player.handKnown)
 			{
-				int hand = normalizeHand(player.hand);
-				//fprintf(logfile, "Hand %d: %c%c%c%c\n", hand, player.hand.card1.rank, player.hand.card1.suit, player.hand.card2.rank, player.hand.card2.suit);
+				int hand = normalizeHand(player.hand);			
 
 				for (int j = 0; j < player.preflopAction.size(); ++j)
 				{
@@ -123,7 +110,6 @@ public:
 					{
 						++probabilityPreflop[hand][nStackSize][size][0][nVPIP][nPFR][poz];
 						++totalPreflop[nStackSize][size][0][nVPIP][nPFR][poz];
-						//fprintf(logfile,"Situation: %d %d %d %d %d %d %d\n", hand, nStackSize, size, 0, nVPIP, nPFR, poz);
 					}
 				
 					if (action.type == 'r')
@@ -131,7 +117,6 @@ public:
 						if (size > mSize) size = mSize;
 						++probabilityPreflop[hand][nStackSize][size][1][nVPIP][nPFR][poz];
 						++totalPreflop[nStackSize][size][1][nVPIP][nPFR][poz];
-						//fprintf(logfile,"Situation: %d %d %d %d %d %d %d\n", hand, nStackSize, size, 1, nVPIP, nPFR, poz);
 					}
 				}
 			}
@@ -243,7 +228,6 @@ private:
 class BayesLearnFlop : public BayesFlop
 {
 public:
-	FILE* logfile;
 	Database* database;
 
 public:
@@ -260,7 +244,6 @@ public:
 		nums[8] = PLAYER_AF_NUM;
 
 		database = new Database("127.0.0.1", "root", "root", "kutya");
-		logfile = fopen("flopbayeslog", "w");
 		memset(totalS, 0, sizeof(totalS));
 		memset(totalFE, 0, sizeof(totalFE));
 		memset(probabilityHS, 0, sizeof(probabilityHS));
@@ -333,8 +316,6 @@ public:
 			{
 				printf("ERROR VPIP: %lf\n", VPIP);
 				printf("NAME: %s\n", player.player.name.c_str());
-				fprintf(logfile,"ERROR VPIP: %lf\n", VPIP);
-				fprintf(logfile,"NAME: %s\n", player.player.name.c_str());
 			}
 		
 			double PFR = database->getPFR(player.player.name);
@@ -342,8 +323,6 @@ public:
 			{
 				printf("ERROR PFR: %lf\n", PFR);
 				printf("NAME: %s\n", player.player.name.c_str());
-				fprintf(logfile,"ERROR PFR: %lf\n", PFR);
-				fprintf(logfile,"NAME: %s\n", player.player.name.c_str());
 			}
 			
 			double AF = database->getAF(player.player.name);
@@ -369,14 +348,6 @@ public:
 			if (player.handKnown)
 			{
 				int hand = Evaluator::cardStrength(player.hand.card1, player.hand.card2, handhistory.flopHand1.card1, handhistory.flopHand2.card1, handhistory.flopHand3.card1);
-				
-				/*
-				fprintf(logfile,"HS:%d = ", hand);
-				fprintf(logfile,"%c%c %c%c %c%c %c%c %c%c\n", player.hand.card1.rank, player.hand.card1.suit, player.hand.card2.rank, player.hand.card2.suit,
-					handhistory.flopHand1.card1.rank, handhistory.flopHand1.card1.suit, 
-					handhistory.flopHand2.card1.rank, handhistory.flopHand2.card1.suit, 
-					handhistory.flopHand3.card1.rank, handhistory.flopHand3.card1.suit);
-				*/
 
 				for (int j = 0; j < player.flopAction.size(); ++j)
 				{
@@ -388,7 +359,6 @@ public:
 						++totalS[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
 						if (j + 1 < player.flopAction.size())
 							++totalFE[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
-						//fprintf(logfile,"Situation: %d %d %d %d %d %d %d\n", hand, nStackSize, size, 0, nVPIP, nPFR, poz);
 					}
 				
 					if (action.type == 'r')
@@ -398,7 +368,6 @@ public:
 						++totalS[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
 						if (j + 1 < player.flopAction.size())
 							++totalFE[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
-						//fprintf(logfile,"Situation: %d %d %d %d %d %d %d\n", hand, nStackSize, size, 1, nVPIP, nPFR, poz);
 					}
 
 					if (action.type == 'x')
@@ -584,7 +553,6 @@ private:
 class BayesLearnTurn : public BayesTurn
 {
 public:
-	FILE* logfile;
 	Database* database;
 
 public:
@@ -601,7 +569,6 @@ public:
 		nums[8] = PLAYER_AF_NUM;
 
 		database = new Database("127.0.0.1", "root", "root", "kutya");
-		logfile = fopen("turnbayeslog", "w");
 		memset(totalS, 0, sizeof(totalS));
 		memset(totalFE, 0, sizeof(totalFE));
 		memset(probabilityHS, 0, sizeof(probabilityHS));
@@ -688,8 +655,6 @@ public:
 			{
 				printf("ERROR VPIP: %lf\n", VPIP);
 				printf("NAME: %s\n", player.player.name.c_str());
-				fprintf(logfile,"ERROR VPIP: %lf\n", VPIP);
-				fprintf(logfile,"NAME: %s\n", player.player.name.c_str());
 			}
 		
 			double PFR = database->getPFR(player.player.name);
@@ -697,8 +662,6 @@ public:
 			{
 				printf("ERROR PFR: %lf\n", PFR);
 				printf("NAME: %s\n", player.player.name.c_str());
-				fprintf(logfile,"ERROR PFR: %lf\n", PFR);
-				fprintf(logfile,"NAME: %s\n", player.player.name.c_str());
 			}
 			
 			double AF = database->getAF(player.player.name);
@@ -724,14 +687,6 @@ public:
 			if (player.handKnown)
 			{
 				int hand = Evaluator::cardStrength(player.hand.card1, player.hand.card2, handhistory.flopHand1.card1, handhistory.flopHand2.card1, handhistory.flopHand3.card1, handhistory.turnHand.card1);
-				
-				/*
-				fprintf(logfile,"HS:%d = ", hand);
-				fprintf(logfile,"%c%c %c%c %c%c %c%c %c%c\n", player.hand.card1.rank, player.hand.card1.suit, player.hand.card2.rank, player.hand.card2.suit,
-					handhistory.flopHand1.card1.rank, handhistory.flopHand1.card1.suit, 
-					handhistory.flopHand2.card1.rank, handhistory.flopHand2.card1.suit, 
-					handhistory.flopHand3.card1.rank, handhistory.flopHand3.card1.suit);
-				*/
 
 				for (int j = 0; j < player.turnAction.size(); ++j)
 				{
@@ -743,7 +698,6 @@ public:
 						++totalS[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
 						if (j + 1 < player.flopAction.size())
 							++totalFE[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
-						//fprintf(logfile,"Situation: %d %d %d %d %d %d %d\n", hand, nStackSize, size, 0, nVPIP, nPFR, poz);
 					}
 				
 					if (action.type == 'r')
@@ -753,7 +707,6 @@ public:
 						++totalS[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
 						if (j + 1 < player.flopAction.size())
 							++totalFE[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
-						//fprintf(logfile,"Situation: %d %d %d %d %d %d %d\n", hand, nStackSize, size, 1, nVPIP, nPFR, poz);
 					}
 
 					if (action.type == 'x')
@@ -930,7 +883,6 @@ private:
 class BayesLearnRiver : public BayesRiver
 {
 public:
-	FILE* logfile;
 	Database* database;
 
 public:
@@ -947,7 +899,6 @@ public:
 		nums[8] = PLAYER_AF_NUM;
 
 		database = new Database("127.0.0.1", "root", "root", "kutya");
-		logfile = fopen("riverbayeslog", "w");
 		memset(totalS, 0, sizeof(totalS));
 		memset(totalFE, 0, sizeof(totalFE));
 		memset(probabilityHS, 0, sizeof(probabilityHS));
@@ -1048,8 +999,6 @@ public:
 			{
 				printf("ERROR VPIP: %lf\n", VPIP);
 				printf("NAME: %s\n", player.player.name.c_str());
-				fprintf(logfile,"ERROR VPIP: %lf\n", VPIP);
-				fprintf(logfile,"NAME: %s\n", player.player.name.c_str());
 			}
 		
 			double PFR = database->getPFR(player.player.name);
@@ -1057,8 +1006,6 @@ public:
 			{
 				printf("ERROR PFR: %lf\n", PFR);
 				printf("NAME: %s\n", player.player.name.c_str());
-				fprintf(logfile,"ERROR PFR: %lf\n", PFR);
-				fprintf(logfile,"NAME: %s\n", player.player.name.c_str());
 			}
 			
 			double AF = database->getAF(player.player.name);
@@ -1084,14 +1031,6 @@ public:
 			if (player.handKnown)
 			{
 				int hand = Evaluator::cardStrength(player.hand.card1, player.hand.card2, handhistory.flopHand1.card1, handhistory.flopHand2.card1, handhistory.flopHand3.card1, handhistory.turnHand.card1, handhistory.riverHand.card1);
-				
-				/*
-				fprintf(logfile,"HS:%d = ", hand);
-				fprintf(logfile,"%c%c %c%c %c%c %c%c %c%c\n", player.hand.card1.rank, player.hand.card1.suit, player.hand.card2.rank, player.hand.card2.suit,
-					handhistory.flopHand1.card1.rank, handhistory.flopHand1.card1.suit, 
-					handhistory.flopHand2.card1.rank, handhistory.flopHand2.card1.suit, 
-					handhistory.flopHand3.card1.rank, handhistory.flopHand3.card1.suit);
-				*/
 
 				for (int j = 0; j < player.riverAction.size(); ++j)
 				{
@@ -1103,7 +1042,6 @@ public:
 						++totalS[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
 						if (j + 1 < player.flopAction.size())
 							++totalFE[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
-						//fprintf(logfile,"Situation: %d %d %d %d %d %d %d\n", hand, nStackSize, size, 0, nVPIP, nPFR, poz);
 					}
 				
 					if (action.type == 'r')
@@ -1113,7 +1051,6 @@ public:
 						++totalS[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
 						if (j + 1 < player.flopAction.size())
 							++totalFE[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
-						//fprintf(logfile,"Situation: %d %d %d %d %d %d %d\n", hand, nStackSize, size, 1, nVPIP, nPFR, poz);
 					}
 
 					if (action.type == 'x')

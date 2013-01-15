@@ -21,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dllinterface", "..\dllinter
 		{D9C913C6-DCB8-42DE-A4AE-B9C081D643C8} = {D9C913C6-DCB8-42DE-A4AE-B9C081D643C8}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "botlogic", "..\botlogic\botlogic.vcxproj", "{6DF510AB-0E81-4DE0-B510-B478A72B32FA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -55,6 +57,10 @@ Global
 		{AC4F0D74-7FFF-469A-A57E-36C40FCB21B3}.Debug|Win32.Build.0 = Debug|Win32
 		{AC4F0D74-7FFF-469A-A57E-36C40FCB21B3}.Release|Win32.ActiveCfg = Release|Win32
 		{AC4F0D74-7FFF-469A-A57E-36C40FCB21B3}.Release|Win32.Build.0 = Release|Win32
+		{6DF510AB-0E81-4DE0-B510-B478A72B32FA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6DF510AB-0E81-4DE0-B510-B478A72B32FA}.Debug|Win32.Build.0 = Debug|Win32
+		{6DF510AB-0E81-4DE0-B510-B478A72B32FA}.Release|Win32.ActiveCfg = Release|Win32
+		{6DF510AB-0E81-4DE0-B510-B478A72B32FA}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

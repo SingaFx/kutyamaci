@@ -11,9 +11,6 @@ using namespace std;
 class BayesUserPreflop : public BayesPreflop
 {
 public:
-	FILE* logfile;
-
-public:
 	BayesUserPreflop()
 	{
 		preflop_nums[0] = PREFLOP_HAND_STRENGTH_NUM;
@@ -24,7 +21,6 @@ public:
 		preflop_nums[5] = PREFLOP_PLAYER_PFR_NUM;
 		preflop_nums[6] = PREFLOP_PLAYER_POZ_NUM;
 
-		logfile = fopen("logfile", "w");
 		memset(totalPreflop, 0, sizeof(totalPreflop));
 		memset(probabilityPreflop, 0, sizeof(probabilityPreflop));
 		totalSituation = 0;
@@ -35,12 +31,9 @@ public:
 	{
 		FILE* f = fopen(filename.c_str(), "r");
 		back(f, false, 1);
-		fprintf(logfile,"Total = %d\n", totalSituation);
-		fprintf(logfile,"Total few = %d\n", totalLittle);
 		int totalS = 1;
 		for (int i = 1; i < preflop_node_number; ++i)
 			totalS *= preflop_nums[i];
-		fprintf(logfile,"Total situation = %d\n", totalS);
 		fclose(f);
 	}
 
@@ -396,15 +389,11 @@ private:
 					if (v[4] >= v[5]) 
 					{
 						totalLittle++;
-						fprintf(logfile,"Situation %d %d %d %d %d %d\n", v[1], v[2], v[3], v[4], v[5], v[6]);
-						fprintf(logfile, "%d\n", totalPreflop[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
 					}
 					else
 					{
 						if (totalPreflop[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]] > 0)
 						{
-							fprintf(logfile,"ERROR Situation %d %d %d %d %d %d\n", v[1], v[2], v[3], v[4], v[5], v[6]);
-							fprintf(logfile, "%d\n", totalPreflop[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
 						}
 					}
 				}
@@ -425,9 +414,6 @@ private:
 class BayesUserFlop : public BayesFlop
 {
 public:
-	FILE* logfile;
-
-public:
 	BayesUserFlop()
 	{
 		nums[0] = HAND_STRENGTH_NUM;
@@ -440,8 +426,6 @@ public:
 		nums[7] = PLAYER_PFR_NUM;
 		nums[8] = PLAYER_AF_NUM;
 
-		//database = new Database("127.0.0.1", "root", "root", "kutya");
-		logfile = fopen("flopbayeslog", "w");
 		memset(totalS, 0, sizeof(totalS));
 		memset(probabilityHS, 0, sizeof(probabilityHS));
 		memset(probabilityFE, 0, sizeof(probabilityFE));
@@ -453,12 +437,9 @@ public:
 		backHS(f, false, 2);
 		backFE(f, false, 2);
 
-		//fprintf(logfile,"Total = %d\n", totalSituation);
-		//fprintf(logfile,"Total few = %d\n", totalLittle);
 		int totalS = 1;
 		for (int i = 2; i < node_number; ++i)
 			totalS *= nums[i];
-		fprintf(logfile,"Total situation = %d\n", totalS);
 		fclose(f);
 	}
 
@@ -637,7 +618,6 @@ private:
 class BayesUserTurn : public BayesTurn
 {
 public:
-	FILE* logfile;
 
 public:
 	BayesUserTurn()
@@ -652,8 +632,6 @@ public:
 		nums[7] = PLAYER_PFR_NUM;
 		nums[8] = PLAYER_AF_NUM;
 
-		//database = new Database("127.0.0.1", "root", "root", "kutya");
-		logfile = fopen("flopbayeslog", "w");
 		memset(totalS, 0, sizeof(totalS));
 		memset(probabilityHS, 0, sizeof(probabilityHS));
 		memset(probabilityFE, 0, sizeof(probabilityFE));
@@ -665,12 +643,9 @@ public:
 		backHS(f, false, 2);
 		backFE(f, false, 2);
 
-		//fprintf(logfile,"Total = %d\n", totalSituation);
-		//fprintf(logfile,"Total few = %d\n", totalLittle);
 		int totalS = 1;
 		for (int i = 2; i < node_number; ++i)
 			totalS *= nums[i];
-		fprintf(logfile,"Total situation = %d\n", totalS);
 		fclose(f);
 	}
 
@@ -844,9 +819,6 @@ private:
 class BayesUserRiver : public BayesRiver
 {
 public:
-	FILE* logfile;
-
-public:
 	BayesUserRiver()
 	{
 		nums[0] = HAND_STRENGTH_NUM;
@@ -859,8 +831,6 @@ public:
 		nums[7] = PLAYER_PFR_NUM;
 		nums[8] = PLAYER_AF_NUM;
 
-		//database = new Database("127.0.0.1", "root", "root", "kutya");
-		logfile = fopen("flopbayeslog", "w");
 		memset(totalS, 0, sizeof(totalS));
 		memset(probabilityHS, 0, sizeof(probabilityHS));
 		memset(probabilityFE, 0, sizeof(probabilityFE));
@@ -872,12 +842,9 @@ public:
 		backHS(f, false, 2);
 		backFE(f, false, 2);
 
-		//fprintf(logfile,"Total = %d\n", totalSituation);
-		//fprintf(logfile,"Total few = %d\n", totalLittle);
 		int totalS = 1;
 		for (int i = 2; i < node_number; ++i)
 			totalS *= nums[i];
-		fprintf(logfile,"Total situation = %d\n", totalS);
 		fclose(f);
 	}
 
