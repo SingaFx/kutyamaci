@@ -1064,6 +1064,42 @@ class Evaluator
 
 		return result;
 	}
+
+	static int riverPossibleStraights(vector<Card> &board)
+	{
+		Card c1, c2;
+		c1.suit = 'a';
+		c2.suit = 'a';
+		int result = 0;
+		for (int i = 2; i <= 14; ++i)
+			for (int j = i+1; j <= 14; ++j)
+			{
+				c1.rank = i;
+				c2.rank = j;
+				vector<Card> temp = board;
+				temp.push_back(c1); temp.push_back(c2);
+				if (riverStraight(temp))
+					result++;
+			}
+
+		return result;
+	}
+
+	static bool riverFuckedUpBoard(vector<Card> &board)
+	{
+		return riverOneCardStrBoard(board) || riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) == 4;
+	}
+
+	static bool riverVeryDangerousBoard(vector<Card> &board)
+	{
+		return riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) == 3 && riverPossibleStraights(board) >= 2;
+	}
+
+	static bool riverDangerousBoard(vector<Card> &board)
+	{
+		return riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) == 3 || riverPossibleStraights(board) >= 2;
+	}
+
 public:
 	// Flop
 	static int cardStrength(Card h1, Card h2, Card b1, Card b2, Card b3)
@@ -2041,7 +2077,46 @@ public:
 		}
 		else if (riverThreeofaKind(cards))
 		{
-			cout << "Three of a kind" << endl;
+			if (riverTripleBoard(board))
+				return 4;
+
+			if (h1.rank == h2.rank)
+			{
+				if (riverFuckedUpBoard(board))
+					return 3;
+				if (riverVeryDangerousBoard(board))
+					return 2;
+				if (riverDangerousBoard(board))
+					return 1;
+				return 0;
+			}
+
+			Card kicker = h1;
+			Card drill = h2;
+			if (existsOnBoard(h1.rank,board))
+			{
+				kicker = h2;
+				drill = h1;
+			}
+
+			if (kicker.rank == 14 || (kicker.rank == 13 && drill.rank == 14))
+			{
+				if (riverFuckedUpBoard(board))
+					return 3;
+				if (riverVeryDangerousBoard(board))
+					return 2;
+				if (riverDangerousBoard(board))
+					return 1;
+				return 0;
+			}
+
+			if (riverFuckedUpBoard(board))
+				return 4;
+			if (riverVeryDangerousBoard(board))
+				return 3;
+			if (riverDangerousBoard(board))
+				return 2;
+			return 1;
 		}
 		else if (riverTwoPair(cards))
 		{
