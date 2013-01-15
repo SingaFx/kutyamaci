@@ -1,6 +1,7 @@
-#include "foundation\src\evaluator.h"
-
 class HandHistoryGenerator
 {
+};
 
+class PreflopHandHistoryGenerator : public HandHistoryGenerator
+{
 };

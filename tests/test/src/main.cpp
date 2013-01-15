@@ -8,6 +8,7 @@
 
 #include "cpptest.h"
 #include "evaluatorTest.h"
+#include "bayesTest.h"
 
 using namespace std;
 
@@ -65,11 +66,13 @@ int main(int argc, char* argv[])
 		//
 		Test::Suite ts;
 		ts.add(auto_ptr<Test::Suite>(new EvaluatorTestSuite));
+		ts.add(auto_ptr<Test::Suite>(new BayesTestSuite));
 
 		// Run the tests
 		//
 		auto_ptr<Test::Output> output(cmdline(argc, argv));
 		ts.run(*output, true);
+
 
 		Test::HtmlOutput* const html = dynamic_cast<Test::HtmlOutput*>(output.get());
 		if (html)

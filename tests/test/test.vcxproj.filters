@@ -21,9 +21,6 @@
     <ClCompile Include="src\bayesPreflopTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\handHistoryGenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\evaluatorTest.h">
