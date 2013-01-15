@@ -228,7 +228,7 @@ class Evaluator
 	static bool flopStraightTwoUnderCards(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3)
 	{
 		if (h1.rank < 14 && h2.rank < 14)
-			return flopTwoUnderCards(h1,h2,b1,b2,b3);
+			return flopTwoUnderCards(h1,h2,b1,b2,b3) && (h1.rank < 10 || h2.rank < 10);
 
 		if (h1.rank == 14)
 			return h2.rank == 2 && b1.rank <= 5 && b2.rank <= 5 && b3.rank <=5;
@@ -597,7 +597,7 @@ class Evaluator
 	static bool turnLowCardinStraight(Card &h, vector<Card> &board)
 	{
 		if (h.rank < 14)
-			return h.rank < board[0].rank && h.rank < board[1].rank && h.rank < board[2].rank && h.rank < board[3].rank;
+			return h.rank < board[0].rank && h.rank < board[1].rank && h.rank < board[2].rank && h.rank < board[3].rank && (h.rank > 2 || board[3].rank < 14);
 
 		return board[0].rank == 2 && board[1].rank == 3 && board[2].rank == 4 && board[3].rank == 5; 
 	}
@@ -1006,12 +1006,12 @@ class Evaluator
 			if (flopStraight(h1,temp[0],temp[1],temp[2],temp[3]) && highestStrCard(h1,temp[0],temp[1],temp[2],temp[3]) >= maxstr)
 			{
 				maxstr = highestStrCard(h1,temp[0],temp[1],temp[2],temp[3]);
-				result = h1.rank < temp[0].rank || (h1.rank == 14 && temp[0].rank <= 5);
+				result = (h1.rank < temp[0].rank && (h1.rank > 2 || temp[3].rank < 14)) || (h1.rank == 14 && temp[0].rank <= 5);
 			}
 			if (flopStraight(h2,temp[0],temp[1],temp[2],temp[3]) && highestStrCard(h2,temp[0],temp[1],temp[2],temp[3]) >= maxstr)
 			{
 				maxstr = highestStrCard(h2,temp[0],temp[1],temp[2],temp[3]);
-				result = h2.rank < temp[0].rank || (h1.rank == 14 && temp[0].rank <= 5);
+				result = (h2.rank < temp[0].rank && (h2.rank > 2 || temp[3].rank < 14)) || (h1.rank == 14 && temp[0].rank <= 5);
 			}
 		}
 
@@ -1020,6 +1020,8 @@ class Evaluator
 
 	static bool riverTwoCardLowStr(Card &h1, Card &h2, vector<Card> &board)
 	{
+		bool result = false;
+
 		for (int i = 0; i < board.size(); ++i)
 		{
 			for (int j = i+1; j < board.size(); ++j)
@@ -1028,11 +1030,12 @@ class Evaluator
 				temp.erase(temp.begin() + i);
 				temp.erase(temp.begin() + j - 1);
 				if (flopStraight(h1,h2,temp[0],temp[1],temp[2]))
-					return flopStraightTwoUnderCards(h1,h2,temp[0],temp[1],temp[2]);
+					if (flopStraightTwoUnderCards(h1,h2,temp[0],temp[1],temp[2]))
+						result = true;
 			}
 		}
 
-		cout << "Error in riverTwoCardLowStr : script is supposed to terminate earlier." << endl;
+		return result;
 	}
 
 	static bool riverOneCardNutStraight(Card &h1, Card &h2, vector<Card> &board)
@@ -1050,17 +1053,53 @@ class Evaluator
 			if (flopStraight(h1,temp[0],temp[1],temp[2],temp[3]) && highestStrCard(h1,temp[0],temp[1],temp[2],temp[3]) > maxstr)
 			{
 				maxstr = highestStrCard(h1,temp[0],temp[1],temp[2],temp[3]);
-				result = turnOneCardNutStraight(h1,h2,board);
+				result = turnOneCardNutStraight(h1,h2,temp);
 			}
 			if (flopStraight(h2,temp[0],temp[1],temp[2],temp[3]) && highestStrCard(h2,temp[0],temp[1],temp[2],temp[3]) > maxstr)
 			{
 				maxstr = highestStrCard(h2,temp[0],temp[1],temp[2],temp[3]);
-				result = turnOneCardNutStraight(h1,h2,board);
+				result = turnOneCardNutStraight(h1,h2,temp);
 			}
 		}
 
 		return result;
 	}
+
+	static int riverPossibleStraights(vector<Card> &board)
+	{
+		Card c1, c2;
+		c1.suit = 'a';
+		c2.suit = 'a';
+		int result = 0;
+		for (int i = 2; i <= 14; ++i)
+			for (int j = i+1; j <= 14; ++j)
+			{
+				c1.rank = i;
+				c2.rank = j;
+				vector<Card> temp = board;
+				temp.push_back(c1); temp.push_back(c2);
+				if (riverStraight(temp))
+					result++;
+			}
+
+		return result;
+	}
+
+	static bool riverFuckedUpBoard(vector<Card> &board)
+	{
+		return riverOneCardStrBoard(board) || riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) == 4;
+	}
+
+	static bool riverVeryDangerousBoard(vector<Card> &board)
+	{
+		return riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) == 3 && riverPossibleStraights(board) >= 2;
+	}
+
+	static bool riverDangerousBoard(vector<Card> &board)
+	{
+		return riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) == 3 || riverPossibleStraights(board) >= 2;
+	}
+
 public:
 	// Flop
 	static int cardStrength(Card h1, Card h2, Card b1, Card b2, Card b3)
@@ -2003,6 +2042,8 @@ public:
 						return 1;
 					}
 
+					if (riverOneCardNutStraight(h1,h2,board))
+							return 1;
 					return 2;
 				}
 
@@ -2036,7 +2077,46 @@ public:
 		}
 		else if (riverThreeofaKind(cards))
 		{
-			cout << "Three of a kind" << endl;
+			if (riverTripleBoard(board))
+				return 4;
+
+			if (h1.rank == h2.rank)
+			{
+				if (riverFuckedUpBoard(board))
+					return 3;
+				if (riverVeryDangerousBoard(board))
+					return 2;
+				if (riverDangerousBoard(board))
+					return 1;
+				return 0;
+			}
+
+			Card kicker = h1;
+			Card drill = h2;
+			if (existsOnBoard(h1.rank,board))
+			{
+				kicker = h2;
+				drill = h1;
+			}
+
+			if (kicker.rank == 14 || (kicker.rank == 13 && drill.rank == 14))
+			{
+				if (riverFuckedUpBoard(board))
+					return 3;
+				if (riverVeryDangerousBoard(board))
+					return 2;
+				if (riverDangerousBoard(board))
+					return 1;
+				return 0;
+			}
+
+			if (riverFuckedUpBoard(board))
+				return 4;
+			if (riverVeryDangerousBoard(board))
+				return 3;
+			if (riverDangerousBoard(board))
+				return 2;
+			return 1;
 		}
 		else if (riverTwoPair(cards))
 		{
