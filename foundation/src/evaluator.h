@@ -1573,7 +1573,8 @@ public:
 		{
 			if (turnDoublePairedBoard(board))
 			{
-				// TODO : If we have a pocker pair bigger than on the board.
+				if (h1.rank == h2.rank && h1.rank > board[0].rank)
+					return 3;
 				if ((h1.rank == 14) || (h2.rank == 14))
 					return 3;
 				return 4;
@@ -2120,7 +2121,99 @@ public:
 		}
 		else if (riverTwoPair(cards))
 		{
-			cout << "Two pair" << endl;
+			if (riverDoublePairedBoard(board))
+			{
+				Card lowpair = board[0];
+				if (board[0].rank != board[1].rank)
+					lowpair = board[1];
+
+				if ((h1.rank == h2.rank && h1.rank > lowpair.rank) || (existsOnBoard(h1.rank,board) && h1.rank > lowpair.rank) || (existsOnBoard(h2.rank,board) && h2.rank > lowpair.rank))
+					return 3;
+				return 4;
+			}
+
+			if (riverFuckedUpBoard(board))
+				return 4;
+
+			if (!riverDoubleBoard(board))
+			{
+				if ((h1.rank == board[4].rank) || (h2.rank == board[4].rank))
+				{
+					if (riverVeryDangerousBoard(board))
+						return 2;
+					if (riverDangerousBoard(board))
+						return 1;
+					return 0;
+				}
+
+				if (riverVeryDangerousBoard(board))
+					return 2;
+				if (riverDangerousBoard(board))
+					return 2;
+				return 1;
+			}
+
+			
+			if (h1.rank == h2.rank)
+			{
+				if (h1.rank > board[4].rank)
+				{
+					if (h1.rank >= 12)
+					{
+						if (riverVeryDangerousBoard(board))
+							return 2;
+						if (riverDangerousBoard(board))
+							return 2;
+						return 1;
+					}
+					if (h1.rank >= 8)
+					{
+						if (riverVeryDangerousBoard(board))
+							return 3;
+						if (riverDangerousBoard(board))
+							return 3;
+						return 2;
+					}
+					return 3;
+				}
+				return 3;
+			}
+
+			Card kicker = h1;
+			Card pair = h2;
+			if (existsOnBoard(h1.rank,board))
+			{
+				kicker = h2;
+				pair = h1;
+			}
+
+			if ((pair.rank == board[4].rank) || ((board[4].rank == board[3].rank) && (pair.rank == board[2].rank)))
+			{
+				if (pair.rank >= 10)
+				{
+					if ((kicker.rank == 14) || ((pair.rank == 14) && (kicker.rank == 13)))
+					{
+						if (riverVeryDangerousBoard(board))
+							return 2;
+						if (riverDangerousBoard(board))
+							return 2;
+						return 1;
+					}
+					if (kicker.rank >= 10)
+						return 2;
+					return 3;
+				}
+				if (kicker.rank >= 10)
+				{
+					if (riverVeryDangerousBoard(board))
+						return 3;
+					if (riverDangerousBoard(board))
+						return 3;
+					return 2;
+				}
+			}
+
+			return 3;
 		}
 		else if (riverOnePair(cards))
 		{
