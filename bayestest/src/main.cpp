@@ -97,9 +97,7 @@ void basic()
 		HS[i] = flop.getProbabilityHS(v);
 	}
 		
-	Card card1, card2, card3;
-	card1.rank = 'A'; card2.rank = 'A'; card3.rank = 'A';
-	card1.suit = 's'; card2.suit = 'd'; card3.suit = 'c';
+	Card card1('A','s'), card2('A','d'), card3('A','c');
 	vector<Card> cards;
 	cards.push_back(card1); cards.push_back(card2); cards.push_back(card3);
 
@@ -141,9 +139,7 @@ void basic()
 		HS[i] = turn.getProbabilityHS(v, 0);
 	}
 
-	Card card4;
-	card4.rank = 'A';
-	card4.suit = 'h';
+	Card card4('A','h');
 	cards.push_back(card4);
 
 	PlayerRange rangeTurn = RangeUtils::createRange(8, HS, cards, own);

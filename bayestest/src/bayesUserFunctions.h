@@ -109,17 +109,17 @@ public:
 
 	int preflopHandType(Hand hand)
 	{
-		int rank1 = convertRankToNumbers(hand.card1);
-		int rank2 = convertRankToNumbers(hand.card2);
-		char suit1 = hand.card1.suit;
-		char suit2 = hand.card2.suit;
+		int rank1 = convertRankToNumbers(hand.getCard1());
+		int rank2 = convertRankToNumbers(hand.getCard2());
+		char suit1 = hand.getCard1().getSuit();
+		char suit2 = hand.getCard2().getSuit();
 
 		if (rank1 < rank2)
 		{
 			swap(rank1, rank2);
 		}
 
-		if (hand.card1.rank == hand.card2.rank)
+		if (hand.getCard1().getRank() == hand.getCard2().getRank())
 		{
 			if (rank1 < 10) return 0; // alacsony PP
 			if (rank1 < 12) return 13; //TT-JJ
@@ -222,13 +222,13 @@ public:
 				v[0] = count;
 				double res;
 				res = getProbability(v, x);
-				hand.card1.rank = numberToCard(i);
-				hand.card2.rank = numberToCard(j);
+				hand.getCard1().setRank(numberToCard(i));
+				hand.getCard2().setRank(numberToCard(j));
 
 				for (int k = 0; k < 4; ++k)
 				{
-					hand.card1.suit = map[k];
-					hand.card2.suit = map[k];
+					hand.getCard1().setSuit(map[k]);
+					hand.getCard2().setSuit(map[k]);
 					int type = preflopHandType(hand);
 					types[type]++;		
 					ptypes[type] += res / 4;
@@ -243,16 +243,16 @@ public:
 				v[0] = count;
 				double res;
 				res = getProbability(v, x);
-				hand.card1.rank = numberToCard(i);
-				hand.card2.rank = numberToCard(j);
+				hand.getCard1().setRank(numberToCard(i));
+				hand.getCard2().setRank(numberToCard(j));
 
 				for (int k1 = 0; k1 < 4; ++k1)
 				{
 					for (int k2 = 0; k2 < 4; ++k2)
 					{
 						if (k1 >= k2) continue;
-						hand.card1.suit = map[k1];
-						hand.card2.suit = map[k2];
+						hand.getCard1().setSuit(map[k1]);
+						hand.getCard2().setSuit(map[k2]);
 						int type = preflopHandType(hand);
 						types[type]++;
 						ptypes[type] += res / 6;
@@ -263,13 +263,13 @@ public:
 		for (int i = 2; i < 15; ++i)
 			for (int j = i + 1; j < 15; ++j)
 			{
-				hand.card1.rank = numberToCard(i);
-				hand.card2.rank = numberToCard(j);
+				hand.getCard1().setRank(numberToCard(i));
+				hand.getCard2().setRank(numberToCard(j));
 
 				for (int k = 0; k < 4; ++k)
 				{
-					hand.card1.suit = map[k];
-					hand.card2.suit = map[k];
+					hand.getCard1().setSuit(map[k]);
+					hand.getCard2().setSuit(map[k]);
 					int type = preflopHandType(hand);
 					double akt = ptypes[type]/(double)types[type];
 					if (akt > 0)
@@ -282,16 +282,16 @@ public:
 		for (int i = 2; i < 15; ++i)
 			for (int j = i; j < 15; ++j)
 			{
-				hand.card1.rank = numberToCard(i);
-				hand.card2.rank = numberToCard(j);
+				hand.getCard1().setRank(numberToCard(i));
+				hand.getCard2().setRank(numberToCard(j));
 
 				for (int k1 = 0; k1 < 4; ++k1)
 				{
 					for (int k2 = 0; k2 < 4; ++k2)
 					{
 						if (k1 >= k2) continue;
-						hand.card1.suit = map[k1];
-						hand.card2.suit = map[k2];
+						hand.getCard1().setSuit(map[k1]);
+						hand.getCard2().setSuit(map[k2]);
 						int type = preflopHandType(hand);
 						double akt = ptypes[type]/(double)types[type];
 						if (akt > 0)

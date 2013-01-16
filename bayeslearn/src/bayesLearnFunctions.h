@@ -1,5 +1,5 @@
-//TODO:merge with bayes test, bayes_functions.h
 #pragma once
+
 #include "evaluator.h"
 #include "handHistoryParser.h"
 #include "database.h"
