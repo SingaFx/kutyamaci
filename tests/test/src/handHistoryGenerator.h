@@ -17,6 +17,8 @@ struct PreflopSituation
 
 class PreflopHandHistoryGenerator
 {
+private:
+
 public:
 	void generateHandHistory(string filename, int n, PreflopSituation& situation)
 	{
