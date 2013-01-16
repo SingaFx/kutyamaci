@@ -2216,14 +2216,71 @@ public:
 		}
 		else if (riverOnePair(cards))
 		{
-			cout << "One pair" << endl;
+			if (riverDoubleBoard(board))
+				return 4;
+
+			if (riverFuckedUpBoard(board))
+				return 4;
+
+			if (h1.getRank() == h2.getRank())
+			{
+				if (h1.getRank() > board[4].getRank())
+				{
+					if (h1.getRank() >= 11)
+					{
+						if (riverVeryDangerousBoard(board))
+							return 2;
+						if (riverDangerousBoard(board))
+							return 2;
+						return 1;
+					}
+					if (riverVeryDangerousBoard(board))
+						return 3;
+					return 2;
+				}
+				if (h1.getRank() > board[3].getRank())
+					return 3;
+				return 4;
+			}
+
+			Card pair = h2;
+			Card kicker = h1;
+			if (existsOnBoard(h1.getRank(),board))
+			{
+				kicker = h2;
+				pair = h1;
+			}
+
+			if (pair.getRank() == board[4].getRank())
+			{
+				if ((kicker.getRank() == 14) || (pair.getRank() == 14 && kicker.getRank() == 13))
+				{
+					if (riverVeryDangerousBoard(board))
+						return 2;
+					if (riverDangerousBoard(board))
+						return 2;
+					return 1;
+				}
+				if (kicker.getRank() >= 10)
+				{
+					return 2;
+				}
+
+				if (riverVeryDangerousBoard(board))
+					return 3;
+				if (riverDangerousBoard(board))
+					return 3;
+				return 2;
+			}
+
+			if (pair.getRank() == board[3].getRank())
+				return 3;
+			return 4;
 		}
 		else
 		{
-			cout << "High card" << endl;
+			return 4;
 		}
-
-		return 4;
 	}
 
 	static int cardStrength(Card h1, Card h2, vector<Card>& v)

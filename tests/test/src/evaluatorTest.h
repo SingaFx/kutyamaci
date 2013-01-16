@@ -67,6 +67,11 @@ public:
 		TEST_ADD(RiverEvaluatorTestSuite::riverTwoPairOnBoard);
 		TEST_ADD(RiverEvaluatorTestSuite::riverTwoPairOnSingleBoard);
 		TEST_ADD(RiverEvaluatorTestSuite::riverTwoPairOnDoubleBoard);
+		TEST_ADD(RiverEvaluatorTestSuite::riverOverPair);
+		TEST_ADD(RiverEvaluatorTestSuite::riverTopPair);
+		TEST_ADD(RiverEvaluatorTestSuite::riverSecondPair);
+		TEST_ADD(RiverEvaluatorTestSuite::riverLowPair);
+		TEST_ADD(RiverEvaluatorTestSuite::riverHighCard);
 	}
 private:
 
@@ -567,6 +572,131 @@ private:
 		cards = EvaluatorUtils::convertStringToCards(s);
 
 		TEST_ASSERT_EQUALS(3, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+	}
+
+	void riverOverPair()
+	{
+		string s = "QhQdJc2d7s3dTh";
+		vector<Card> cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(1, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+
+		s = "QhQdJc2d7s3dTd";
+		cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(2, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+
+		s = "QhQdJc2d9s3dTd";
+		cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(2, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+
+		s = "ThTd9s2c3d8d6s";
+		cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(2, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+
+		s = "ThTd9s2c3d8s6s";
+		cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(3, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+
+		s = "ThTd9s2c3s8s6s";
+		cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(4, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+	}
+
+	void riverTopPair()
+	{
+		string s = "AhQdQc2d3cTd7s";
+		vector<Card> cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(1, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+
+		s = "AhQdQc2c3cTd7s";
+		cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(2, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+
+		s = "AhQdQc2d3cTd4s";
+		cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(2, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+
+		s = "KhQdQc2d3cTd7s";
+		cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(2, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+
+		s = "KhQdQc2c3cTd7s";
+		cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(2, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+
+		s = "KhQdQc2d3cTd4s";
+		cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(2, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+
+		s = "8hQdQc2d3cTd7s";
+		cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(2, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+
+		s = "8hQdQc2c3cTd7s";
+		cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(3, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+
+		s = "8hQdQc2d3cTd4s";
+		cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(3, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+	}
+
+	void riverSecondPair()
+	{
+		string s = "AhTsQc2d3cTd7s";
+		vector<Card> cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(3, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+
+		s = "AhTsQc2c3cTd7s";
+		cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(3, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+
+		s = "JdJsQc2c3cTd7s";
+		cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(3, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+	}
+
+	void riverLowPair()
+	{
+		string s = "Ah3dQc2d3cTd7s";
+		vector<Card> cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(4, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+
+		s = "4h4dQc2c3cTd7s";
+		cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(4, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+	}
+
+	void riverHighCard()
+	{
+		string s = "Ah4dQc2d3cTd7s";
+		vector<Card> cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(4, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
+
+		s = "5h4dQc2c3cTd7s";
+		cards = EvaluatorUtils::convertStringToCards(s);
+
+		TEST_ASSERT_EQUALS(4, Evaluator::cardStrength(cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]));
 	}
 };
 
