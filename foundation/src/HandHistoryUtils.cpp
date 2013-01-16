@@ -307,8 +307,8 @@ std::vector<HandHistory> HandHistoryUtils::importFromFile(FILE *f, int historyNu
             char f1r, f1s, f2r, f2s, f3r, f3s;
 			sscanf(s,"%c%c%c%c%c%c", &f1r, &f1s,&f2r, &f2s,&f3r, &f3s);
             handhistory.setFlopCard1(Card(f1r, f1s));
-            handhistory.setFlopCard1(Card(f2r, f2s));
-            handhistory.setFlopCard1(Card(f3r, f3s));
+            handhistory.setFlopCard2(Card(f2r, f2s));
+            handhistory.setFlopCard3(Card(f3r, f3s));
 		}
 		if (handhistory.getFinalBetRound() >= 2)
 		{
@@ -347,6 +347,7 @@ std::vector<HandHistory> HandHistoryUtils::importFromFile(FILE *f, int historyNu
 			fgets(s, sizeof(s), f);
             double balance;
 			sscanf(s,"%lf", &balance);
+			player.setBalance(balance);
 			if (balance > 100 || balance < 0)
 			{
 				printf("%s\n", player.getPlayerName().c_str());
@@ -357,7 +358,7 @@ std::vector<HandHistory> HandHistoryUtils::importFromFile(FILE *f, int historyNu
 			fgets(s, sizeof(s), f);
             int position;
 			sscanf(s,"%d", &position);
-
+			player.setPosition(position);
 			if (position > 2 || position < -3)
 			{
 				//printf("%s\n", s);
@@ -382,7 +383,7 @@ std::vector<HandHistory> HandHistoryUtils::importFromFile(FILE *f, int historyNu
 				fgets(s, sizeof(s), f);
                 char type;
                 double size;
-				sscanf(s,"%s %lf", &type, &size);
+				sscanf(s,"%c %lf", &type, &size);
                 action.setAction(type, size);
 				player.getPreflopAction().push_back(action);
 			}
@@ -395,7 +396,7 @@ std::vector<HandHistory> HandHistoryUtils::importFromFile(FILE *f, int historyNu
 				fgets(s, sizeof(s), f);
                 char type;
                 double size;
-				sscanf(s,"%s %lf", &type, &size);
+				sscanf(s,"%c %lf", &type, &size);
                 action.setAction(type, size);
 				player.getFlopAction().push_back(action);
 			}
@@ -407,7 +408,7 @@ std::vector<HandHistory> HandHistoryUtils::importFromFile(FILE *f, int historyNu
 				fgets(s, sizeof(s), f);
                 char type;
                 double size;
-				sscanf(s,"%s %lf", &type, &size);
+				sscanf(s,"%c %lf", &type, &size);
                 action.setAction(type, size);
 				player.getTurnAction().push_back(action);
 			}
@@ -419,13 +420,13 @@ std::vector<HandHistory> HandHistoryUtils::importFromFile(FILE *f, int historyNu
 				fgets(s, sizeof(s), f);
                 char type;
                 double size;
-				sscanf(s,"%s %lf", &type, &size);
+				sscanf(s,"%c %lf", &type, &size);
                 action.setAction(type, size);
 				player.getRiverAction().push_back(action);
 			}
 
 			fgets(s, sizeof(s), f);
-            bool handKnown;
+            int handKnown;
 			sscanf(s,"%d", &handKnown);
             player.setHandKnown(handKnown);
 			if (handKnown)

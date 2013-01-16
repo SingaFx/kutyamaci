@@ -7,11 +7,14 @@ using namespace std;
 #include "cpptest.h"
 #include "bayestest\src\bayesUserFunctions.h"
 #include "bayeslearn\src\bayesLearnFunctions.h"
+#include "handHistoryGenerator.h"
 
 class BayesPreflopTestSuite : public Test::Suite
 {
 public:
-	BayesUserPreflop preflop;
+	BayesLearnPreflop preflopLearn;
+	BayesUserPreflop preflopUser;
+	PreflopHandHistoryGenerator generator;
 public:
 	BayesPreflopTestSuite();
 private:
