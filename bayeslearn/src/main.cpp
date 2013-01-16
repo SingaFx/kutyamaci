@@ -6,6 +6,7 @@
 #include "handHistoryParser.h"
 #include "bayesLearnFunctions.h"
 #include "database.h"
+#include "HandHistoryUtils.h"
 
 //using namespace dlib;
 ;
@@ -58,12 +59,11 @@ BayesLearnTurn* turn;
 
 int total;
 
-
 void parseHands(string filename)
 {
 	int total = 0;
 	printf("Begin parsing hands\n");
-	
+
 	FILE *f = fopen(filename.c_str(),"r");
 	char s[100];
 
@@ -81,7 +81,6 @@ void parseHands(string filename)
 		}
 	}
 }
-
 
 /*
 void test()
@@ -112,7 +111,6 @@ void testPreflop(directed_graph<bayes_node>::kernel_1a_c& bn)
 	int line = 0;
 
 //[PREFLOP_PLAYER_STACK_SIZE_NUM][PREFLOP_PLAYER_BET_SIZE_NUM][PREFLOP_PLAYER_LINE_NUM][PREFLOP_PLAYER_VPIP_NUM][PREFLOP_PLAYER_PFR_NUM][PREFLOP_PLAYER_POZ_NUM];
-
 
 	int nStackSize = 2;
 	int nBetSize = 2;
@@ -174,7 +172,7 @@ void setPostFlop()
 	//set postflop
 		for (int i = 1; i < 4; ++i)
 			bn[i].set_number_of_nodes(node_number);
-		
+
 		//setup edges
 		//keep it simple now, just    all-{1}->0
 		for (int i = 1; i < 4; ++i)
@@ -191,14 +189,14 @@ void setPostFlop()
 			bn[i].add_edge(0, 1);
 		}
 
-		//setup node parameters	
+		//setup node parameters
 		for (int i = 1; i < 4; ++i)
 		{
 			set_node_num_values(bn[i], HAND_STRENGTH, HAND_STRENGTH_NUM);
 			set_node_num_values(bn[i], FOLD_EQUITY, FOLD_EQUITY_NUM);
 			set_node_num_values(bn[i], POT_SIZE, POT_SIZE_NUM);
 			set_node_num_values(bn[i], PLAYER_STACK_SIZE, PLAYER_STACK_SIZE_NUM);
-			set_node_num_values(bn[i], PLAYER_BET_SIZE, PLAYER_BET_SIZE_NUM); 
+			set_node_num_values(bn[i], PLAYER_BET_SIZE, PLAYER_BET_SIZE_NUM);
 			set_node_num_values(bn[i], PLAYER_LINE, PLAYER_LINE_NUM);
 			set_node_num_values(bn[i], PLAYER_VPIP, PLAYER_VPIP_NUM);
 			set_node_num_values(bn[i], PLAYER_PFR, PLAYER_PFR_NUM);
@@ -206,13 +204,12 @@ void setPostFlop()
 		}
 
 	//learn parameters
-		
+
 		//!read from a file the data
 		//update node probabilities -> probability[...]!
-		
+
 		//p(a1), p(a2) -> if not observed!
-		
-		
+
 		for (int i = 1; i < 4; ++i)
 			for (int j = 2; j < node_number; ++j) //2..nodenumber
 			{
@@ -222,7 +219,6 @@ void setPostFlop()
 					set_node_probability(bn[i], j, k, parent_state, 0);
 				}
 			}
-		
 
 		//p(0|all - {1}) + p(1|all) probabilities
 		//p(0|all - {1})
@@ -230,7 +226,7 @@ void setPostFlop()
 		//backHS(0);
 		//p(1|all);
 		//backFE(0);
-		
+
 	//TESTING
 		//test();
 	//save network
@@ -249,7 +245,7 @@ int main(int argc, char* argv[])
 		turn = new BayesLearnTurn();
 		parseHands("d:\\pokerbot\\hh.txt");
 		//parseHands("..\\tests\\resource\\bayes\\testhh.txt");
-		
+
 		preflop->write("preflopBayes");
 		flop->write("flopBayes");
 		turn->write("turnBayes");
@@ -257,14 +253,14 @@ int main(int argc, char* argv[])
 		/*BAYES NETWORK
 		//==============SET preflop network=======================
 		bn[0].set_number_of_nodes(preflop_node_number);
-		
+
 		for (int j = 1; j < preflop_node_number; ++j)
 		{
 			bn[0].add_edge(j, 0);
 		}
 		set_node_num_values(bn[0], PREFLOP_HAND_STRENGTH, PREFLOP_HAND_STRENGTH_NUM);
 		set_node_num_values(bn[0], PREFLOP_PLAYER_STACK_SIZE, PREFLOP_PLAYER_STACK_SIZE_NUM);
-		set_node_num_values(bn[0], PREFLOP_PLAYER_BET_SIZE, PREFLOP_PLAYER_BET_SIZE_NUM); 
+		set_node_num_values(bn[0], PREFLOP_PLAYER_BET_SIZE, PREFLOP_PLAYER_BET_SIZE_NUM);
 		set_node_num_values(bn[0], PREFLOP_PLAYER_LINE, PREFLOP_PLAYER_LINE_NUM);
 		set_node_num_values(bn[0], PREFLOP_PLAYER_VPIP, PREFLOP_PLAYER_VPIP_NUM);
 		set_node_num_values(bn[0], PREFLOP_PLAYER_PFR, PREFLOP_PLAYER_PFR_NUM);

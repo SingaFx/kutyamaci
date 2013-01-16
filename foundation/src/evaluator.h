@@ -24,13 +24,13 @@ class Evaluator
 		map['J'] = 11;
 		map['T'] = 10;
 
-		if ((c.rank >= '2') && (c.rank <= '9'))
+		if ((c.getRank() >= '2') && (c.getRank() <= '9'))
 		{
-			c.rank = c.rank - '0';
+			c.setRank(c.getRank() - '0');
 		}
 		else
 		{
-			c.rank = map[c.rank];
+			c.setRank(map[c.getRank()]);
 		}
 
 		return;
@@ -38,7 +38,7 @@ class Evaluator
 
 	static bool compareCards(Card &c1, Card &c2)
 	{
-		return c1.rank < c2.rank;
+		return c1.getRank() < c2.getRank();
 	}
 
 	static bool flopStraightFlush(vector<Card> &cards)
@@ -46,9 +46,9 @@ class Evaluator
 		assert(cards.size() == 5);
 		sort(cards.begin(), cards.end(), compareCards);
 
-		return ((((cards[0].rank == cards[1].rank-1) && (cards[1].rank == cards[2].rank-1) && (cards[2].rank == cards[3].rank-1) && (cards[3].rank == cards[4].rank-1)) || 
-				((cards[0].rank == 2) && (cards[1].rank == 3) && (cards[2].rank == 4) && (cards[3].rank == 5) && (cards[4].rank == 14))) &&
-				(cards[0].suit == cards[1].suit) && (cards[1].suit == cards[2].suit) && (cards[2].suit == cards[3].suit) && (cards[3].suit == cards[4].suit));
+		return ((((cards[0].getRank() == cards[1].getRank()-1) && (cards[1].getRank() == cards[2].getRank()-1) && (cards[2].getRank() == cards[3].getRank()-1) && (cards[3].getRank() == cards[4].getRank()-1)) ||
+				((cards[0].getRank() == 2) && (cards[1].getRank() == 3) && (cards[2].getRank() == 4) && (cards[3].getRank() == 5) && (cards[4].getRank() == 14))) &&
+				(cards[0].getSuit() == cards[1].getSuit()) && (cards[1].getSuit() == cards[2].getSuit()) && (cards[2].getSuit() == cards[3].getSuit()) && (cards[3].getSuit() == cards[4].getSuit()));
 	}
 
 	static bool flopPoker(vector<Card> &cards)
@@ -56,8 +56,8 @@ class Evaluator
 		assert(cards.size() == 5);
 		sort(cards.begin(), cards.end(), compareCards);
 
-		return (((cards[0].rank == cards[1].rank) && (cards[1].rank == cards[2].rank) && (cards[2].rank == cards[3].rank)) ||
-				((cards[1].rank == cards[2].rank) && (cards[2].rank == cards[3].rank) && (cards[3].rank == cards[4].rank)));
+		return (((cards[0].getRank() == cards[1].getRank()) && (cards[1].getRank() == cards[2].getRank()) && (cards[2].getRank() == cards[3].getRank())) ||
+				((cards[1].getRank() == cards[2].getRank()) && (cards[2].getRank() == cards[3].getRank()) && (cards[3].getRank() == cards[4].getRank())));
 	}
 
 	static bool flopFullHouse(vector<Card> &cards)
@@ -65,8 +65,8 @@ class Evaluator
 		assert(cards.size() == 5);
 		sort(cards.begin(), cards.end(), compareCards);
 
-		return (((cards[0].rank == cards[1].rank) && (cards[2].rank == cards[3].rank) && (cards[3].rank == cards[4].rank)) ||
-				((cards[0].rank == cards[1].rank) && (cards[1].rank == cards[2].rank) && (cards[3].rank == cards[4].rank)));
+		return (((cards[0].getRank() == cards[1].getRank()) && (cards[2].getRank() == cards[3].getRank()) && (cards[3].getRank() == cards[4].getRank())) ||
+				((cards[0].getRank() == cards[1].getRank()) && (cards[1].getRank() == cards[2].getRank()) && (cards[3].getRank() == cards[4].getRank())));
 	}
 
 	static bool flopFlush(vector<Card> &cards)
@@ -76,7 +76,7 @@ class Evaluator
 
 		if (flopStraightFlush(cards)) return false;
 
-		return ((cards[0].suit == cards[1].suit) && (cards[1].suit == cards[2].suit) && (cards[2].suit == cards[3].suit) && (cards[3].suit == cards[4].suit));
+		return ((cards[0].getSuit() == cards[1].getSuit()) && (cards[1].getSuit() == cards[2].getSuit()) && (cards[2].getSuit() == cards[3].getSuit()) && (cards[3].getSuit() == cards[4].getSuit()));
 	}
 
 	static bool flopStraight(vector<Card> &cards)
@@ -86,8 +86,8 @@ class Evaluator
 
 		if (flopStraightFlush(cards)) return false;
 
-		return (((cards[0].rank == cards[1].rank-1) && (cards[1].rank == cards[2].rank-1) && (cards[2].rank == cards[3].rank-1) && (cards[3].rank == cards[4].rank-1)) || 
-				((cards[0].rank == 2) && (cards[1].rank == 3) && (cards[2].rank == 4) && (cards[3].rank == 5) && (cards[4].rank == 14)));
+		return (((cards[0].getRank() == cards[1].getRank()-1) && (cards[1].getRank() == cards[2].getRank()-1) && (cards[2].getRank() == cards[3].getRank()-1) && (cards[3].getRank() == cards[4].getRank()-1)) ||
+				((cards[0].getRank() == 2) && (cards[1].getRank() == 3) && (cards[2].getRank() == 4) && (cards[3].getRank() == 5) && (cards[4].getRank() == 14)));
 	}
 
 	static bool flopThreeofaKind(vector<Card> &cards)
@@ -98,8 +98,8 @@ class Evaluator
 		if (flopPoker(cards)) return false;
 		if (flopFullHouse(cards)) return false;
 
-		return (((cards[0].rank == cards[1].rank) && (cards[1].rank == cards[2].rank)) || ((cards[1].rank == cards[2].rank) && (cards[2].rank == cards[3].rank))
-				|| ((cards[2].rank == cards[3].rank) && (cards[3].rank == cards[4].rank)));
+		return (((cards[0].getRank() == cards[1].getRank()) && (cards[1].getRank() == cards[2].getRank())) || ((cards[1].getRank() == cards[2].getRank()) && (cards[2].getRank() == cards[3].getRank()))
+				|| ((cards[2].getRank() == cards[3].getRank()) && (cards[3].getRank() == cards[4].getRank())));
 	}
 
 	static bool flopTwoPair(vector<Card> &cards)
@@ -111,8 +111,8 @@ class Evaluator
 		if (flopPoker(cards)) return false;
 		if (flopThreeofaKind(cards)) return false;
 
-		return (((cards[0].rank == cards[1].rank) && (cards[2].rank == cards[3].rank)) || ((cards[1].rank == cards[2].rank) && (cards[3].rank == cards[4].rank))
-				|| ((cards[0].rank == cards[1].rank) && (cards[3].rank == cards[4].rank)));
+		return (((cards[0].getRank() == cards[1].getRank()) && (cards[2].getRank() == cards[3].getRank())) || ((cards[1].getRank() == cards[2].getRank()) && (cards[3].getRank() == cards[4].getRank()))
+				|| ((cards[0].getRank() == cards[1].getRank()) && (cards[3].getRank() == cards[4].getRank())));
 	}
 
 	static bool flopOnePair(vector<Card> &cards)
@@ -125,18 +125,18 @@ class Evaluator
 		if (flopFullHouse(cards)) return false;
 		if (flopPoker(cards)) return false;
 
-		return ((cards[0].rank == cards[1].rank) || (cards[1].rank == cards[2].rank) || (cards[2].rank == cards[3].rank) || (cards[3].rank == cards[4].rank));
+		return ((cards[0].getRank() == cards[1].getRank()) || (cards[1].getRank() == cards[2].getRank()) || (cards[2].getRank() == cards[3].getRank()) || (cards[3].getRank() == cards[4].getRank()));
 	}
 
 	static Card flopHighestCard(Card &b1, Card &b2, Card &b3)
 	{
-		if ((b1.rank >= b2.rank) && (b1.rank >= b3.rank))
+		if ((b1.getRank() >= b2.getRank()) && (b1.getRank() >= b3.getRank()))
 			return b1;
 
-		if ((b2.rank >= b1.rank) && (b2.rank >= b3.rank))
+		if ((b2.getRank() >= b1.getRank()) && (b2.getRank() >= b3.getRank()))
 			return b2;
 
-		if ((b3.rank >= b2.rank) && (b3.rank >= b1.rank))
+		if ((b3.getRank() >= b2.getRank()) && (b3.getRank() >= b1.getRank()))
 			return b3;
 
 		cout << "Error in flopHighestCard : Script is supposed to terminate earlier." << endl;
@@ -150,16 +150,16 @@ class Evaluator
 		if (flopFlush(vcards))
 			return false;
 
-		return ((h1.suit == h2.suit) && (h2.suit == b1.suit) && (b1.suit == b2.suit)) ||
-			((h1.suit == h2.suit) && (h2.suit == b1.suit) && (b1.suit == b3.suit)) ||
-			((h1.suit == h2.suit) && (h2.suit == b2.suit) && (b2.suit == b3.suit)) ||
-			((h1.suit == b1.suit) && (b1.suit == b2.suit) && (b2.suit == b3.suit)) ||
-			((h2.suit == b1.suit) && (b1.suit == b2.suit) && (b2.suit == b3.suit));
+		return ((h1.getSuit() == h2.getSuit()) && (h2.getSuit() == b1.getSuit()) && (b1.getSuit() == b2.getSuit())) ||
+			((h1.getSuit() == h2.getSuit()) && (h2.getSuit() == b1.getSuit()) && (b1.getSuit() == b3.getSuit())) ||
+			((h1.getSuit() == h2.getSuit()) && (h2.getSuit() == b2.getSuit()) && (b2.getSuit() == b3.getSuit())) ||
+			((h1.getSuit() == b1.getSuit()) && (b1.getSuit() == b2.getSuit()) && (b2.getSuit() == b3.getSuit())) ||
+			((h2.getSuit() == b1.getSuit()) && (b1.getSuit() == b2.getSuit()) && (b2.getSuit() == b3.getSuit()));
 	}
 
 	static bool flopTripleBoard(Card &b1, Card &b2, Card &b3)
 	{
-		return (b1.rank == b2.rank) && (b2.rank == b3.rank);
+		return (b1.getRank() == b2.getRank()) && (b2.getRank() == b3.getRank());
 	}
 
 	static bool flopDoubleBoard(Card &b1, Card &b2, Card &b3)
@@ -167,7 +167,7 @@ class Evaluator
 		if (flopTripleBoard(b1,b2,b3))
 			return false;
 
-		return (b1.rank == b2.rank) || (b1.rank == b3.rank) || (b2.rank == b3.rank);
+		return (b1.getRank() == b2.getRank()) || (b1.getRank() == b3.getRank()) || (b2.getRank() == b3.getRank());
 	}
 
 	static bool flopSingleBoard(Card &b1, Card &b2, Card &b3)
@@ -177,7 +177,7 @@ class Evaluator
 
 	static bool flopMonotoneBoard(Card &b1, Card &b2, Card &b3)
 	{
-		return (b1.suit == b2.suit) && (b2.suit == b3.suit);
+		return (b1.getSuit() == b2.getSuit()) && (b2.getSuit() == b3.getSuit());
 	}
 
 	static bool flopTwoToneBoard(Card &b1, Card &b2, Card &b3)
@@ -185,14 +185,14 @@ class Evaluator
 		if (flopMonotoneBoard(b1,b2,b3))
 			return false;
 
-		return ((b1.suit == b2.suit) || (b1.suit == b3.suit) || (b2.suit == b3.suit));
+		return ((b1.getSuit() == b2.getSuit()) || (b1.getSuit() == b3.getSuit()) || (b2.getSuit() == b3.getSuit()));
 	}
 
 	static int flopHiLoDistance(Card &b1, Card &b2, Card &b3)
 	{
-		int dist1 = abs(b1.rank - b2.rank);
-		int dist2 = abs(b1.rank - b3.rank);
-		int dist3 = abs(b2.rank - b3.rank);
+		int dist1 = abs(b1.getRank() - b2.getRank());
+		int dist2 = abs(b1.getRank() - b3.getRank());
+		int dist3 = abs(b2.getRank() - b3.getRank());
 
 		return (dist1 > dist2) ? ((dist1 > dist3) ? dist1 : dist3) : ((dist2 > dist3) ? dist2 : dist3);
 	}
@@ -203,7 +203,7 @@ class Evaluator
 			return false;
 
 		return flopHiLoDistance(b1,b2,b3) == 2;
-	} 
+	}
 
 	static bool flopConnectedBoard(Card &b1, Card &b2, Card &b3)
 	{
@@ -215,24 +215,24 @@ class Evaluator
 
 	static bool flopTwoUnderCards(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3)
 	{
-		return (h1.rank < b1.rank) && (h1.rank < b2.rank) && (h1.rank < b3.rank) &&
-				(h2.rank < b1.rank) && (h2.rank < b2.rank) && (h2.rank < b3.rank);
+		return (h1.getRank() < b1.getRank()) && (h1.getRank() < b2.getRank()) && (h1.getRank() < b3.getRank()) &&
+				(h2.getRank() < b1.getRank()) && (h2.getRank() < b2.getRank()) && (h2.getRank() < b3.getRank());
 	}
 
 	static bool flopTwoOverCards(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3)
 	{
-		return (h1.rank > b1.rank) && (h1.rank > b2.rank) && (h1.rank > b3.rank) &&
-				(h2.rank > b1.rank) && (h2.rank > b2.rank) && (h2.rank > b3.rank);
+		return (h1.getRank() > b1.getRank()) && (h1.getRank() > b2.getRank()) && (h1.getRank() > b3.getRank()) &&
+				(h2.getRank() > b1.getRank()) && (h2.getRank() > b2.getRank()) && (h2.getRank() > b3.getRank());
 	}
 
 	static bool flopStraightTwoUnderCards(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3)
 	{
-		if (h1.rank < 14 && h2.rank < 14)
-			return flopTwoUnderCards(h1,h2,b1,b2,b3) && (h1.rank < 10 || h2.rank < 10);
+		if (h1.getRank() < 14 && h2.getRank() < 14)
+			return flopTwoUnderCards(h1,h2,b1,b2,b3) && (h1.getRank() < 10 || h2.getRank() < 10);
 
-		if (h1.rank == 14)
-			return h2.rank == 2 && b1.rank <= 5 && b2.rank <= 5 && b3.rank <=5;
-		return h1.rank == 2 && b1.rank <= 5 && b2.rank <= 5 && b3.rank <=5;
+		if (h1.getRank() == 14)
+			return h2.getRank() == 2 && b1.getRank() <= 5 && b2.getRank() <= 5 && b3.getRank() <=5;
+		return h1.getRank() == 2 && b1.getRank() <= 5 && b2.getRank() <= 5 && b3.getRank() <=5;
 	}
 
 	static bool flopNutFlushDraw(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3)
@@ -242,59 +242,59 @@ class Evaluator
 
 		if (flopMonotoneBoard(b1,b2,b3))
 		{
-			if (h1.suit == b1.suit)
+			if (h1.getSuit() == b1.getSuit())
 			{
-				if (flopHighestCard(b1,b2,b3).rank < 14)
-					return h1.rank == 14;
-				if (flopHighestCard(b1,b2,b3).rank < 13)
-					return h1.rank == 13;
-				if (flopHighestCard(b1,b2,b3).rank < 12)
-					return h1.rank == 12;
-				return h1.rank == 11;
+				if (flopHighestCard(b1,b2,b3).getRank() < 14)
+					return h1.getRank() == 14;
+				if (flopHighestCard(b1,b2,b3).getRank() < 13)
+					return h1.getRank() == 13;
+				if (flopHighestCard(b1,b2,b3).getRank() < 12)
+					return h1.getRank() == 12;
+				return h1.getRank() == 11;
 			}
-			if (h2.suit == b1.suit)
+			if (h2.getSuit() == b1.getSuit())
 			{
-				if (flopHighestCard(b1,b2,b3).rank < 14)
-					return h2.rank == 14;
-				if (flopHighestCard(b1,b2,b3).rank < 13)
-					return h2.rank == 13;
-				if (flopHighestCard(b1,b2,b3).rank < 12)
-					return h2.rank == 12;
-				return h2.rank == 11;
+				if (flopHighestCard(b1,b2,b3).getRank() < 14)
+					return h2.getRank() == 14;
+				if (flopHighestCard(b1,b2,b3).getRank() < 13)
+					return h2.getRank() == 13;
+				if (flopHighestCard(b1,b2,b3).getRank() < 12)
+					return h2.getRank() == 12;
+				return h2.getRank() == 11;
 			}
 		}
-		
+
 		Card highestSuitedCard, secondHighestSuitedCard;
-		if (flopHighestCard(b1,b2,b3).suit == h1.suit)
+		if (flopHighestCard(b1,b2,b3).getSuit() == h1.getSuit())
 		{
 			highestSuitedCard = flopHighestCard(b1,b2,b3);
 		}
 		else
 		{
-			if (b1.suit != h1.suit)
+			if (b1.getSuit() != h1.getSuit())
 			{
-				highestSuitedCard = (b2.rank > b3.rank) ? b2 : b3;
-				secondHighestSuitedCard = (b2.rank > b3.rank) ? b3 : b2;
+				highestSuitedCard = (b2.getRank() > b3.getRank()) ? b2 : b3;
+				secondHighestSuitedCard = (b2.getRank() > b3.getRank()) ? b3 : b2;
 			}
-			if (b2.suit != h1.suit)
+			if (b2.getSuit() != h1.getSuit())
 			{
-				highestSuitedCard = (b1.rank > b3.rank) ? b1 : b3;
-				secondHighestSuitedCard = (b1.rank > b3.rank) ? b3 : b1;
+				highestSuitedCard = (b1.getRank() > b3.getRank()) ? b1 : b3;
+				secondHighestSuitedCard = (b1.getRank() > b3.getRank()) ? b3 : b1;
 			}
-			if (b3.suit != h1.suit)
+			if (b3.getSuit() != h1.getSuit())
 			{
-				highestSuitedCard = (b1.rank > b2.rank) ? b1 : b2;
-				secondHighestSuitedCard = (b1.rank > b2.rank) ? b2 : b1;
+				highestSuitedCard = (b1.getRank() > b2.getRank()) ? b1 : b2;
+				secondHighestSuitedCard = (b1.getRank() > b2.getRank()) ? b2 : b1;
 			}
 		}
 
-		if (highestSuitedCard.rank < 14)
-			return (h1.rank == 14) || (h2.rank == 14);
+		if (highestSuitedCard.getRank() < 14)
+			return (h1.getRank() == 14) || (h2.getRank() == 14);
 
-		if (secondHighestSuitedCard.rank < 13)
-			return (h1.rank == 13) || (h2.rank == 13);
+		if (secondHighestSuitedCard.getRank() < 13)
+			return (h1.getRank() == 13) || (h2.getRank() == 13);
 
-		return (h1.rank == 12) || (h2.rank == 12);
+		return (h1.getRank() == 12) || (h2.getRank() == 12);
 	}
 
 	static bool flopDangerousBoard(Card &b1, Card &b2, Card b3)
@@ -307,25 +307,25 @@ class Evaluator
 		assert(cards.size() == 5);
 		sort(cards.begin(), cards.end(), compareCards);
 
-		if (flopStraight(cards) || flopFlush(cards)) 
+		if (flopStraight(cards) || flopFlush(cards))
 			return false;
 
 		vector<Card> uniqueCards;
 		uniqueCards.push_back(cards[0]);
 		for (int i = 1; i < cards.size(); ++i)
-			if (cards[i].rank != cards[i-1].rank)
+			if (cards[i].getRank() != cards[i-1].getRank())
 				uniqueCards.push_back(cards[i]);
 
 		if (uniqueCards.size() < 4)
 			return false;
 
-		if ((uniqueCards[3].rank-uniqueCards[0].rank == 3 && uniqueCards[3].rank != 14) || (uniqueCards.size() == 5 && uniqueCards[4].rank-uniqueCards[1].rank == 3 && uniqueCards[4].rank != 14))
+		if ((uniqueCards[3].getRank()-uniqueCards[0].getRank() == 3 && uniqueCards[3].getRank() != 14) || (uniqueCards.size() == 5 && uniqueCards[4].getRank()-uniqueCards[1].getRank() == 3 && uniqueCards[4].getRank() != 14))
 			return true;
 
-		return (((cards[0].rank == cards[1].rank-1) && (cards[1].rank == cards[2].rank-1) && (cards[2].rank == cards[3].rank-1) && (cards[3].rank < 14)) || 
-				((cards[1].rank == cards[2].rank-1) && (cards[2].rank == cards[3].rank-1) && (cards[3].rank == cards[4].rank-1) && (cards[4].rank < 14)) ||
-				((cards[0].rank == cards[1].rank-2) && (cards[1].rank == cards[2].rank-1) && (cards[2].rank == cards[3].rank-1) && (cards[3].rank == cards[4].rank-2)) ||
-				((cards[0].rank == 3) && (cards[1].rank == 4) && (cards[2].rank == 5) && (cards[3].rank == 7) && (cards[4].rank == 14)));
+		return (((cards[0].getRank() == cards[1].getRank()-1) && (cards[1].getRank() == cards[2].getRank()-1) && (cards[2].getRank() == cards[3].getRank()-1) && (cards[3].getRank() < 14)) ||
+				((cards[1].getRank() == cards[2].getRank()-1) && (cards[2].getRank() == cards[3].getRank()-1) && (cards[3].getRank() == cards[4].getRank()-1) && (cards[4].getRank() < 14)) ||
+				((cards[0].getRank() == cards[1].getRank()-2) && (cards[1].getRank() == cards[2].getRank()-1) && (cards[2].getRank() == cards[3].getRank()-1) && (cards[3].getRank() == cards[4].getRank()-2)) ||
+				((cards[0].getRank() == 3) && (cards[1].getRank() == 4) && (cards[2].getRank() == 5) && (cards[3].getRank() == 7) && (cards[4].getRank() == 14)));
 	}
 
 	static bool flopGutshot(vector<Card> &cards)
@@ -333,24 +333,24 @@ class Evaluator
 		assert(cards.size() == 5);
 		sort(cards.begin(), cards.end(), compareCards);
 
-		if (flopStraight(cards) || flopFlush(cards) || flopOESD(cards)) 
+		if (flopStraight(cards) || flopFlush(cards) || flopOESD(cards))
 			return false;
 
 		vector<Card> uniqueCards;
 		uniqueCards.push_back(cards[0]);
 		for (int i = 1; i < cards.size(); ++i)
-			if (cards[i].rank != cards[i-1].rank)
+			if (cards[i].getRank() != cards[i-1].getRank())
 				uniqueCards.push_back(cards[i]);
 
-		return (uniqueCards.size() >= 4 && uniqueCards[3].rank - uniqueCards[0].rank <= 4) || (uniqueCards.size() >= 5 && uniqueCards[4].rank - uniqueCards[1].rank <= 4) ||
-			(uniqueCards.size() >= 4 && uniqueCards[uniqueCards.size()-1].rank == 14 && uniqueCards[2].rank <= 5);
+		return (uniqueCards.size() >= 4 && uniqueCards[3].getRank() - uniqueCards[0].getRank() <= 4) || (uniqueCards.size() >= 5 && uniqueCards[4].getRank() - uniqueCards[1].getRank() <= 4) ||
+			(uniqueCards.size() >= 4 && uniqueCards[uniqueCards.size()-1].getRank() == 14 && uniqueCards[2].getRank() <= 5);
 	}
 
 	static bool flopNutOESD(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3)
 	{
 		Card placeHolderCard;
-		placeHolderCard.rank = 20;
-		placeHolderCard.suit = -1;
+		placeHolderCard.setRank(20);
+		placeHolderCard.setSuit(-1);
 		Card cards[] = {h1,h2,b1,b2,b3};
 		vector<Card> vcards(cards, cards + sizeof(cards) / sizeof(Card));
 		Card cards2[] = {h2,b1,b2,b3,placeHolderCard};
@@ -363,11 +363,11 @@ class Evaluator
 
 		if (flopOESD(vcards2))
 		{
-			return ((h2.rank > b1.rank) && (h2.rank > b2.rank) && (h2.rank > b3.rank));
+			return ((h2.getRank() > b1.getRank()) && (h2.getRank() > b2.getRank()) && (h2.getRank() > b3.getRank()));
 		}
 		if (flopOESD(vcards3))
 		{
-			return ((h1.rank > b1.rank) && (h1.rank > b2.rank) && (h1.rank > b3.rank));
+			return ((h1.getRank() > b1.getRank()) && (h1.getRank() > b2.getRank()) && (h1.getRank() > b3.getRank()));
 		}
 
 		Card cards4[] = {h1,h2,b1,b2,placeHolderCard};
@@ -387,7 +387,7 @@ class Evaluator
 		if (flopOESD(vcards6))
 		{
 			return !flopTwoUnderCards(h1,h2,b2,b3,placeHolderCard);
-		}	
+		}
 
 		return true;
 	}
@@ -499,14 +499,14 @@ class Evaluator
 	{
 		assert(board.size() == 4);
 
-		return (board[0].rank == board[1].rank) && (board[1].rank != board[2].rank) && (board[2].rank == board[3].rank);
+		return (board[0].getRank() == board[1].getRank()) && (board[1].getRank() != board[2].getRank()) && (board[2].getRank() == board[3].getRank());
 	}
 
 	static bool turnQuadBoard(vector<Card> &board)
 	{
 		assert(board.size() == 4);
 
-		return (board[0].rank == board[1].rank) && (board[1].rank == board[2].rank) && (board[2].rank == board[3].rank);
+		return (board[0].getRank() == board[1].getRank()) && (board[1].getRank() == board[2].getRank()) && (board[2].getRank() == board[3].getRank());
 	}
 
 	static bool turnTripleBoard(vector<Card> &board)
@@ -516,7 +516,7 @@ class Evaluator
 		if (turnQuadBoard(board))
 			return false;
 
-		return ((board[0].rank == board[1].rank) && (board[1].rank == board[2].rank)) || ((board[1].rank == board[2].rank) && (board[2].rank == board[3].rank));
+		return ((board[0].getRank() == board[1].getRank()) && (board[1].getRank() == board[2].getRank())) || ((board[1].getRank() == board[2].getRank()) && (board[2].getRank() == board[3].getRank()));
 	}
 
 	static bool turnDoubleBoard(vector<Card> &board)
@@ -524,7 +524,7 @@ class Evaluator
 		if (turnQuadBoard(board) || turnTripleBoard(board))
 			return false;
 
-		return ((board[0].rank == board[1].rank) || (board[1].rank == board[2].rank) || (board[2].rank == board[3].rank));
+		return ((board[0].getRank() == board[1].getRank()) || (board[1].getRank() == board[2].getRank()) || (board[2].getRank() == board[3].getRank()));
 	}
 
 	static bool turnSingleBoard(vector<Card> &board)
@@ -534,7 +534,7 @@ class Evaluator
 
 	static bool turnMonotoneBoard(vector<Card> &board)
 	{
-		return (board[0].suit == board[1].suit) && (board[1].suit == board[2].suit) && (board[2].suit == board[3].suit);
+		return (board[0].getSuit() == board[1].getSuit()) && (board[1].getSuit() == board[2].getSuit()) && (board[2].getSuit() == board[3].getSuit());
 	}
 
 	static bool turnOneCardStrBoard(vector<Card> &board)
@@ -542,7 +542,7 @@ class Evaluator
 		if (!turnSingleBoard(board))
 			return false;
 
-		return (board[3].rank - board[0].rank <= 4) || (board[3].rank == 14 && board[2].rank <= 5);
+		return (board[3].getRank() - board[0].getRank() <= 4) || (board[3].getRank() == 14 && board[2].getRank() <= 5);
 	}
 
 	static bool turnOneCardNutFlush(Card &h1, Card &h2, vector<Card> &board)
@@ -551,11 +551,11 @@ class Evaluator
 			return false;
 
 		Card suitedCard;
-		if (h1.suit == board[0].suit)
+		if (h1.getSuit() == board[0].getSuit())
 		{
 			suitedCard = h1;
 		}
-		else if (h2.suit == board[0].suit)
+		else if (h2.getSuit() == board[0].getSuit())
 		{
 			suitedCard = h2;
 		}
@@ -564,8 +564,8 @@ class Evaluator
 			return false;
 		}
 
-		return suitedCard.rank == 14 || (board[3].rank == 14 && suitedCard.rank == 13) || (board[3].rank == 14 && board[2].rank == 13 && suitedCard.rank == 12) ||
-			(board[3].rank == 14 && board[2].rank == 13 && board[1].rank == 12 && suitedCard.rank == 11);
+		return suitedCard.getRank() == 14 || (board[3].getRank() == 14 && suitedCard.getRank() == 13) || (board[3].getRank() == 14 && board[2].getRank() == 13 && suitedCard.getRank() == 12) ||
+			(board[3].getRank() == 14 && board[2].getRank() == 13 && board[1].getRank() == 12 && suitedCard.getRank() == 11);
 	}
 
 	static bool turnOneCardStr(Card &h1, Card &h2, vector<Card> &board)
@@ -577,7 +577,7 @@ class Evaluator
 		temp.push_back(h1);
 		if (flopStraight(temp))
 		{
-			if (flopStraight(temp2) && (h2.rank > board[3].rank))
+			if (flopStraight(temp2) && (h2.getRank() > board[3].getRank()))
 				return false;
 			return true;
 		}
@@ -586,7 +586,7 @@ class Evaluator
 		temp.push_back(h2);
 		if (flopStraight(temp))
 		{
-			if (flopStraight(temp2) && (h1.rank > board[3].rank))
+			if (flopStraight(temp2) && (h1.getRank() > board[3].getRank()))
 				return false;
 			return true;
 		}
@@ -596,10 +596,10 @@ class Evaluator
 
 	static bool turnLowCardinStraight(Card &h, vector<Card> &board)
 	{
-		if (h.rank < 14)
-			return h.rank < board[0].rank && h.rank < board[1].rank && h.rank < board[2].rank && h.rank < board[3].rank && (h.rank > 2 || board[3].rank < 14);
+		if (h.getRank() < 14)
+			return h.getRank() < board[0].getRank() && h.getRank() < board[1].getRank() && h.getRank() < board[2].getRank() && h.getRank() < board[3].getRank() && (h.getRank() > 2 || board[3].getRank() < 14);
 
-		return board[0].rank == 2 && board[1].rank == 3 && board[2].rank == 4 && board[3].rank == 5; 
+		return board[0].getRank() == 2 && board[1].getRank() == 3 && board[2].getRank() == 4 && board[3].getRank() == 5;
 	}
 
 	static bool turnOneCardLowStr(Card &h1, Card &h2, vector<Card> &board)
@@ -616,7 +616,7 @@ class Evaluator
 		if (flopStraight(temp))
 			return turnLowCardinStraight(h1,board);
 
-		return turnLowCardinStraight(h2,board); 
+		return turnLowCardinStraight(h2,board);
 	}
 
 	static bool turnOneCardNutStraight(Card &h1, Card &h2, vector<Card> &board)
@@ -631,31 +631,31 @@ class Evaluator
 		temp2.push_back(h2);
 		if (flopStraight(temp) && flopStraight(temp2))
 		{
-			if ((h1.rank == 14) && (h2.rank == 6))
+			if ((h1.getRank() == 14) && (h2.getRank() == 6))
 			{
 				straight = temp2;
 			}
-			else if ((h1.rank == 6) && (h2.rank == 14))
+			else if ((h1.getRank() == 6) && (h2.getRank() == 14))
 			{
 				straight = temp;
 			}
 			else
 			{
-				straight = h1.rank > h2.rank ? temp : temp2;
+				straight = h1.getRank() > h2.getRank() ? temp : temp2;
 			}
 		}
 		else if (flopStraight(temp))
 		{
-			straight = temp; 
+			straight = temp;
 		}
-		else 
+		else
 		{
 			straight = temp2;
 		}
 
 		sort(straight.begin(), straight.end(), compareCards);
 
-		return straight[4].rank == 14 && straight[3].rank == 13;
+		return straight[4].getRank() == 14 && straight[3].getRank() == 13;
 	}
 
 	static bool turnOneCardNutFlushDraw(Card &h1, Card &h2, vector<Card> &board)
@@ -666,15 +666,15 @@ class Evaluator
 		if (!turnFlushDraw(h1,h2,board[0],board[1],board[2],board[3]))
 			return false;
 
-		char suit = board[0].suit == board[1].suit ? board[0].suit : board[2].suit;
-		Card suitedCard = h1.suit == suit ? h1 : h2;
+		char suit = board[0].getSuit() == board[1].getSuit() ? board[0].getSuit() : board[2].getSuit();
+		Card suitedCard = h1.getSuit() == suit ? h1 : h2;
 
 		vector<Card> temp;
 		for (int i = 0; i < board.size(); ++i)
-			if (board[i].suit == suit)
+			if (board[i].getSuit() == suit)
 				temp.push_back(board[i]);
 
-		return (suitedCard.rank == 14) || (temp[2].rank == 14 && suitedCard.rank == 13) || (temp[1].rank == 13 && suitedCard.rank == 12) || (temp[1].rank == 12 && suitedCard.rank == 11);
+		return (suitedCard.getRank() == 14) || (temp[2].getRank() == 14 && suitedCard.getRank() == 13) || (temp[1].getRank() == 13 && suitedCard.getRank() == 12) || (temp[1].getRank() == 12 && suitedCard.getRank() == 11);
 	}
 
 	static bool turnLowTwoCardStraight(Card &h1, Card &h2, vector<Card> &board)
@@ -685,19 +685,19 @@ class Evaluator
 		temp1.clear();
 		temp1.push_back(h1);temp1.push_back(h2);temp1.push_back(board[0]);temp1.push_back(board[1]);temp1.push_back(board[2]);
 		if (flopStraight(temp1))
-			if (flopStraightTwoUnderCards(h1,h2,board[0],board[1],board[2]) && (h1.rank < 10 || h2.rank < 10))
+			if (flopStraightTwoUnderCards(h1,h2,board[0],board[1],board[2]) && (h1.getRank() < 10 || h2.getRank() < 10))
 				result = true;
 
 		temp1.clear();
 		temp1.push_back(h1);temp1.push_back(h2);temp1.push_back(board[0]);temp1.push_back(board[2]);temp1.push_back(board[3]);
 		if (flopStraight(temp1))
-			if (flopStraightTwoUnderCards(h1,h2,board[0],board[2],board[3]) && (h1.rank < 10 || h2.rank < 10))
+			if (flopStraightTwoUnderCards(h1,h2,board[0],board[2],board[3]) && (h1.getRank() < 10 || h2.getRank() < 10))
 				result = true;
 
 		temp1.clear();
 		temp1.push_back(h1);temp1.push_back(h2);temp1.push_back(board[1]);temp1.push_back(board[2]);temp1.push_back(board[3]);
 		if (flopStraight(temp1))
-			if (flopStraightTwoUnderCards(h1,h2,board[1],board[2],board[3]) && (h1.rank < 10 || h2.rank < 10))
+			if (flopStraightTwoUnderCards(h1,h2,board[1],board[2],board[3]) && (h1.getRank() < 10 || h2.getRank() < 10))
 				result = true;
 
 		return result;
@@ -707,8 +707,8 @@ class Evaluator
 
 	static bool turnThreeToneBoard(vector<Card> &board)
 	{
-		return (board[0].suit == board[1].suit && board[1].suit == board[2].suit) || (board[0].suit == board[2].suit && board[2].suit == board[3].suit) ||
-			(board[1].suit == board[2].suit && board[2].suit == board[3].suit) || (board[0].suit == board[1].suit && board[1].suit == board[3].suit);
+		return (board[0].getSuit() == board[1].getSuit() && board[1].getSuit() == board[2].getSuit()) || (board[0].getSuit() == board[2].getSuit() && board[2].getSuit() == board[3].getSuit()) ||
+			(board[1].getSuit() == board[2].getSuit() && board[2].getSuit() == board[3].getSuit()) || (board[0].getSuit() == board[1].getSuit() && board[1].getSuit() == board[3].getSuit());
 	}
 
 	static bool turnDangerousBoard(Card &b1, Card &b2, Card &b3, Card &b4)
@@ -720,7 +720,7 @@ class Evaluator
 	{
 		for (int i = 0; i < board.size(); ++i)
 		{
-			if (board[i].rank == rank)
+			if (board[i].getRank() == rank)
 				return true;
 		}
 
@@ -729,7 +729,7 @@ class Evaluator
 
 	static bool turnVeryDangerousBoard(vector<Card> &board)
 	{
-		return ((board[0].suit == board[1].suit) && (board[1].suit == board[2].suit) && (board[2].suit == board[3].suit)) || (turnOneCardStrBoard(board));
+		return ((board[0].getSuit() == board[1].getSuit()) && (board[1].getSuit() == board[2].getSuit()) && (board[2].getSuit() == board[3].getSuit())) || (turnOneCardStrBoard(board));
 	}
 
 	static bool turnFlushDraw(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3, Card &b4)
@@ -739,7 +739,7 @@ class Evaluator
 
 	static bool turnTwoCardFlushDraw(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3, Card &b4)
 	{
-		return turnFlushDraw(h1,h2,b1,b2,b3,b4) && (h1.suit == h2.suit); 
+		return turnFlushDraw(h1,h2,b1,b2,b3,b4) && (h1.getSuit() == h2.getSuit());
 	}
 
 	static bool turnStrongFlushDraw(Card &h1, Card &h2, vector<Card> &board)
@@ -766,7 +766,7 @@ class Evaluator
 
 	static bool turnOESD(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3, Card &b4)
 	{
-		return flopOESD(createVector(h1,h2,b1,b2,b3)) || flopOESD(createVector(h1,h2,b1,b2,b4)) || flopOESD(createVector(h1,h2,b1,b3,b4)) || 
+		return flopOESD(createVector(h1,h2,b1,b2,b3)) || flopOESD(createVector(h1,h2,b1,b2,b4)) || flopOESD(createVector(h1,h2,b1,b3,b4)) ||
 			flopOESD(createVector(h1,h2,b2,b3,b4));
 	}
 
@@ -781,7 +781,7 @@ class Evaluator
 		int temp[255];
 		temp['c'] = 0; temp['d'] = 0; temp['h'] = 0; temp['s'] = 0;
 
-		temp[b1.suit]++;temp[b2.suit]++;temp[b3.suit]++;temp[b4.suit]++;
+		temp[b1.getSuit()]++;temp[b2.getSuit()]++;temp[b3.getSuit()]++;temp[b4.getSuit()]++;
 
 		return maxim(temp['c'],maxim(temp['d'],maxim(temp['h'],temp['s'])));
 	}
@@ -852,15 +852,15 @@ class Evaluator
 			strcard = h2;
 
 		if (flopStraightFlush(strcard, b1, b2, b3, b4))
-			return (strcard.rank < b1.rank && strcard.rank < b2.rank && strcard.rank < b3.rank && strcard.rank < b4.rank) || (strcard.rank == 14 && b1.rank <= 5);
+			return (strcard.getRank() < b1.getRank() && strcard.getRank() < b2.getRank() && strcard.getRank() < b3.getRank() && strcard.getRank() < b4.getRank()) || (strcard.getRank() == 14 && b1.getRank() <= 5);
 		if (flopStraightFlush(strcard, b1, b2, b3, b5))
-			return (strcard.rank < b1.rank && strcard.rank < b2.rank && strcard.rank < b3.rank && strcard.rank < b5.rank) || (strcard.rank == 14 && b1.rank <= 5);
+			return (strcard.getRank() < b1.getRank() && strcard.getRank() < b2.getRank() && strcard.getRank() < b3.getRank() && strcard.getRank() < b5.getRank()) || (strcard.getRank() == 14 && b1.getRank() <= 5);
 		if (flopStraightFlush(strcard, b1, b2, b4, b5))
-			return (strcard.rank < b1.rank && strcard.rank < b2.rank && strcard.rank < b4.rank && strcard.rank < b5.rank) || (strcard.rank == 14 && b1.rank <= 5);
+			return (strcard.getRank() < b1.getRank() && strcard.getRank() < b2.getRank() && strcard.getRank() < b4.getRank() && strcard.getRank() < b5.getRank()) || (strcard.getRank() == 14 && b1.getRank() <= 5);
 		if (flopStraightFlush(strcard, b1, b3, b4, b5))
-			return (strcard.rank < b1.rank && strcard.rank < b3.rank && strcard.rank < b4.rank && strcard.rank < b5.rank) || (strcard.rank == 14 && b1.rank <= 5);
+			return (strcard.getRank() < b1.getRank() && strcard.getRank() < b3.getRank() && strcard.getRank() < b4.getRank() && strcard.getRank() < b5.getRank()) || (strcard.getRank() == 14 && b1.getRank() <= 5);
 		if (flopStraightFlush(strcard, b2, b3, b4, b5))
-			return (strcard.rank < b2.rank && strcard.rank < b3.rank && strcard.rank < b4.rank && strcard.rank < b5.rank) || (strcard.rank == 14 && b2.rank <= 5);
+			return (strcard.getRank() < b2.getRank() && strcard.getRank() < b3.getRank() && strcard.getRank() < b4.getRank() && strcard.getRank() < b5.getRank()) || (strcard.getRank() == 14 && b2.getRank() <= 5);
 
 		cout << "Error in riverOneCardLowStrFlush : script is supposed to terminate earlier." << endl;
 	}
@@ -891,7 +891,7 @@ class Evaluator
 		int temp[255];
 		temp['c'] = 0; temp['d'] = 0; temp['h'] = 0; temp['s'] = 0;
 
-		temp[b1.suit]++;temp[b2.suit]++;temp[b3.suit]++;temp[b4.suit]++;temp[b5.suit]++;
+		temp[b1.getSuit()]++;temp[b2.getSuit()]++;temp[b3.getSuit()]++;temp[b4.getSuit()]++;temp[b5.getSuit()]++;
 
 		return maxim(temp['c'],maxim(temp['d'],maxim(temp['h'],temp['s'])));
 	}
@@ -901,21 +901,21 @@ class Evaluator
 		if (riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) < 4)
 			return false;
 
-		char suit = board[0].suit;
-		if ((board[0].suit != board[1].suit) && (board[1].suit == board[2].suit))
-			suit = board[1].suit;
+		char suit = board[0].getSuit();
+		if ((board[0].getSuit() != board[1].getSuit()) && (board[1].getSuit() == board[2].getSuit()))
+			suit = board[1].getSuit();
 
-		if ((h1.suit != suit) && (h2.suit != suit))
+		if ((h1.getSuit() != suit) && (h2.getSuit() != suit))
 			return false;
-		Card suitedCard = (h1.suit == suit && (h2.suit != suit || h2.rank < h1.rank)) ? h1 : h2;
+		Card suitedCard = (h1.getSuit() == suit && (h2.getSuit() != suit || h2.getRank() < h1.getRank())) ? h1 : h2;
 
 		vector<Card> suiteds = board;
 		for (int i = 0; i < suiteds.size(); ++i)
-			if (suiteds[i].suit != suit)
+			if (suiteds[i].getSuit() != suit)
 				suiteds.erase(suiteds.begin() + i);
 
-		return suitedCard.rank == 14 || (suitedCard.rank == 13 && suiteds[3].rank == 14) || (suitedCard.rank == 12 && suiteds[2].rank == 13 && suiteds[3].rank == 14)
-			|| (suitedCard.rank == 11 && suiteds[1].rank == 12 && suiteds[2].rank == 13 && suiteds[3].rank == 14);
+		return suitedCard.getRank() == 14 || (suitedCard.getRank() == 13 && suiteds[3].getRank() == 14) || (suitedCard.getRank() == 12 && suiteds[2].getRank() == 13 && suiteds[3].getRank() == 14)
+			|| (suitedCard.getRank() == 11 && suiteds[1].getRank() == 12 && suiteds[2].getRank() == 13 && suiteds[3].getRank() == 14);
 	}
 
 	static bool riverOneCardStrBoard(vector<Card> &board)
@@ -936,23 +936,23 @@ class Evaluator
 		if (riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) < 4)
 			return false;
 
-		char suit = board[0].suit;
-		if ((board[0].suit != board[1].suit) && (board[1].suit == board[2].suit))
-			suit = board[1].suit;
+		char suit = board[0].getSuit();
+		if ((board[0].getSuit() != board[1].getSuit()) && (board[1].getSuit() == board[2].getSuit()))
+			suit = board[1].getSuit();
 
 		vector<Card> temp = board;
 		for (int i = 0; i < temp.size(); ++i)
-			if (temp[i].suit != suit)
+			if (temp[i].getSuit() != suit)
 				temp.erase(temp.begin() + i);
 
-		return (temp.size() == 4 && turnOneCardStrBoard(temp)) || (temp.size() == 5 && riverOneCardStrBoard(temp)); 
+		return (temp.size() == 4 && turnOneCardStrBoard(temp)) || (temp.size() == 5 && riverOneCardStrBoard(temp));
 	}
-	
+
 	static int highestStrCard(Card &c1, Card &c2, Card &c3, Card &c4, Card &c5)
 	{
 		vector<Card> temp = createVector(c1,c2,c3,c4,c5);
 		sort(temp.begin(), temp.end(), compareCards);
-		return (temp[0].rank > 2 || temp[4].rank < 14) ? temp[4].rank : 5;
+		return (temp[0].getRank() > 2 || temp[4].getRank() < 14) ? temp[4].getRank() : 5;
 	}
 
 	static bool riverOneCardStr(Card &h1, Card &h2, vector<Card> &board)
@@ -1006,12 +1006,12 @@ class Evaluator
 			if (flopStraight(h1,temp[0],temp[1],temp[2],temp[3]) && highestStrCard(h1,temp[0],temp[1],temp[2],temp[3]) >= maxstr)
 			{
 				maxstr = highestStrCard(h1,temp[0],temp[1],temp[2],temp[3]);
-				result = (h1.rank < temp[0].rank && (h1.rank > 2 || temp[3].rank < 14)) || (h1.rank == 14 && temp[0].rank <= 5);
+				result = (h1.getRank() < temp[0].getRank() && (h1.getRank() > 2 || temp[3].getRank() < 14)) || (h1.getRank() == 14 && temp[0].getRank() <= 5);
 			}
 			if (flopStraight(h2,temp[0],temp[1],temp[2],temp[3]) && highestStrCard(h2,temp[0],temp[1],temp[2],temp[3]) >= maxstr)
 			{
 				maxstr = highestStrCard(h2,temp[0],temp[1],temp[2],temp[3]);
-				result = (h2.rank < temp[0].rank && (h2.rank > 2 || temp[3].rank < 14)) || (h1.rank == 14 && temp[0].rank <= 5);
+				result = (h2.getRank() < temp[0].getRank() && (h2.getRank() > 2 || temp[3].getRank() < 14)) || (h1.getRank() == 14 && temp[0].getRank() <= 5);
 			}
 		}
 
@@ -1068,14 +1068,14 @@ class Evaluator
 	static int riverPossibleStraights(vector<Card> &board)
 	{
 		Card c1, c2;
-		c1.suit = 'a';
-		c2.suit = 'a';
+		c1.setSuit('a');
+		c2.setSuit('a');
 		int result = 0;
 		for (int i = 2; i <= 14; ++i)
 			for (int j = i+1; j <= 14; ++j)
 			{
-				c1.rank = i;
-				c2.rank = j;
+				c1.setRank(i);
+				c2.setRank(j);
 				vector<Card> temp = board;
 				temp.push_back(c1); temp.push_back(c2);
 				if (riverStraight(temp))
@@ -1132,17 +1132,17 @@ public:
 			 // real full house is always very strong on flop
 			 if (!flopTripleBoard(b1,b2,b3))
 				 return 0;
-			 
+
 			 // AA and trips on board is also very strong
-			 if ((h1.rank == 14) && (h2.rank == 14))
+			 if ((h1.getRank() == 14) && (h2.getRank() == 14))
 				 return 0;
 
-			 // JJ-KK 
-			 if ((h1.rank >= 11) && (h2.rank >= 11))
+			 // JJ-KK
+			 if ((h1.getRank() >= 11) && (h2.getRank() >= 11))
 				 return 1;
 
 			 // 88-TT
-			 if ((h1.rank > 8) && (h2.rank > 8))
+			 if ((h1.getRank() > 8) && (h2.getRank() > 8))
 				 return 2;
 
 			 return 3;
@@ -1172,25 +1172,25 @@ public:
 
 			 if (flopDoubleBoard(b1,b2,b3))
 			 {
-				 Card doubledCard = (b1.rank == b2.rank) ? b1 : b3;
-				 Card pocketNotDoubledCard = (h1.rank == doubledCard.rank) ? h2 : h1;
-				 if (doubledCard.rank < 14)
+				 Card doubledCard = (b1.getRank() == b2.getRank()) ? b1 : b3;
+				 Card pocketNotDoubledCard = (h1.getRank() == doubledCard.getRank()) ? h2 : h1;
+				 if (doubledCard.getRank() < 14)
 				 {
-					 if (pocketNotDoubledCard.rank == 14)
+					 if (pocketNotDoubledCard.getRank() == 14)
 						 return 0;
-					 if (pocketNotDoubledCard.rank >= 10)
+					 if (pocketNotDoubledCard.getRank() >= 10)
 						 return 1;
 					 return 2;
 				 }
-				 
-				 if (pocketNotDoubledCard.rank == 13)
+
+				 if (pocketNotDoubledCard.getRank() == 13)
 					 return 0;
-				 if (pocketNotDoubledCard.rank >= 10)
+				 if (pocketNotDoubledCard.getRank() >= 10)
 					 return 1;
 				 return 2;
 			 }
 
-			 if ((h1.rank == 14) || (h2.rank == 14))
+			 if ((h1.getRank() == 14) || (h2.getRank() == 14))
 				 return 3;
 
 			 return 4;
@@ -1201,7 +1201,7 @@ public:
 			 if (flopDangerousBoard(b1,b2,b3))
 			 {
 				 // top2 pair
-				 if ((pocket[0].rank == board[1].rank) && (pocket[1].rank == board[2].rank))
+				 if ((pocket[0].getRank() == board[1].getRank()) && (pocket[1].getRank() == board[2].getRank()))
 					 return 1;
 				 return 2;
 			 }
@@ -1209,36 +1209,36 @@ public:
 			 if (flopSingleBoard(b1,b2,b3))
 			 {
 				 // top2 pair
-				 if ((pocket[0].rank == board[1].rank) && (pocket[1].rank == board[2].rank))
+				 if ((pocket[0].getRank() == board[1].getRank()) && (pocket[1].getRank() == board[2].getRank()))
 					 return 0;
 				 return 1;
 			 }
 
-			 if (h1.rank == h2.rank)
+			 if (h1.getRank() == h2.getRank())
 			 {
 				 if (flopTwoOverCards(h1,h2,b1,b2,b3))
 				 {
-					 if (h1.rank >= 12)
+					 if (h1.getRank() >= 12)
 						 return 1;
-					 if (h1.rank >= 8)
+					 if (h1.getRank() >= 8)
 						 return 2;
 					 return 3;
 				 }
 				 return 3;
 			 }
 
-			 Card pair = ((h1.rank == board[0].rank) || (h1.rank == board[2].rank)) ? h1 : h2;
-			 Card kicker = ((h1.rank == board[0].rank) || (h1.rank == board[2].rank)) ? h2 : h1;
-			 if (pair.rank >= 10)
+			 Card pair = ((h1.getRank() == board[0].getRank()) || (h1.getRank() == board[2].getRank())) ? h1 : h2;
+			 Card kicker = ((h1.getRank() == board[0].getRank()) || (h1.getRank() == board[2].getRank())) ? h2 : h1;
+			 if (pair.getRank() >= 10)
 			 {
-				 if ((kicker.rank == 14) || (pair.rank == 14 && kicker.rank == 13))
+				 if ((kicker.getRank() == 14) || (pair.getRank() == 14 && kicker.getRank() == 13))
 					 return 1;
-				 if (kicker.rank >= 11)
+				 if (kicker.getRank() >= 11)
 					 return 2;
 				 return 3;
 			 }
 
-			 if (kicker.rank >= 11)
+			 if (kicker.getRank() >= 11)
 				 return 2;
 			 return 3;
 		 }
@@ -1246,28 +1246,28 @@ public:
 		 {
 			 if (flopNutFlushDraw(h1,h2,b1,b2,b3) || (flopNutOESD(h1,h2,b1,b2,b3) && !flopMonotoneBoard(b1,b2,b3)))
 			 {
-				 if (h1.rank == h2.rank)
+				 if (h1.getRank() == h2.getRank())
 				 {
 					 if (flopTwoOverCards(h1,h2,b1,b2,b3))
 						return 1;
 					 return 2;
 				 }
 
-				 if ((h1.rank == board[2].rank))
+				 if ((h1.getRank() == board[2].getRank()))
 				 {
-					 if (h2.rank >= 11)
+					 if (h2.getRank() >= 11)
 						 return 1;
 					 return 2;
 				 }
 
-				 if ((h2.rank == board[2].rank))
+				 if ((h2.getRank() == board[2].getRank()))
 				 {
-					 if (h1.rank >= 11)
+					 if (h1.getRank() >= 11)
 						 return 1;
 					 return 2;
 				 }
 
-				 if ((h1.rank == board[1].rank) || (h2.rank == board[1].rank))
+				 if ((h1.getRank() == board[1].getRank()) || (h2.getRank() == board[1].getRank()))
 					 return 2;
 
 				 return 6;
@@ -1275,28 +1275,28 @@ public:
 
 			 if (flopDangerousBoard(b1,b2,b3))
 			 {
-				 if (h1.rank == h2.rank)
+				 if (h1.getRank() == h2.getRank())
 				 {
 					 if (flopTwoOverCards(h1,h2,b1,b2,b3))
 						return 2;
 					 return 3;
 				 }
 
-				 if ((h1.rank == board[2].rank))
+				 if ((h1.getRank() == board[2].getRank()))
 				 {
-					 if (h2.rank >= 11)
+					 if (h2.getRank() >= 11)
 						 return 2;
 					 return 3;
 				 }
 
-				 if ((h2.rank == board[2].rank))
+				 if ((h2.getRank() == board[2].getRank()))
 				 {
-					 if (h1.rank >= 11)
+					 if (h1.getRank() >= 11)
 						 return 2;
 					 return 3;
 				 }
 
-				 if ((h1.rank == board[1].rank) || (h2.rank == board[1].rank))
+				 if ((h1.getRank() == board[1].getRank()) || (h2.getRank() == board[1].getRank()))
 					 return 3;
 
 				 if (flopGutshot(cards))
@@ -1304,36 +1304,36 @@ public:
 				 return 4;
 			 }
 
-			 if (h1.rank == h2.rank)
+			 if (h1.getRank() == h2.getRank())
 			 {
 				 if (flopTwoOverCards(h1,h2,b1,b2,b3))
 				 {
-					 if (h1.rank >= 11)
+					 if (h1.getRank() >= 11)
 						return 1;
 					 return 2;
 				 }
 				 return 3;
 			 }
-			  
-			 if ((h1.rank == board[2].rank))
+
+			 if ((h1.getRank() == board[2].getRank()))
 			 {
-				 if ((h2.rank == 14) || ((h1.rank == 14) && (h2.rank == 13)))
+				 if ((h2.getRank() == 14) || ((h1.getRank() == 14) && (h2.getRank() == 13)))
 					 return 1;
-				 if (h2.rank >= 11)
-					 return 2;
-				 return 3;
-			 }
-			  
-			 if ((h2.rank == board[2].rank))
-			 {
-				 if ((h1.rank == 14) || ((h2.rank == 14) && (h1.rank == 13)))
-					 return 1;
-				 if (h1.rank >= 11)
+				 if (h2.getRank() >= 11)
 					 return 2;
 				 return 3;
 			 }
 
-			 if ((h1.rank == board[1].rank) || (h2.rank == board[1].rank))
+			 if ((h2.getRank() == board[2].getRank()))
+			 {
+				 if ((h1.getRank() == 14) || ((h2.getRank() == 14) && (h1.getRank() == 13)))
+					 return 1;
+				 if (h1.getRank() >= 11)
+					 return 2;
+				 return 3;
+			 }
+
+			 if ((h1.getRank() == board[1].getRank()) || (h2.getRank() == board[1].getRank()))
 				 return 3;
 
 			 if (flopGutshot(cards))
@@ -1350,7 +1350,7 @@ public:
 
 		 return 4;
 	}
-	
+
 	// Turn
 	static int cardStrength(Card h1, Card h2, Card b1, Card b2, Card b3, Card b4)
 	{
@@ -1379,7 +1379,7 @@ public:
 		{
 			if (flopStraightFlush(h1,b1,b2,b3,b4))
 			{
-				if (h1.rank > b1.rank || h1.rank > b2.rank || h1.rank > b3.rank || h1.rank > b4.rank || (h1.rank == 10 && board[0].rank > 10 ) || (h1.rank == 2 && board[3].rank == 14))
+				if (h1.getRank() > b1.getRank() || h1.getRank() > b2.getRank() || h1.getRank() > b3.getRank() || h1.getRank() > b4.getRank() || (h1.getRank() == 10 && board[0].getRank() > 10 ) || (h1.getRank() == 2 && board[3].getRank() == 14))
 					return 0;
 
 				if (flopStraightFlush(h2,b1,b2,b3,b4))
@@ -1390,18 +1390,18 @@ public:
 
 			if (flopStraightFlush(h2,b1,b2,b3,b4))
 			{
-				return (h2.rank > b1.rank || h2.rank > b2.rank || h2.rank > b3.rank || h2.rank > b4.rank || (h2.rank == 10 && board[0].rank > 10 ) || (h2.rank == 2 && board[3].rank == 14)) ? 0 : 1;
+				return (h2.getRank() > b1.getRank() || h2.getRank() > b2.getRank() || h2.getRank() > b3.getRank() || h2.getRank() > b4.getRank() || (h2.getRank() == 10 && board[0].getRank() > 10 ) || (h2.getRank() == 2 && board[3].getRank() == 14)) ? 0 : 1;
 			}
 
 			return 0;
 		}
 		else if (turnPoker(cards))
 		{
-			if ((b1.rank == b2.rank) && (b2.rank == b3.rank) && (b3.rank == b4.rank))
+			if ((b1.getRank() == b2.getRank()) && (b2.getRank() == b3.getRank()) && (b3.getRank() == b4.getRank()))
 			{
-				if ((h1.rank == 14) || (h2.rank == 14) || ((b1.rank == 14) && ((h1.rank == 13) || (h2.rank == 13))))
+				if ((h1.getRank() == 14) || (h2.getRank() == 14) || ((b1.getRank() == 14) && ((h1.getRank() == 13) || (h2.getRank() == 13))))
 					return 0;
-				if ((h1.rank == 13) || (h2.rank == 13) || ((b1.rank == 14) && ((h1.rank == 12) || (h2.rank == 12))))
+				if ((h1.getRank() == 13) || (h2.getRank() == 13) || ((b1.getRank() == 14) && ((h1.getRank() == 12) || (h2.getRank() == 12))))
 					return 3;
 				return 4;
 			}
@@ -1415,32 +1415,32 @@ public:
 
 			if (turnDoublePairedBoard(board))
 			{
-				if ((board[3].rank == h1.rank) || (board[3].rank == h2.rank))
+				if ((board[3].getRank() == h1.getRank()) || (board[3].getRank() == h2.getRank()))
 					return 0;
 				return 2;
 			}
 
-			Card standAloneCard = (board[0].rank == board[1].rank) ? board[3] : board[0];
-			Card trips = (board[0].rank == board[1].rank) ? board[0] : board[3];
+			Card standAloneCard = (board[0].getRank() == board[1].getRank()) ? board[3] : board[0];
+			Card trips = (board[0].getRank() == board[1].getRank()) ? board[0] : board[3];
 
-			if (h1.rank == h2.rank)
+			if (h1.getRank() == h2.getRank())
 			{
-				if (h1.rank == standAloneCard.rank && h1.rank > trips.rank)
+				if (h1.getRank() == standAloneCard.getRank() && h1.getRank() > trips.getRank())
 					return 0;
-				if (h1.rank > standAloneCard.rank)
+				if (h1.getRank() > standAloneCard.getRank())
 				{
-					if (h1.rank >= 11)
+					if (h1.getRank() >= 11)
 						return 1;
-					if (h1.rank >= 8)
+					if (h1.getRank() >= 8)
 						return 2;
 					return 3;
 				}
 				return 3;
 			}
 
-			if (standAloneCard.rank >= 12)
+			if (standAloneCard.getRank() >= 12)
 				return 1;
-			if (standAloneCard.rank >= 8)
+			if (standAloneCard.getRank() >= 8)
 				return 2;
 			return 3;
 		}
@@ -1452,7 +1452,7 @@ public:
 			if (!turnMonotoneBoard(board) && turnDoubleBoard(board))
 				return 1;
 
-			Card suitedCard = (h1.suit == b1.suit && (h2.suit != b1.suit || h2.rank < h1.rank)) ? h1 : h2;
+			Card suitedCard = (h1.getSuit() == b1.getSuit() && (h2.getSuit() != b1.getSuit() || h2.getRank() < h1.getRank())) ? h1 : h2;
 
 			if (turnOneCardNutFlush(h1,h2,board))
 			{
@@ -1461,7 +1461,7 @@ public:
 				return 0;
 			}
 
-			if (suitedCard.rank >= 11)
+			if (suitedCard.getRank() >= 11)
 				return 3;
 
 			return 4;
@@ -1516,7 +1516,7 @@ public:
 
 			if (!turnThreeToneBoard(board))
 				return 0;
-			
+
 			if (turnOneCardNutFlushDraw(h1,h2,board))
 				return 0;
 
@@ -1542,10 +1542,10 @@ public:
 			if (turnDoubleBoard(board))
 			{
 				Card kicker = h2;
-				if (existsOnBoard(h2.rank,board))
+				if (existsOnBoard(h2.getRank(),board))
 					kicker = h1;
 
-				if (kicker.rank == 14)
+				if (kicker.getRank() == 14)
 				{
 					if (turnOneCardNutFlushDraw(h1,h2,board))
 					{
@@ -1557,7 +1557,7 @@ public:
 					}
 					return 0;
 				}
-				if (kicker.rank >= 10)
+				if (kicker.getRank() >= 10)
 				{
 					return 1;
 				}
@@ -1573,16 +1573,16 @@ public:
 		{
 			if (turnDoublePairedBoard(board))
 			{
-				if (h1.rank == h2.rank && h1.rank > board[0].rank)
+				if (h1.getRank() == h2.getRank() && h1.getRank() > board[0].getRank())
 					return 3;
-				if ((h1.rank == 14) || (h2.rank == 14))
+				if ((h1.getRank() == 14) || (h2.getRank() == 14))
 					return 3;
 				return 4;
 			}
 
 			if (turnSingleBoard(board))
 			{
-				if ((h1.rank == board[3].rank) || (h2.rank == board[3].rank))
+				if ((h1.getRank() == board[3].getRank()) || (h2.getRank() == board[3].getRank()))
 				{
 					if (turnVeryDangerousBoard(board))
 						return 3;
@@ -1610,11 +1610,11 @@ public:
 
 			if (turnDoubleBoard(board))
 			{
-				if (h1.rank == h2.rank)
+				if (h1.getRank() == h2.getRank())
 				{
-					if (h1.rank > board[3].rank)
+					if (h1.getRank() > board[3].getRank())
 					{
-						if (h1.rank >= 12)
+						if (h1.getRank() >= 12)
 						{
 							if (turnOneCardNutFlushDraw(h1,h2,board))
 								return 2;
@@ -1622,7 +1622,7 @@ public:
 								return 2;
 							return 1;
 						}
-						if (h1.rank >= 8)
+						if (h1.getRank() >= 8)
 						{
 							if (turnOneCardNutFlushDraw(h1,h2,board))
 								return 2;
@@ -1637,17 +1637,17 @@ public:
 
 				Card kicker = h1;
 				Card pair = h2;
-				if (existsOnBoard(h1.rank,board))
+				if (existsOnBoard(h1.getRank(),board))
 				{
 					kicker = h2;
 					pair = h1;
 				}
 
-				if ((pair.rank == board[3].rank) || ((board[3].rank == board[2].rank) && (pair.rank == board[1].rank)))
+				if ((pair.getRank() == board[3].getRank()) || ((board[3].getRank() == board[2].getRank()) && (pair.getRank() == board[1].getRank())))
 				{
-					if (pair.rank >= 10)
+					if (pair.getRank() >= 10)
 					{
-						if ((kicker.rank == 14) || ((pair.rank == 14) && (kicker.rank == 13)))
+						if ((kicker.getRank() == 14) || ((pair.getRank() == 14) && (kicker.getRank() == 13)))
 						{
 							if (turnStrongFlushDraw(h1,h2,board))
 								return 1;
@@ -1655,11 +1655,11 @@ public:
 								return 2;
 							return 1;
 						}
-						if (kicker.rank >= 10)
+						if (kicker.getRank() >= 10)
 							return 2;
 						return 3;
 					}
-					if (kicker.rank >= 10)
+					if (kicker.getRank() >= 10)
 					{
 						if (turnStrongFlushDraw(h1,h2,board))
 							return 2;
@@ -1691,11 +1691,11 @@ public:
 			if (turnVeryDangerousBoard(board))
 				return 4;
 
-			if (h1.rank == h2.rank)
+			if (h1.getRank() == h2.getRank())
 			{
-				if (h1.rank > board[3].rank)
+				if (h1.getRank() > board[3].getRank())
 				{
-					if (h1.rank >= 11)
+					if (h1.getRank() >= 11)
 					{
 						if (turnOneCardNutFlushDraw(h1,h2,board))
 							return 1;
@@ -1705,22 +1705,22 @@ public:
 					}
 					return 2;
 				}
-				if (h1.rank > board[2].rank)
+				if (h1.getRank() > board[2].getRank())
 					return 3;
 				return 4;
 			}
-			
+
 			Card pair = h2;
 			Card kicker = h1;
-			if (existsOnBoard(h1.rank,board))
+			if (existsOnBoard(h1.getRank(),board))
 			{
 				kicker = h2;
 				pair = h1;
 			}
 
-			if (pair.rank == board[3].rank)
+			if (pair.getRank() == board[3].getRank())
 			{
-				if ((kicker.rank == 14) || (pair.rank == 14 && kicker.rank == 13))
+				if ((kicker.getRank() == 14) || (pair.getRank() == 14 && kicker.getRank() == 13))
 				{
 					if (turnStrongFlushDraw(h1,h2,board) || (turnStrongOESD(h1,h2,b1,b2,b3,b4) && turnSuitedNumber(b1,b2,b3,b4) < 3))
 						return 1;
@@ -1728,7 +1728,7 @@ public:
 						return 2;
 					return 1;
 				}
-				if (kicker.rank >= 10)
+				if (kicker.getRank() >= 10)
 				{
 					if (turnStrongFlushDraw(h1,h2,board) || (turnStrongOESD(h1,h2,b1,b2,b3,b4) && turnSuitedNumber(b1,b2,b3,b4) < 3))
 						return 1;
@@ -1739,7 +1739,7 @@ public:
 				return 3;
 			}
 
-			if (pair.rank == board[2].rank)
+			if (pair.getRank() == board[2].getRank())
 			{
 				if (turnStrongFlushDraw(h1,h2,board) || (turnStrongOESD(h1,h2,b1,b2,b3,b4) && turnSuitedNumber(b1,b2,b3,b4) < 3))
 					return 2;
@@ -1804,7 +1804,7 @@ public:
 					return 0;
 				if (flopStraightFlush(h1,board[1],board[2],board[3],board[4]) || flopStraightFlush(h2,board[1],board[2],board[3],board[4]))
 					return 0;
-				if ((board[4].rank == 14) && (board[3].rank == 13))
+				if ((board[4].getRank() == 14) && (board[3].getRank() == 13))
 					return 8;
 				return 4;
 			}
@@ -1821,11 +1821,11 @@ public:
 		{
 			if (flopPoker(b1,b2,b3,b4,b5))
 			{
-				if ((board[4].rank == 14 && board[3].rank < 14) || (board[4].rank == 14 && board[3].rank == 14 && board[0].rank == 13))
+				if ((board[4].getRank() == 14 && board[3].getRank() < 14) || (board[4].getRank() == 14 && board[3].getRank() == 14 && board[0].getRank() == 13))
 					return 8;
-				if (h1.rank == 14 || h2.rank == 14 || (board[4].rank == 14 && board[3].rank == 14 && (h1.rank == 13 || h2.rank == 13)))
+				if (h1.getRank() == 14 || h2.getRank() == 14 || (board[4].getRank() == 14 && board[3].getRank() == 14 && (h1.getRank() == 13 || h2.getRank() == 13)))
 					return 0;
-				if (((h1.rank == 13 || h2.rank == 13) && (board[4].rank < 13)) || (board[4].rank == 14 && board[3].rank == 14 && (h1.rank == 12 || h2.rank == 12) && (board[0].rank < 12)))
+				if (((h1.getRank() == 13 || h2.getRank() == 13) && (board[4].getRank() < 13)) || (board[4].getRank() == 14 && board[3].getRank() == 14 && (h1.getRank() == 12 || h2.getRank() == 12) && (board[0].getRank() < 12)))
 					return 3;
 				return 4;
 			}
@@ -1837,26 +1837,26 @@ public:
 			{
 				Card pair = board[0];
 				Card trips = board[4];
-				if (board[1].rank == board[2].rank)
+				if (board[1].getRank() == board[2].getRank())
 				{
 					pair = board[4];
 					trips = board[0];
 				}
 
-				if ((pair.rank > trips.rank) && (h1.rank == pair.rank || h2.rank == pair.rank))
+				if ((pair.getRank() > trips.getRank()) && (h1.getRank() == pair.getRank() || h2.getRank() == pair.getRank()))
 					return 0;
-				if ((h1.rank == h2.rank) && (h1.rank > pair.rank))
+				if ((h1.getRank() == h2.getRank()) && (h1.getRank() > pair.getRank()))
 				{
-					if (h1.rank >= 12)
+					if (h1.getRank() >= 12)
 						return 1;
-					if (h1.rank >= 88)
+					if (h1.getRank() >= 88)
 						return 2;
 					return 3;
 				}
 
 				return 4;
 			}
-			
+
 			if (!riverDoublePairedBoard(board) && !riverTripleBoard(board))
 				return 0;
 
@@ -1865,29 +1865,29 @@ public:
 				Card bigpair = board[4];
 				Card lowpair = board[2];
 				Card standAloneCard = board[0];
-				if (board[4].rank != board[3].rank)
+				if (board[4].getRank() != board[3].getRank())
 				{
 					bigpair = board[3];
 					lowpair = board[1];
 					standAloneCard = board[4];
 				}
-				if ((board[0].rank == board[1].rank) && (board[4].rank == board[3].rank))
+				if ((board[0].getRank() == board[1].getRank()) && (board[4].getRank() == board[3].getRank()))
 				{
 					bigpair = board[4];
 					lowpair = board[0];
 					standAloneCard = board[2];
 				}
 
-				if ((bigpair.rank == h1.rank) || (bigpair.rank == h2.rank))
+				if ((bigpair.getRank() == h1.getRank()) || (bigpair.getRank() == h2.getRank()))
 					return 0;
-				if ((lowpair.rank == h1.rank) || (lowpair.rank == h2.rank))
+				if ((lowpair.getRank() == h1.getRank()) || (lowpair.getRank() == h2.getRank()))
 					return 2;
 
-				if ((h1.rank == h2.rank) && (h1.rank == standAloneCard.rank))
+				if ((h1.getRank() == h2.getRank()) && (h1.getRank() == standAloneCard.getRank()))
 				{
-					if (h1.rank > bigpair.rank)
+					if (h1.getRank() > bigpair.getRank())
 						return 0;
-					if (h1.rank > lowpair.rank)
+					if (h1.getRank() > lowpair.getRank())
 						return 2;
 					return 3;
 				}
@@ -1898,44 +1898,44 @@ public:
 			Card highStandAloneCard = board[0];
 			Card lowStandAloneCard = board[1];
 			Card trips = board[2];
-			if (board[0].rank == board[1].rank)
+			if (board[0].getRank() == board[1].getRank())
 			{
 				highStandAloneCard = board[3];
 				lowStandAloneCard = board[4];
 			}
-			if ((board[1].rank == board[2].rank) && (board[2].rank == board[3].rank))
+			if ((board[1].getRank() == board[2].getRank()) && (board[2].getRank() == board[3].getRank()))
 			{
 				highStandAloneCard = board[0];
 				lowStandAloneCard = board[4];
 			}
 
-			if (highStandAloneCard.rank > lowStandAloneCard.rank)
+			if (highStandAloneCard.getRank() > lowStandAloneCard.getRank())
 			{
 				Card temp = highStandAloneCard;
 				highStandAloneCard = lowStandAloneCard;
 				lowStandAloneCard = temp;
 			}
 
-			if (h1.rank == h2.rank)
+			if (h1.getRank() == h2.getRank())
 			{
-				if ((h1.rank == highStandAloneCard.rank || h1.rank == lowStandAloneCard.rank) && (h1.rank > trips.rank))
+				if ((h1.getRank() == highStandAloneCard.getRank() || h1.getRank() == lowStandAloneCard.getRank()) && (h1.getRank() > trips.getRank()))
 					return 0;
-				if (h1.rank > highStandAloneCard.rank)
+				if (h1.getRank() > highStandAloneCard.getRank())
 				{
-					if (h1.rank >= 11)
+					if (h1.getRank() >= 11)
 						return 1;
-					if (h1.rank >= 8)
+					if (h1.getRank() >= 8)
 						return 2;
 					return 3;
 				}
 				return 3;
 			}
 
-			if (h1.rank == highStandAloneCard.rank || h2.rank == highStandAloneCard.rank)
+			if (h1.getRank() == highStandAloneCard.getRank() || h2.getRank() == highStandAloneCard.getRank())
 			{
-				if (highStandAloneCard.rank >= 12)
+				if (highStandAloneCard.getRank() >= 12)
 					return 1;
-				if (highStandAloneCard.rank >= 8)
+				if (highStandAloneCard.getRank() >= 8)
 					return 2;
 				return 3;
 			}
@@ -1951,15 +1951,15 @@ public:
 						return 1;
 					return 0;
 				}
-				if ((h1.suit == b1.suit) || (h2.suit == b2.suit))
+				if ((h1.getSuit() == b1.getSuit()) || (h2.getSuit() == b2.getSuit()))
 				{
-					Card suitedCard = (h1.suit == b1.suit && (h2.suit != b1.suit || h2.rank < h1.rank)) ? h1 : h2;
-					if (suitedCard.rank >= 11)
+					Card suitedCard = (h1.getSuit() == b1.getSuit() && (h2.getSuit() != b1.getSuit() || h2.getRank() < h1.getRank())) ? h1 : h2;
+					if (suitedCard.getRank() >= 11)
 						return 3;
 					return 4;
 				}
 
-				if ((board[4].rank == 14) && (!riverPossibleOneCardStrFlush(board)))
+				if ((board[4].getRank() == 14) && (!riverPossibleOneCardStrFlush(board)))
 					return 8;
 				return 4;
 			}
@@ -1976,10 +1976,10 @@ public:
 			if (riverSuitedNumber(b1,b2,b3,b4,b5) == 3 && riverDoubleBoard(board))
 				return 1;
 
-			char suit = board[1].suit;
-			if ((board[1].suit != board[2].suit) && (board[2].suit == board[3].suit))
-				suit = board[2].suit;
-			Card suitedCard = (h1.suit == suit && (h2.suit != suit || h2.rank < h1.rank)) ? h1 : h2;
+			char suit = board[1].getSuit();
+			if ((board[1].getSuit() != board[2].getSuit()) && (board[2].getSuit() == board[3].getSuit()))
+				suit = board[2].getSuit();
+			Card suitedCard = (h1.getSuit() == suit && (h2.getSuit() != suit || h2.getRank() < h1.getRank())) ? h1 : h2;
 
 			if (riverOneCardNutFlush(h1,h2,board))
 			{
@@ -1990,7 +1990,7 @@ public:
 				return 0;
 			}
 
-			if (suitedCard.rank >= 11)
+			if (suitedCard.getRank() >= 11)
 				return 3;
 			return 4;
 		}
@@ -2001,12 +2001,12 @@ public:
 
 			if (flopStraight(b1,b2,b3,b4,b5))
 			{
-				if ((h1.rank == board[4].rank + 1) || (h2.rank == board[4].rank + 1))
+				if ((h1.getRank() == board[4].getRank() + 1) || (h2.getRank() == board[4].getRank() + 1))
 				{
-					Card str = (h1.rank == board[4].rank + 1) ? h1 : h2;
-					Card other = (h1.rank == board[4].rank + 1) ? h2 : h1;
+					Card str = (h1.getRank() == board[4].getRank() + 1) ? h1 : h2;
+					Card other = (h1.getRank() == board[4].getRank() + 1) ? h2 : h1;
 
-					if (other.rank == str.rank + 1)
+					if (other.getRank() == str.getRank() + 1)
 					{
 						if (riverSuitedNumber(b1,b2,b3,b4,b5) == 3)
 							return 1;
@@ -2015,12 +2015,12 @@ public:
 
 					if (riverSuitedNumber(b1,b2,b3,b4,b5) == 3)
 						return 2;
-					if (str.rank == 14)
+					if (str.getRank() == 14)
 						return 0;
 					return 1;
 				}
 
-				if ((board[0].rank == 10) && (riverSuitedNumber(b1,b2,b3,b4,b5) < 3))
+				if ((board[0].getRank() == 10) && (riverSuitedNumber(b1,b2,b3,b4,b5) < 3))
 					return 8;
 				return 4;
 			}
@@ -2081,7 +2081,7 @@ public:
 			if (riverTripleBoard(board))
 				return 4;
 
-			if (h1.rank == h2.rank)
+			if (h1.getRank() == h2.getRank())
 			{
 				if (riverFuckedUpBoard(board))
 					return 3;
@@ -2094,13 +2094,13 @@ public:
 
 			Card kicker = h1;
 			Card drill = h2;
-			if (existsOnBoard(h1.rank,board))
+			if (existsOnBoard(h1.getRank(),board))
 			{
 				kicker = h2;
 				drill = h1;
 			}
 
-			if (kicker.rank == 14 || (kicker.rank == 13 && drill.rank == 14))
+			if (kicker.getRank() == 14 || (kicker.getRank() == 13 && drill.getRank() == 14))
 			{
 				if (riverFuckedUpBoard(board))
 					return 3;
@@ -2124,10 +2124,10 @@ public:
 			if (riverDoublePairedBoard(board))
 			{
 				Card lowpair = board[0];
-				if (board[0].rank != board[1].rank)
+				if (board[0].getRank() != board[1].getRank())
 					lowpair = board[1];
 
-				if ((h1.rank == h2.rank && h1.rank > lowpair.rank) || (existsOnBoard(h1.rank,board) && h1.rank > lowpair.rank) || (existsOnBoard(h2.rank,board) && h2.rank > lowpair.rank))
+				if ((h1.getRank() == h2.getRank() && h1.getRank() > lowpair.getRank()) || (existsOnBoard(h1.getRank(),board) && h1.getRank() > lowpair.getRank()) || (existsOnBoard(h2.getRank(),board) && h2.getRank() > lowpair.getRank()))
 					return 3;
 				return 4;
 			}
@@ -2137,7 +2137,7 @@ public:
 
 			if (!riverDoubleBoard(board))
 			{
-				if ((h1.rank == board[4].rank) || (h2.rank == board[4].rank))
+				if ((h1.getRank() == board[4].getRank()) || (h2.getRank() == board[4].getRank()))
 				{
 					if (riverVeryDangerousBoard(board))
 						return 2;
@@ -2153,12 +2153,11 @@ public:
 				return 1;
 			}
 
-			
-			if (h1.rank == h2.rank)
+			if (h1.getRank() == h2.getRank())
 			{
-				if (h1.rank > board[4].rank)
+				if (h1.getRank() > board[4].getRank())
 				{
-					if (h1.rank >= 12)
+					if (h1.getRank() >= 12)
 					{
 						if (riverVeryDangerousBoard(board))
 							return 2;
@@ -2166,7 +2165,7 @@ public:
 							return 2;
 						return 1;
 					}
-					if (h1.rank >= 8)
+					if (h1.getRank() >= 8)
 					{
 						if (riverVeryDangerousBoard(board))
 							return 3;
@@ -2181,17 +2180,17 @@ public:
 
 			Card kicker = h1;
 			Card pair = h2;
-			if (existsOnBoard(h1.rank,board))
+			if (existsOnBoard(h1.getRank(),board))
 			{
 				kicker = h2;
 				pair = h1;
 			}
 
-			if ((pair.rank == board[4].rank) || ((board[4].rank == board[3].rank) && (pair.rank == board[2].rank)))
+			if ((pair.getRank() == board[4].getRank()) || ((board[4].getRank() == board[3].getRank()) && (pair.getRank() == board[2].getRank())))
 			{
-				if (pair.rank >= 10)
+				if (pair.getRank() >= 10)
 				{
-					if ((kicker.rank == 14) || ((pair.rank == 14) && (kicker.rank == 13)))
+					if ((kicker.getRank() == 14) || ((pair.getRank() == 14) && (kicker.getRank() == 13)))
 					{
 						if (riverVeryDangerousBoard(board))
 							return 2;
@@ -2199,11 +2198,11 @@ public:
 							return 2;
 						return 1;
 					}
-					if (kicker.rank >= 10)
+					if (kicker.getRank() >= 10)
 						return 2;
 					return 3;
 				}
-				if (kicker.rank >= 10)
+				if (kicker.getRank() >= 10)
 				{
 					if (riverVeryDangerousBoard(board))
 						return 3;
@@ -2238,5 +2237,4 @@ public:
 
 		return -1;
 	}
-
 };

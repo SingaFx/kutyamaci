@@ -31,45 +31,45 @@ static int convertRankToNumbers(Card c)
 	map['J'] = 11;
 	map['T'] = 10;
 
-	if ((c.rank >= '2') && (c.rank <= '9'))
+	if ((c.getRank() >= '2') && (c.getRank() <= '9'))
 	{
-		c.rank = c.rank - '0';
+		c.setRank(c.getRank() - '0');
 	}
 	else
 	{
-		c.rank = map[c.rank];
+		c.setRank(map[c.getRank()]);
 	}
-	return c.rank;
+
+	return c.getRank();
 }
 static int normalizeHand(Hand hand) //-> 1..169
 {
-	if (convertRankToNumbers(hand.card1) > convertRankToNumbers(hand.card2))
+	if (convertRankToNumbers(hand.getCard1()) > convertRankToNumbers(hand.getCard2()))
 	{
-		int temp = hand.card1.rank;
-		hand.card1.rank = hand.card2.rank;
-		hand.card2.rank = temp;
+		int temp = hand.getCard1().getRank();
+		hand.getCard1().setRank(hand.getCard2().getRank());
+		hand.getCard2().setRank(temp);
 	}
 
-	if (hand.card1.suit == hand.card2.suit) //suited
+	if (hand.getCard1().getSuit() == hand.getCard2().getSuit()) //suited
 	{
 		int count = 0;
 		for (int i = 2; i < 15; ++i)
 			for (int j = i + 1; j < 15; ++j)
 			{
 				++count;
-				if (numberToCard(i) == hand.card1.rank && numberToCard(j) == hand.card2.rank)
+				if (numberToCard(i) == hand.getCard1().getRank() && numberToCard(j) == hand.getCard2().getRank())
 					return count;
 			}
-			
 	}
 	else //offsuited
-	{	
+	{
 		int count = 0;
 		for (int i = 2; i < 15; ++i)
 			for (int j = i; j < 15; ++j)
 			{
 				++count;
-				if (numberToCard(i) == hand.card1.rank && numberToCard(j) == hand.card2.rank)
+				if (numberToCard(i) == hand.getCard1().getRank() && numberToCard(j) == hand.getCard2().getRank())
 					return (count + 78);
 			}
 	}
@@ -168,7 +168,7 @@ static int normalizeBetSize(int street, double betsize, double potcommon, double
 		{
 			return 8;
 		}
-		
+
 		return 9;
 	}
 	else
@@ -232,12 +232,12 @@ static int normalizePotSize(int street, double potcommon, double bblind)
 
 	if (street == 3)
 	{
-		if (potcommon <= 10 * bblind) 
+		if (potcommon <= 10 * bblind)
 		{
 			return 0;
 		}
 
-		if (potcommon <= 30 * bblind) 
+		if (potcommon <= 30 * bblind)
 		{
 			return 1;
 		}
@@ -257,12 +257,12 @@ static int normalizePotSize(int street, double potcommon, double bblind)
 
 	if (street == 4)
 	{
-		if (potcommon <= 20 * bblind) 
+		if (potcommon <= 20 * bblind)
 		{
 			return 0;
 		}
 
-		if (potcommon <= 40 * bblind) 
+		if (potcommon <= 40 * bblind)
 		{
 			return 1;
 		}

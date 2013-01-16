@@ -62,17 +62,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Action.h" />
     <ClInclude Include="src\bayesFunctions.h" />
     <ClInclude Include="src\bayesUtils.h" />
+    <ClInclude Include="src\Card.h" />
     <ClInclude Include="src\database.h" />
     <ClInclude Include="src\evaluator.h" />
+    <ClInclude Include="src\Hand.h" />
+    <ClInclude Include="src\HandHistory.h" />
     <ClInclude Include="src\handHistoryParser.h" />
+    <ClInclude Include="src\HandHistoryUtils.h" />
     <ClInclude Include="src\logger.h" />
+    <ClInclude Include="src\OnGameParser.h" />
+    <ClInclude Include="src\PlayerHistory.h" />
     <ClInclude Include="src\rangeFunctions.h" />
     <ClInclude Include="src\validator.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Action.cpp" />
+    <ClCompile Include="src\Card.cpp" />
+    <ClCompile Include="src\Hand.cpp" />
+    <ClCompile Include="src\HandHistory.cpp" />
+    <ClCompile Include="src\HandHistoryUtils.cpp" />
     <ClCompile Include="src\logger.cpp" />
+    <ClCompile Include="src\OnGameParser.cpp" />
+    <ClCompile Include="src\PlayerHistory.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -17,7 +17,7 @@ public:
 		double total = 0;
 		for (it = range.begin(); it != range.end(); ++it)
 		{
-			printf("%c%c%c%c: %lf\n", it->first.card1.rank, it->first.card1.suit, it->first.card2.rank, it->first.card2.suit, it->second);
+			printf("%c%c%c%c: %lf\n", it->first.getCard1().getRank(), it->first.getCard1().getSuit(), it->first.getCard2().getRank(), it->first.getCard2().getSuit(), it->second);
 			total += it->second;
 		}
 		printf("Total = %lf\n", total);
@@ -31,7 +31,7 @@ public:
 		{
 			total += it->second;
 		}
-		
+
 		return total;
 	}
 
@@ -76,14 +76,14 @@ private:
 						int rank1 = j1 + 2;
 						int rank2 = j2 + 2;
 						Hand hand;
-						hand.card1.rank = numberToCard(rank1);
-						hand.card2.rank = numberToCard(rank2);
-						hand.card1.suit = map[i1];
-						hand.card2.suit = map[i2];
+						hand.getCard1().setRank(numberToCard(rank1));
+						hand.getCard2().setRank(numberToCard(rank2));
+						hand.getCard1().setSuit(map[i1]);
+						hand.getCard2().setSuit(map[i2]);
 
 						if (Validator::softValidate(v, hand, own))
 						{
-							int str = Evaluator::cardStrength(hand.card1, hand.card2, v);
+							int str = Evaluator::cardStrength(hand.getCard1(), hand.getCard2(), v);
 							hsn[str]++;
 							total++;
 						}
@@ -94,14 +94,14 @@ private:
 						int rank1 = j1 + 2;
 						int rank2 = j1 + 2;
 						Hand hand;
-						hand.card1.rank = numberToCard(rank1);
-						hand.card2.rank = numberToCard(rank2);
-						hand.card1.suit = map[i1];
-						hand.card2.suit = map[i2];
+						hand.getCard1().setRank(numberToCard(rank1));
+						hand.getCard2().setRank(numberToCard(rank2));
+						hand.getCard1().setSuit(map[i1]);
+						hand.getCard2().setSuit(map[i2]);
 
 						if (Validator::softValidate(v, hand, own))
 						{
-							int str = Evaluator::cardStrength(hand.card1, hand.card2, v);
+							int str = Evaluator::cardStrength(hand.getCard1(), hand.getCard2(), v);
 							hsn[str]++;
 							total++;
 						}
@@ -132,14 +132,14 @@ private:
 						int rank1 = j1 + 2;
 						int rank2 = j2 + 2;
 						Hand hand;
-						hand.card1.rank = numberToCard(rank1);
-						hand.card2.rank = numberToCard(rank2);
-						hand.card1.suit = map[i1];
-						hand.card2.suit = map[i2];
+						hand.getCard1().setRank(numberToCard(rank1));
+						hand.getCard2().setRank(numberToCard(rank2));
+						hand.getCard1().setSuit(map[i1]);
+						hand.getCard2().setSuit(map[i2]);
 
 						if (Validator::softValidate(v, hand, own))
 						{
-							int str = Evaluator::cardStrength(hand.card1, hand.card2, v);
+							int str = Evaluator::cardStrength(hand.getCard1(), hand.getCard2(), v);
 							double akt = HS[str] / hsn[str];
 							if (akt > 0)
 								res.range.insert(make_pair(hand, akt));
@@ -151,14 +151,14 @@ private:
 						int rank1 = j1 + 2;
 						int rank2 = j1 + 2;
 						Hand hand;
-						hand.card1.rank = numberToCard(rank1);
-						hand.card2.rank = numberToCard(rank2);
-						hand.card1.suit = map[i1];
-						hand.card2.suit = map[i2];
+						hand.getCard1().setRank(numberToCard(rank1));
+						hand.getCard2().setRank(numberToCard(rank2));
+						hand.getCard1().setSuit(map[i1]);
+						hand.getCard2().setSuit(map[i2]);
 
 						if (Validator::softValidate(v, hand, own))
 						{
-							int str = Evaluator::cardStrength(hand.card1, hand.card2, v);
+							int str = Evaluator::cardStrength(hand.getCard1(), hand.getCard2(), v);
 							double akt = HS[str] / hsn[str];
 							if (akt > 0)
 								res.range.insert(make_pair(hand, akt));
@@ -275,7 +275,7 @@ public:
 
 		int hsn[20];
 		memset(hsn, 0, sizeof(hsn));
-		
+
 		calculateStrengths(n, hsn, v, own, map);
 		int cnt = totalTypes(n, hsn);
 		distributeRanges(n, HS, hsn);
@@ -293,9 +293,9 @@ public:
 		if (hsn[6] != 0) HS[6] += cnt++ * egyseg; //jo draw
 		if (hsn[3] != 0) HS[3] += cnt++ * egyseg; //gyenge
 		if (hsn[5] != 0) HS[5] += cnt++ * egyseg; //GS
-		if (hsn[4] != 0) HS[4] += cnt++ * egyseg; //AIR	
+		if (hsn[4] != 0) HS[4] += cnt++ * egyseg; //AIR
 		HS[8] = 0;
-	
+
 		normalize(n, HS);
 		calculateRanges(n, HS, hsn, v, own, map, res);
 
@@ -311,12 +311,12 @@ public:
 		set<pair<Hand, double> >::iterator it1, it2, iter;
 		for (it1 = r1.range.begin(); it1 != r1.range.end(); ++it1)
 		{
-			int str = Evaluator::cardStrength(it1->first.card1, it1->first.card2, v);
+			int str = Evaluator::cardStrength(it1->first.getCard1(), it1->first.getCard2(), v);
 			hsr1[str] += it1->second;
 		}
 		for (it2 = r2.range.begin(); it2 != r2.range.end(); ++it2)
 		{
-			int str = Evaluator::cardStrength(it2->first.card1, it2->first.card2, v);
+			int str = Evaluator::cardStrength(it2->first.getCard1(), it2->first.getCard2(), v);
 			hsr2[str] += it2->second;
 		}
 
@@ -325,9 +325,9 @@ public:
 		for (it1 = r1.range.begin(); it1 != r1.range.end(); it1++)
 		{
 			iter = r2.range.lower_bound(make_pair(it1->first, 0.0));
-			if (iter->first == it1->first) 
+			if (iter->first == it1->first)
 			{
-				int str = Evaluator::cardStrength(it1->first.card1, it1->first.card2, v);
+				int str = Evaluator::cardStrength(it1->first.getCard1(), it1->first.getCard2(), v);
 				double akt = 0;
 				if (hsr1[str] > 0)
 					akt = it1->second * (hsr2[str] / hsr1[str]);
