@@ -31,6 +31,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "poker-eval", "..\Poker.Poke
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Poker.Equity", "..\Poker.Equity\Poker.Equity.vcxproj", "{E7862099-FB93-416C-88FA-E072FD894E41}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "eqcalculator", "..\eqcalculator\eqcalculator.vcxproj", "{7D2D234C-F929-45AF-9F0C-354D9D61A3CE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E7862099-FB93-416C-88FA-E072FD894E41} = {E7862099-FB93-416C-88FA-E072FD894E41}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -119,6 +124,14 @@ Global
 		{E7862099-FB93-416C-88FA-E072FD894E41}.Release|Win32.Build.0 = Release|Win32
 		{E7862099-FB93-416C-88FA-E072FD894E41}.Template|Win32.ActiveCfg = Release|Win32
 		{E7862099-FB93-416C-88FA-E072FD894E41}.Template|Win32.Build.0 = Release|Win32
+		{7D2D234C-F929-45AF-9F0C-354D9D61A3CE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7D2D234C-F929-45AF-9F0C-354D9D61A3CE}.Debug|Win32.Build.0 = Debug|Win32
+		{7D2D234C-F929-45AF-9F0C-354D9D61A3CE}.profile|Win32.ActiveCfg = Release|Win32
+		{7D2D234C-F929-45AF-9F0C-354D9D61A3CE}.profile|Win32.Build.0 = Release|Win32
+		{7D2D234C-F929-45AF-9F0C-354D9D61A3CE}.Release|Win32.ActiveCfg = Release|Win32
+		{7D2D234C-F929-45AF-9F0C-354D9D61A3CE}.Release|Win32.Build.0 = Release|Win32
+		{7D2D234C-F929-45AF-9F0C-354D9D61A3CE}.Template|Win32.ActiveCfg = Release|Win32
+		{7D2D234C-F929-45AF-9F0C-354D9D61A3CE}.Template|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

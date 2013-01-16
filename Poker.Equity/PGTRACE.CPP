@@ -37,7 +37,7 @@ void _trace(char *fmt, ...)
 #ifdef _DEBUG
 	OutputDebugString(out);
 #endif
-	printf(out);
+	//printf(out);
 }
 
 
