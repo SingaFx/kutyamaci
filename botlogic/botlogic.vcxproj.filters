@@ -21,5 +21,16 @@
     <ClInclude Include="src\simpleDecision.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\botlogic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\simpleDecision.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\bayesDecision.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
