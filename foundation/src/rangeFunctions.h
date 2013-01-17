@@ -301,7 +301,6 @@ public:
 
 		return res;
 	}
-
 	static PlayerRange mergeRange(PlayerRange& r1, PlayerRange& r2, vector<Card>& v)
 	{
 		double hsr1[20], hsr2[20];
@@ -337,12 +336,13 @@ public:
 		}
 		return res;
 	}
-
 	//FE randomizalas a FOLD szerint
 	static double randomizeFE(double FE, double FOLD)
 	{
 		return FE + unifRand(-0.2, 0.1);
 	}
+
+
 private:
 	static double unifRand()
 	{
