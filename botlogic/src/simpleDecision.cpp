@@ -1,6 +1,6 @@
 #include "simpleDecision.h"
 
-Action SimpleDecision::makeDecision()
+Action SimpleDecision::makeDecision(CurrentGameInfo& game)
 {
 	Action res;
 
