@@ -9,6 +9,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bayeslearn", "..\bayeslearn
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bayestest", "..\bayestest\bayestest.vcxproj", "{448D4E6B-6FD5-4DE7-B168-3B13256B62C1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D9C913C6-DCB8-42DE-A4AE-B9C081D643C8} = {D9C913C6-DCB8-42DE-A4AE-B9C081D643C8}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foundation", "..\foundation\foundation.vcxproj", "{D9C913C6-DCB8-42DE-A4AE-B9C081D643C8}"
 EndProject
