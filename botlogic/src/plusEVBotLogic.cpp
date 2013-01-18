@@ -15,11 +15,13 @@ PlayerRange& PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameIn
 	extendGameInfo(gameInfo);
 
 	PlayerRange res;
+	double bblind = gameInfo.getBblind();
 
 	if (gameInfo.getStreet() == 0)
 	{
 		CurrentPlayerInfo player = gameInfo.getPlayerByName(name);
-		PlayerRange actual = preflop.getRange(player.getVPIP(), player.getPFR(), player.getStacksize(), player.getPoz(), player.getLine(), player.getBetsize(), gameInfo.getBblind(), 0, patternsNeeded);
+		
+		PlayerRange actual = preflop.getRange(player.getVPIP(), player.getPFR(), player.getStacksize() * bblind, player.getPoz(), player.getLine(), player.getBetsize() * bblind, gameInfo.getBblind(), 0, patternsNeeded);
 
 		vector<Card> cards;
 		res = RangeUtils::mergeRange(oldPlayerRange, actual, cards);
@@ -29,8 +31,8 @@ PlayerRange& PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameIn
 	{
 		CurrentPlayerInfo player = gameInfo.getPlayerByName(name);
 		
-		PlayerRange actual = flop.getRange(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize(), player.getLine(), player.getBetsize(), gameInfo.getBblind(), 
-			gameInfo.getPotcommon(), gameInfo.getBoard(), gameInfo.getHand(), patternsNeeded);
+		PlayerRange actual = flop.getRange(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * bblind, player.getLine(), player.getBetsize() * bblind, gameInfo.getBblind(), 
+			gameInfo.getPotcommon() * bblind, gameInfo.getBoard(), gameInfo.getHand(), patternsNeeded);
 
 		res = RangeUtils::mergeRange(oldPlayerRange, actual, gameInfo.getBoard());
 	}
@@ -39,8 +41,8 @@ PlayerRange& PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameIn
 	{
 		CurrentPlayerInfo player = gameInfo.getPlayerByName(name);
 		
-		PlayerRange actual = turn.getRange(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize(), player.getLine(), player.getBetsize(), gameInfo.getBblind(), 
-											gameInfo.getPotcommon(), gameInfo.getBoard(), gameInfo.getHand(), patternsNeeded);
+		PlayerRange actual = turn.getRange(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * bblind, player.getLine(), player.getBetsize() * bblind, gameInfo.getBblind(), 
+											gameInfo.getPotcommon() * bblind, gameInfo.getBoard(), gameInfo.getHand(), patternsNeeded);
 
 		res = RangeUtils::mergeRange(oldPlayerRange, actual, gameInfo.getBoard());
 	}
@@ -65,10 +67,10 @@ Action PlusEVBotLogic::makeDecision(CurrentGameInfo& gameInfo, vector<PlayerRang
 
 	extendGameInfo(gameInfo);
 
-	res = BayesDecision::makeDecision(gameInfo, ranges);
-	if (res.getType() == 5)
+	res = BayesDecision::makeDecision(gameInfo, ranges, preflop, flop, turn, river);
+	if (res.getType() == 'n')
 	{
-		res = SimpleDecision::makeDecision(gameInfo);
+		//res = SimpleDecision::makeDecision(gameInfo);
 	}
 
 	return res;

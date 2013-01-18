@@ -515,6 +515,8 @@ public:
 
 	PlayerRange getRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x)
 	{
+		PlayerRange res;
+
 		int v[8];
 		v[1] = normalizePotSize(2, potcommon, bblind);
 		v[2] = normalizeStackSize(stackSize, bblind);
@@ -529,9 +531,10 @@ public:
 		{
 			v[0] = i;
 			HS[i] = getProbabilityHS(v, x);
+			if (HS[i] < 0) return res;
 		}
 
-		PlayerRange res = RangeUtils::createRange(8, HS, cards, own);
+		res = RangeUtils::createRange(8, HS, cards, own);
 
 		return res;
 	}
@@ -729,6 +732,7 @@ public:
 
 	PlayerRange getRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x)
 	{
+		PlayerRange res;
 		int v[8];
 		v[1] = normalizePotSize(3, potcommon, bblind);
 		v[2] = normalizeStackSize(stackSize, bblind);
@@ -743,9 +747,10 @@ public:
 		{
 			v[0] = i;
 			HS[i] = getProbabilityHS(v, x);
+			if (HS[i] < 0) return res;
 		}
 
-		PlayerRange res = RangeUtils::createRange(8, HS, cards, own);
+		res = RangeUtils::createRange(8, HS, cards, own);
 
 		return res;
 	}
@@ -902,6 +907,7 @@ public:
 
 	PlayerRange getRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x)
 	{
+		PlayerRange res;
 		int v[8];
 		v[1] = normalizePotSize(4, potcommon, bblind);
 		v[2] = normalizeStackSize(stackSize, bblind);
@@ -916,9 +922,10 @@ public:
 		{
 			v[0] = i;
 			HS[i] = getProbabilityHS(v, x);
+			if (HS[i] < 0) return res;
 		}
 
-		PlayerRange res = RangeUtils::createRange(8, HS, cards, own);
+		res = RangeUtils::createRange(8, HS, cards, own);
 
 		return res;
 	}
