@@ -985,7 +985,7 @@ public:
 			totalpot += maxcall;
 		}
 
-		int nPotSize = normalizePotSize(3, totalpot, 0.04);
+		int nPotSize = normalizePotSize(4, totalpot, 0.04);
 
 		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
 		{

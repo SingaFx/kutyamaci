@@ -74,6 +74,7 @@ void parseHands(string filename)
 		std::vector<HandHistory> history = HandHistoryUtils::importFromFile(f, historyNumber);
 		total += history.size();
 		printf("Total number of parsed hands = %d\n", total);
+		//if (total < 6283000) continue;
 		for (int i = 0; i < history.size(); ++i)
 		{
 			preflop->updateProbabilities(history[i]);
@@ -82,7 +83,7 @@ void parseHands(string filename)
 			river->updateProbabilities(history[i]);
 		}
 
-		if (total > 1000000) return ;
+		//if (total > 1000000) return ;
 	}
 }
 

@@ -119,10 +119,10 @@ public:
 
 	static const int HAND_STRENGTH_NUM = 9;
 	static const int FOLD_EQUITY_NUM = 1;
-	static const int POT_SIZE_NUM = 5; //!!
+	static const int POT_SIZE_NUM = 5; 
 	static const int PLAYER_STACK_SIZE_NUM = 5;
-	static const int PLAYER_BET_SIZE_NUM = 5; //!!
-	static const int PLAYER_LINE_NUM = 3; //->
+	static const int PLAYER_BET_SIZE_NUM = 6; 
+	static const int PLAYER_LINE_NUM = 3;
 	static const int PLAYER_VPIP_NUM = 5;
 	static const int PLAYER_PFR_NUM = 3;
 	static const int PLAYER_AF_NUM = 3;

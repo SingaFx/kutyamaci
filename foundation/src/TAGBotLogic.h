@@ -9,6 +9,6 @@ public:
     TAGBotLogic();
     virtual ~TAGBotLogic();
 
-    virtual PlayerRange& calculateRange(const CurrentGameInfo&);
+    virtual PlayerRange& calculateRange(string name, const CurrentGameInfo&, const PlayerRange&);
     virtual Action makeDecision(const CurrentGameInfo&, const PlayerRange&);
 };
