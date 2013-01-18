@@ -16,7 +16,7 @@ public:
 			if (cards[i].getRank() == hand.getCard2().getRank() && cards[i].getSuit() == hand.getCard2().getSuit()) return false;
 		}
 
-		if (hand.getCard1() == own.getCard1() || hand.getCard2() == own.getCard2()) return false;
+		if (hand.getCard1() == own.getCard1() || hand.getCard1() == own.getCard2() || hand.getCard2() == own.getCard1() || hand.getCard2() == own.getCard2()) return false;
 
 		return true;
 	}
