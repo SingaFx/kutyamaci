@@ -21,7 +21,7 @@
     <ClInclude Include="src\simpleDecision.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\botlogic.h">
+    <ClInclude Include="src\plusEVBotLogic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -32,7 +32,7 @@
     <ClCompile Include="src\bayesDecision.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\botlogic.cpp">
+    <ClCompile Include="src\plusEVBotLogic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

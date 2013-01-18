@@ -110,7 +110,6 @@ private:
 			}
 		}
 	}
-
 	static void calculateRanges(int n, double HS[], int hsn[], vector<Card>& v, Hand& own, char map[], PlayerRange& res)
 	{
 		int count1 = 0;
@@ -168,7 +167,6 @@ private:
 			}
 		}
 	}
-
 	static void normalize(int n, double HS[])
 	{
 		double totalProb = 0;
@@ -181,7 +179,6 @@ private:
 			HS[i] *= 1 / totalProb;
 		}
 	}
-
 	static int totalTypes(int n, int hsn[])
 	{
 		int cnt = 0;
@@ -196,7 +193,6 @@ private:
 
 		return cnt;
 	}
-
 	static void distributeRanges(int n, double HS[], int hsn[])
 	{
 		for (int i = 0; i < 5; ++i)

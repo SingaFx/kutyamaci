@@ -65,12 +65,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\bayesDecision.h" />
-    <ClInclude Include="src\botlogic.h" />
+    <ClInclude Include="src\plusEVBotLogic.h" />
     <ClInclude Include="src\simpleDecision.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\bayesDecision.cpp" />
-    <ClCompile Include="src\botlogic.cpp" />
+    <ClCompile Include="src\plusEVBotLogic.cpp" />
     <ClCompile Include="src\simpleDecision.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

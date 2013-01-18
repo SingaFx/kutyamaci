@@ -94,7 +94,7 @@ void basic()
 	for (int i = 0; i < flop.HAND_STRENGTH_NUM; ++i)
 	{
 		v[0] = i;
-		HS[i] = flop.getProbabilityHS(v);
+		HS[i] = flop.getProbabilityHS(v, 0);
 	}
 		
 	Card card1('A','s'), card2('A','d'), card3('A','c');

@@ -16,6 +16,15 @@ CurrentGameInfo::CurrentGameInfo(double	potcommon, double bblind, double totalPo
 {
 }
 
+void CurrentGameInfo::setStreet(int street)
+{
+	this->street = street;
+}
+int CurrentGameInfo::getStreet()
+{
+	return street;
+}
+
 void CurrentGameInfo::setPotcommon(double potcommon)
 {
 	this->potcommon = potcommon;
@@ -77,4 +86,12 @@ void CurrentGameInfo::setBoard(vector<Card>& board)
 vector<Card>& CurrentGameInfo::getBoard()
 {
 	return board;
+}
+
+CurrentPlayerInfo& CurrentGameInfo::getPlayerByName(string name)
+{
+	for (int i = 0; i < opponentsInfo.size(); ++i)
+	{
+		if (opponentsInfo[i].getName() == name) return opponentsInfo[i];
+	}
 }

@@ -65,6 +65,7 @@
     <ClInclude Include="src\AbstractBotLogic.h" />
     <ClInclude Include="src\Action.h" />
     <ClInclude Include="src\bayesFunctions.h" />
+    <ClInclude Include="src\bayesUserFunctions.h" />
     <ClInclude Include="src\bayesUtils.h" />
     <ClInclude Include="src\Card.h" />
     <ClInclude Include="src\currentGameInfo.h" />
@@ -79,7 +80,6 @@
     <ClInclude Include="src\OnGameParser.h" />
     <ClInclude Include="src\PlayerHistory.h" />
     <ClInclude Include="src\rangeFunctions.h" />
-    <ClInclude Include="src\TAGBotLogic.h" />
     <ClInclude Include="src\validator.h" />
   </ItemGroup>
   <ItemGroup>
@@ -93,7 +93,6 @@
     <ClCompile Include="src\logger.cpp" />
     <ClCompile Include="src\OnGameParser.cpp" />
     <ClCompile Include="src\PlayerHistory.cpp" />
-    <ClCompile Include="src\TAGBotLogic.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -11,5 +11,5 @@ private:
 
 public:
 	//range-t kap
-	static Action MakeDecision(CurrentGameInfo&, vector<PlayerRange>&);
+	static Action makeDecision(CurrentGameInfo&, vector<PlayerRange>&);
 };

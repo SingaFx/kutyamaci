@@ -63,13 +63,13 @@
     <ClInclude Include="src\AbstractBotLogic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\TAGBotLogic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\currentGameInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\currentPlayerInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\bayesUserFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -96,9 +96,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\PlayerHistory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\TAGBotLogic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\currentGameInfo.cpp">

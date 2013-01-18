@@ -280,7 +280,7 @@ public:
 			for (int j = 0; j < player.getFlopAction().size(); ++j)
 				{
 					Action action = player.getFlopAction()[j];
-					int size = normalizeBetSize(1, action.getSize(), 0, 0.04);
+					int size = normalizeBetSize(2, action.getSize(), 0, 0.04);
 					if (action.getType() == 'c')
 					{
 						if (size > mSize) mSize = size;
@@ -350,7 +350,7 @@ public:
 				for (int j = 0; j < player.getFlopAction().size(); ++j)
 				{
 					Action action = player.getFlopAction()[j];
-					int size = normalizeBetSize(1, action.getSize(), 0, 0.04);
+					int size = normalizeBetSize(2, action.getSize(), 0, 0.04);
 					if (action.getType() == 'c')
 					{
 						++probabilityHS[hand][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
@@ -419,9 +419,9 @@ public:
 						if (action.getType() == 'c')
 						{
 							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][0][nVPIP][nPFR][nAF];
-							++totalS[nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][0][nVPIP][nPFR][nAF];
+							++totalS[nPotSize][nStackSize][normalizeBetSize(2, action.getSize(), totalpot, 0.04)][0][nVPIP][nPFR][nAF];
 							if (j + 1 < player.getFlopAction().size())
-								++totalFE[nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][0][nVPIP][nPFR][nAF];
+								++totalFE[nPotSize][nStackSize][normalizeBetSize(2, action.getSize(), 0, 0.04)][0][nVPIP][nPFR][nAF];
 						}
 
 						if (action.getType() == 'r')

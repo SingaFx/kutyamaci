@@ -8,6 +8,7 @@ using namespace std;
 class CurrentGameInfo
 {
 private:
+	int street; //0 preflop, 1 flop...
 	double potcommon; //until this street (preflop - 0, flop - totalPreflop, ...)
 	double bblind; //nagyvak merete -> 0.04
 	double totalPot; //total potsize
@@ -24,6 +25,9 @@ public:
 	CurrentGameInfo();
 	CurrentGameInfo(double, double, double, vector<CurrentPlayerInfo>&, CurrentPlayerInfo&, double, Hand&, vector<Card>&);
 	//~CurrentGameInfo();
+
+	void setStreet(int);
+	int getStreet(); 
 
 	void setPotcommon(double);
 	double getPotcommon();
@@ -45,4 +49,6 @@ public:
 
 	void setBoard(vector<Card>&);
 	vector<Card>& getBoard();
+
+	CurrentPlayerInfo& getPlayerByName(string name);
 };
