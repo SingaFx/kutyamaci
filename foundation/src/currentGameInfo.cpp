@@ -16,6 +16,15 @@ CurrentGameInfo::CurrentGameInfo(double	potcommon, double bblind, double totalPo
 {
 }
 
+void CurrentGameInfo::setStreet(int street)
+{
+	this->street = street;
+}
+int CurrentGameInfo::getStreet()
+{
+	return street;
+}
+
 void CurrentGameInfo::setPotcommon(double potcommon)
 {
 	this->potcommon = potcommon;
@@ -52,6 +61,15 @@ vector<CurrentPlayerInfo>& CurrentGameInfo::getOpponentsInfo()
 	return opponentsInfo;
 }
 
+void CurrentGameInfo::setHero(CurrentPlayerInfo& hero)
+{
+	this->hero = hero;
+}
+CurrentPlayerInfo& CurrentGameInfo::getHero()
+{
+	return hero;
+}
+
 void CurrentGameInfo::setAmountToCall(double amountToCall)
 {
 	this->amountToCall = amountToCall;
@@ -77,4 +95,32 @@ void CurrentGameInfo::setBoard(vector<Card>& board)
 vector<Card>& CurrentGameInfo::getBoard()
 {
 	return board;
+}
+
+CurrentPlayerInfo& CurrentGameInfo::getPlayerByName(string name)
+{
+	for (int i = 0; i < opponentsInfo.size(); ++i)
+	{
+		if (opponentsInfo[i].getName() == name) return opponentsInfo[i];
+	}
+}
+
+double CurrentGameInfo::getBiggestBet()
+{
+	double max = 0;
+	for (int i = 0; i < opponentsInfo.size(); ++i)
+	{
+		if (opponentsInfo[i].getBetsize() > max) max = opponentsInfo[i].getBetsize();
+	}
+
+	return max;
+}
+
+CurrentPlayerInfo& CurrentGameInfo::getPlayerbyPosition(int position)
+{
+	for (int i = 0; i < opponentsInfo.size(); ++i)
+	{
+		if (opponentsInfo[i].getPoz() == position)
+			return opponentsInfo[i];
+	}
 }

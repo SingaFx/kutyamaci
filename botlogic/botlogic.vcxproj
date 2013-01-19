@@ -41,7 +41,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\foundation\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\foundation\src;..\mysql\include;..\eqcalculator\src;..\Poker.Equity;..\Poker.PokerEval\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -53,7 +53,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\foundation\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\foundation\src;..\mysql\include;..\eqcalculator\src;..\Poker.Equity;..\Poker.PokerEval\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -65,12 +65,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\bayesDecision.h" />
-    <ClInclude Include="src\botlogic.h" />
+    <ClInclude Include="src\plusEVBotLogic.h" />
     <ClInclude Include="src\simpleDecision.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\bayesDecision.cpp" />
-    <ClCompile Include="src\botlogic.cpp" />
+    <ClCompile Include="src\plusEVBotLogic.cpp" />
     <ClCompile Include="src\simpleDecision.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -5,7 +5,7 @@
 using namespace std;
 
 #include "cpptest.h"
-#include "bayestest\src\bayesUserFunctions.h"
+#include "bayesUserFunctions.h"
 #include "bayeslearn\src\bayesLearnFunctions.h"
 #include "handHistoryGenerator.h"
 

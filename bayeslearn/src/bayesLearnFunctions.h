@@ -280,7 +280,7 @@ public:
 			for (int j = 0; j < player.getFlopAction().size(); ++j)
 				{
 					Action action = player.getFlopAction()[j];
-					int size = normalizeBetSize(1, action.getSize(), 0, 0.04);
+					int size = normalizeBetSize(2, action.getSize(), 0, 0.04);
 					if (action.getType() == 'c')
 					{
 						if (size > mSize) mSize = size;
@@ -296,7 +296,7 @@ public:
 			for (int j = 0; j < player.getPreflopAction().size(); ++j)
 				{
 					Action action = player.getPreflopAction()[j];
-					if (action.getType() == 'c')
+					if (action.getType() == 'c' || action.getType() == 'r')
 					{
 						if (action.getSize() > maxcall) maxcall = action.getSize();
 					}
@@ -350,7 +350,7 @@ public:
 				for (int j = 0; j < player.getFlopAction().size(); ++j)
 				{
 					Action action = player.getFlopAction()[j];
-					int size = normalizeBetSize(1, action.getSize(), 0, 0.04);
+					int size = normalizeBetSize(2, action.getSize(), totalpot, 0.04);
 					if (action.getType() == 'c')
 					{
 						++probabilityHS[hand][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
@@ -416,20 +416,21 @@ public:
 					for (int j = 0; j < player.getFlopAction().size(); ++j)
 					{
 						Action action = player.getFlopAction()[j];
+						int size = normalizeBetSize(2, action.getSize(), totalpot, 0.04);
 						if (action.getType() == 'c')
 						{
-							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][0][nVPIP][nPFR][nAF];
-							++totalS[nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][0][nVPIP][nPFR][nAF];
+							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
+							++totalS[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
 							if (j + 1 < player.getFlopAction().size())
-								++totalFE[nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][0][nVPIP][nPFR][nAF];
+								++totalFE[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
 						}
 
 						if (action.getType() == 'r')
 						{
-							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][1][nVPIP][nPFR][nAF];
-							++totalS[nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][1][nVPIP][nPFR][nAF];
+							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
+							++totalS[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
 							if (j + 1 < player.getFlopAction().size())
-								++totalFE[nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][1][nVPIP][nPFR][nAF];
+								++totalFE[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
 						}
 
 						if (action.getType() == 'x')
@@ -450,14 +451,15 @@ public:
 						else
 						{
 							Action action = player.getFlopAction()[player.getFlopAction().size() - 2];
+							int size = normalizeBetSize(2, action.getSize(), totalpot, 0.04);
 							if (action.getType() == 'c')
 							{
-								++probabilityFE[0][nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][0][nVPIP][nPFR][nAF];
+								++probabilityFE[0][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
 							}
 
 							if (action.getType() == 'r')
 							{
-								++probabilityFE[0][nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][1][nVPIP][nPFR][nAF];
+								++probabilityFE[0][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
 							}
 
 							if (action.getType() == 'x')
@@ -604,7 +606,7 @@ public:
 			for (int j = 0; j < player.getTurnAction().size(); ++j)
 				{
 					Action action = player.getTurnAction()[j];
-					int size = normalizeBetSize(1, action.getSize(), 0, 0.04);
+					int size = normalizeBetSize(2, action.getSize(), 0, 0.04);
 					if (action.getType() == 'c')
 					{
 						if (size > mSize) mSize = size;
@@ -620,7 +622,7 @@ public:
 			for (int j = 0; j < player.getPreflopAction().size(); ++j)
 				{
 					Action action = player.getPreflopAction()[j];
-					if (action.getType() == 'c')
+					if (action.getType() == 'c' || action.getType() == 'r')
 					{
 						if (action.getSize() > maxcall) maxcall = action.getSize();
 					}
@@ -634,7 +636,7 @@ public:
 			for (int j = 0; j < player.getFlopAction().size(); ++j)
 				{
 					Action action = player.getFlopAction()[j];
-					if (action.getType() == 'c')
+					if (action.getType() == 'c' || action.getType() == 'r')
 					{
 						if (action.getSize() > maxcall) maxcall = action.getSize();
 					}
@@ -688,7 +690,7 @@ public:
 				for (int j = 0; j < player.getTurnAction().size(); ++j)
 				{
 					Action action = player.getTurnAction()[j];
-					int size = normalizeBetSize(1, action.getSize(), 0, 0.04);
+					int size = normalizeBetSize(2, action.getSize(), totalpot, 0.04);
 					if (action.getType() == 'c')
 					{
 						++probabilityHS[hand][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
@@ -745,20 +747,21 @@ public:
 					for (int j = 0; j < player.getTurnAction().size(); ++j)
 					{
 						Action action = player.getTurnAction()[j];
+						int size = normalizeBetSize(2, action.getSize(), totalpot, 0.04);
 						if (action.getType() == 'c')
 						{
-							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][0][nVPIP][nPFR][nAF];
-							++totalS[nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][0][nVPIP][nPFR][nAF];
+							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
+							++totalS[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
 							if (j + 1 < player.getTurnAction().size())
-								++totalFE[nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][0][nVPIP][nPFR][nAF];
+								++totalFE[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
 						}
 
 						if (action.getType() == 'r')
 						{
-							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][1][nVPIP][nPFR][nAF];
-							++totalS[nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][1][nVPIP][nPFR][nAF];
+							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
+							++totalS[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
 							if (j + 1 < player.getTurnAction().size())
-								++totalFE[nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][1][nVPIP][nPFR][nAF];
+								++totalFE[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
 						}
 
 						if (action.getType() == 'x')
@@ -779,14 +782,15 @@ public:
 						else
 						{
 							Action action = player.getTurnAction()[player.getTurnAction().size() - 2];
+							int size = normalizeBetSize(2, action.getSize(), totalpot, 0.04);
 							if (action.getType() == 'c')
 							{
-								++probabilityFE[0][nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][0][nVPIP][nPFR][nAF];
+								++probabilityFE[0][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
 							}
 
 							if (action.getType() == 'r')
 							{
-								++probabilityFE[0][nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][1][nVPIP][nPFR][nAF];
+								++probabilityFE[0][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
 							}
 
 							if (action.getType() == 'x')
@@ -933,7 +937,7 @@ public:
 			for (int j = 0; j < player.getRiverAction().size(); ++j)
 				{
 					Action action = player.getRiverAction()[j];
-					int size = normalizeBetSize(1, action.getSize(), 0, 0.04);
+					int size = normalizeBetSize(2, action.getSize(), 0, 0.04);
 					if (action.getType() == 'c')
 					{
 						if (size > mSize) mSize = size;
@@ -949,7 +953,7 @@ public:
 			for (int j = 0; j < player.getPreflopAction().size(); ++j)
 				{
 					Action action = player.getPreflopAction()[j];
-					if (action.getType() == 'c')
+					if (action.getType() == 'c' || action.getType() == 'r')
 					{
 						if (action.getSize() > maxcall) maxcall = action.getSize();
 					}
@@ -963,7 +967,7 @@ public:
 			for (int j = 0; j < player.getFlopAction().size(); ++j)
 				{
 					Action action = player.getFlopAction()[j];
-					if (action.getType() == 'c')
+					if (action.getType() == 'c' || action.getType() == 'r')
 					{
 						if (action.getSize() > maxcall) maxcall = action.getSize();
 					}
@@ -977,7 +981,7 @@ public:
 			for (int j = 0; j < player.getTurnAction().size(); ++j)
 				{
 					Action action = player.getTurnAction()[j];
-					if (action.getType() == 'c')
+					if (action.getType() == 'c' || action.getType() == 'r')
 					{
 						if (action.getSize() > maxcall) maxcall = action.getSize();
 					}
@@ -985,7 +989,7 @@ public:
 			totalpot += maxcall;
 		}
 
-		int nPotSize = normalizePotSize(3, totalpot, 0.04);
+		int nPotSize = normalizePotSize(4, totalpot, 0.04);
 
 		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
 		{
@@ -1078,20 +1082,21 @@ public:
 					for (int j = 0; j < player.getRiverAction().size(); ++j)
 					{
 						Action action = player.getRiverAction()[j];
+						int size = normalizeBetSize(2, action.getSize(), totalpot, 0.04);
 						if (action.getType() == 'c')
 						{
-							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][0][nVPIP][nPFR][nAF];
-							++totalS[nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][0][nVPIP][nPFR][nAF];
+							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
+							++totalS[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
 							if (j + 1 < player.getRiverAction().size())
-								++totalFE[nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][0][nVPIP][nPFR][nAF];
+								++totalFE[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
 						}
 
 						if (action.getType() == 'r')
 						{
-							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][1][nVPIP][nPFR][nAF];
-							++totalS[nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][1][nVPIP][nPFR][nAF];
+							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
+							++totalS[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
 							if (j + 1 < player.getRiverAction().size())
-								++totalFE[nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][1][nVPIP][nPFR][nAF];
+								++totalFE[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
 						}
 
 						if (action.getType() == 'x')
@@ -1112,14 +1117,15 @@ public:
 						else
 						{
 							Action action = player.getRiverAction()[player.getRiverAction().size() - 2];
+							int size = normalizeBetSize(2, action.getSize(), totalpot, 0.04);
 							if (action.getType() == 'c')
 							{
-								++probabilityFE[0][nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][0][nVPIP][nPFR][nAF];
+								++probabilityFE[0][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
 							}
 
 							if (action.getType() == 'r')
 							{
-								++probabilityFE[0][nPotSize][nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][1][nVPIP][nPFR][nAF];
+								++probabilityFE[0][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
 							}
 
 							if (action.getType() == 'x')

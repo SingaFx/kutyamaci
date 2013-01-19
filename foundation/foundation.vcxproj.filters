@@ -60,13 +60,19 @@
     <ClInclude Include="src\PlayerHistory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\AbstractBotLogic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\currentGameInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\currentPlayerInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\BwinPartyParser.h">
+    <ClInclude Include="src\bayesUserFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\globalConst.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -99,9 +105,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\currentPlayerInfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\BwinPartyParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -67,3 +67,39 @@ int CurrentPlayerInfo::getLine()
 {
 	return line;
 }
+
+void CurrentPlayerInfo::setVPIP(double VPIP)
+{
+	this->VPIP = VPIP;
+}
+double CurrentPlayerInfo::getVPIP()
+{
+	return VPIP;
+}
+
+void CurrentPlayerInfo::setPFR(double PFR)
+{
+	this->PFR = PFR;
+}
+double CurrentPlayerInfo::getPFR()
+{
+	return PFR;
+}
+
+void CurrentPlayerInfo::setAF(double AF)
+{
+	this->AF = AF;
+}
+double CurrentPlayerInfo::getAF()
+{
+	return AF;
+}
+
+void CurrentPlayerInfo::setHandnr(int handnr)
+{
+	this->handnr = handnr;
+}
+int CurrentPlayerInfo::getHandnr()
+{
+	return handnr;
+}

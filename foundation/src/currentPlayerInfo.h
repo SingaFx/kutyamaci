@@ -10,8 +10,13 @@ private:
 	double actualStacksize;
 	double betsize; //currentbet(amennyi elotte van most)
 	string name;
-	int poz; //-3..2 -> 0..5
+	int poz; //-3..2
 	int line; //last move 0, 1, 2 (c, r, x)
+
+	double VPIP; //set in botlogic
+	double PFR;
+	double AF;
+	int handnr;
 
 public:
 
@@ -35,4 +40,16 @@ public:
 
 	void setLine(int);
 	int getLine();
+
+	void setVPIP(double);
+	double getVPIP();
+
+	void setPFR(double);
+	double getPFR();
+
+	void setAF(double);
+	double getAF();
+
+	void setHandnr(int);
+	int getHandnr();
 };

@@ -54,8 +54,8 @@ bool hlget( int rank0, int rank1, int listnum )
 
 double process_query(const char* pquery)
 {
-    Logger& logger = Logger::getLogger();            
-    logger.logExp(string("[Processing query] : ").append(pquery).c_str());
+    //Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);            
+    //logger.logExp(string("[Processing query] : ").append(pquery).c_str());
 
 	if(pquery==NULL)
     {
@@ -73,14 +73,60 @@ double process_query(const char* pquery)
 
 double process_state(holdem_state* pstate)
 {
-    Logger& logger = Logger::getLogger();
+    Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);
     logger.logExp("[Processing state] : ");
+
+    double balance0 = gws("balance0");
+    double balance1 = gws("balance1");
+    double balance2 = gws("balance2");
+    double balance3 = gws("balance3");
+    double balance4 = gws("balance4");
+    double balance5 = gws("balance5");
+
+    logger.logExp("-> balance0 : ", balance0);
+    logger.logExp("-> balance1 : ", balance1);
+    logger.logExp("-> balance2 : ", balance2);
+    logger.logExp("-> balance3 : ", balance3);
+    logger.logExp("-> balance4 : ", balance4);
+    logger.logExp("-> balance5 : ", balance5);
+
+    char buffer[100];
+    for (int idx = 0; idx < 5; ++idx)
+    {        
+        holdem_player& hp = pstate->m_player[idx];
+
+        
+        if (hp.m_name_known & 0x01)
+        {
+            sprintf(buffer, "holdem_player[%d] -> player name : ", idx);
+            logger.logExp(buffer, hp.m_name);
+        }
+        if (hp.m_balance_known & 0x01 )
+        {
+            sprintf(buffer, "holdem_player[%d] -> balance : ", idx);
+            logger.logExp(buffer, hp.m_balance);
+        }
+
+        sprintf(buffer, "holdem_player[%d] -> currentbet : ", idx);
+        logger.logExp(buffer, hp.m_currentbet);
+        //logger.logExp(buffer, hp.m_cards);
+        sprintf(buffer, "holdem_player[%d] -> cards : ", idx);
+        char rank = RANK(hp.m_cards[0]);
+        char suit = SUIT(hp.m_cards[0]);
+        char card[3];
+        sprintf(card, "%c%c", rank, suit);
+        logger.logExp(buffer, card);
+    }
+
 	if (pstate!=NULL)
     {
       m_holdem_state[ (++m_ndx)&0xff ] = *pstate;
 
+      
       // logging the state      
-      logger.logExp(string("-> m_title : ").append(pstate->m_title).c_str());
+      logger.logExp("-> m_title : ", pstate->m_title);
+      logger.logExp("-> m_title : ", pstate->m_pot[0]);
+      //logger.logExp(string("-> m_title : ").append(pstate->m_title).c_str());
       //logger.logExp(string("-> m_pot[0] : ").append(pstate->m_pot[0]).c_str());
       //logger.logExp(string("-> m_cards : ").append(pstate->m_cards[0]).c_str());
     }
