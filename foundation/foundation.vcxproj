@@ -41,7 +41,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\mysql\bin;..\mysql\lib;..\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -66,6 +66,7 @@
     <ClInclude Include="src\bayesFunctions.h" />
     <ClInclude Include="src\bayesUserFunctions.h" />
     <ClInclude Include="src\bayesUtils.h" />
+    <ClInclude Include="src\BwinPartyParser.h" />
     <ClInclude Include="src\Card.h" />
     <ClInclude Include="src\currentGameInfo.h" />
     <ClInclude Include="src\currentPlayerInfo.h" />
@@ -83,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Action.cpp" />
+    <ClCompile Include="src\BwinPartyParser.cpp" />
     <ClCompile Include="src\Card.cpp" />
     <ClCompile Include="src\currentGameInfo.cpp" />
     <ClCompile Include="src\currentPlayerInfo.cpp" />

@@ -69,9 +69,11 @@
     <ClInclude Include="src\import_updater.h" />
     <ClInclude Include="src\live_updater.h" />
     <ClInclude Include="src\updater.h" />
+    <ClInclude Include="src\Worker.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Worker.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
