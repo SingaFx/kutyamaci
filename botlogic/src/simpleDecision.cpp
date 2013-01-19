@@ -97,6 +97,8 @@ char SimpleDecision::calculateDecision(CurrentGameInfo& game)
 			}
 		}
 	}
+
+	return ' ';
 }
 
 double SimpleDecision::calculateBetSize(CurrentGameInfo& game)
