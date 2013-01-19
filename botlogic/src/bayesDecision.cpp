@@ -1,29 +1,43 @@
 #include "bayesDecision.h"
+#include "eqcalculator.h"
 
-static char calculateDecision(CurrentGameInfo& game, vector<PlayerRange>& ranges, BayesUserPreflop& preflop, BayesUserFlop& flop, BayesUserTurn& turn, BayesUserRiver& river)
+double BayesDecision::calculateEQ(PlayerRange& range, vector<Card>& board, Hand& hand)
 {
-	char res = ' ';
+	EqCalculator calc;
 
-	double EQ, FE;
+	vector<PlayerRange> ranges;
+	ranges.push_back(range);
+	PlayerRange myRange;
+	myRange.range.insert(make_pair(hand, 1));
+	ranges.push_back(myRange);
 
+	return calc.calculate(ranges, board, 25000);
+}
 
+char BayesDecision::calculateDecision(CurrentGameInfo& game, vector<PlayerRange>& ranges, BayesUserPreflop& preflop, BayesUserFlop& flop, BayesUserTurn& turn, BayesUserRiver& river)
+{
+	char res = 'n';
+
+	vector<double> FE, EQ;
+	vector<double> EV;
+
+	//EV = FE * totalpot + (1 - FE) * (EQ * (totalpot + 2 * betsize) - (1 - EQ) * (betsize))
+	//--> EQ vs calling range? EQ vs calling + raiserange
+	//--> FE: novelni, ha pozicioban van...
+	//--> minEQ ahhoz h beteljen
+	//??--> RR = random raise
 
 	if (game.getStreet() == 0)
 	{
+		for (int i = 0; i < ranges.size(); ++i)
+		{
+			double akt = calculateEQ(ranges[i], game.getBoard(), game.getHand());
+		}
 	}
 	
-	if (game.getStreet() == 1)
+	if (game.getStreet() > 0)
 	{
 	}
-
-	if (game.getStreet() == 2)
-	{
-	}
-
-	if (game.getStreet() == 3)
-	{
-	}
-
 
 	return res;
 }

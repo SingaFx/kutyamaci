@@ -61,6 +61,15 @@ vector<CurrentPlayerInfo>& CurrentGameInfo::getOpponentsInfo()
 	return opponentsInfo;
 }
 
+void CurrentGameInfo::setHero(CurrentPlayerInfo& hero)
+{
+	this->hero = hero;
+}
+CurrentPlayerInfo& CurrentGameInfo::getHero()
+{
+	return hero;
+}
+
 void CurrentGameInfo::setAmountToCall(double amountToCall)
 {
 	this->amountToCall = amountToCall;
