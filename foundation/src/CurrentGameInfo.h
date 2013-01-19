@@ -54,4 +54,5 @@ public:
 	vector<Card>& getBoard();
 
 	CurrentPlayerInfo& getPlayerByName(string name);
+	double getBiggestBet();
 };

@@ -104,3 +104,14 @@ CurrentPlayerInfo& CurrentGameInfo::getPlayerByName(string name)
 		if (opponentsInfo[i].getName() == name) return opponentsInfo[i];
 	}
 }
+
+double CurrentGameInfo::getBiggestBet()
+{
+	double max = 0;
+	for (int i = 0; i < opponentsInfo.size(); ++i)
+	{
+		if (opponentsInfo[i].getBetsize() > max) max = opponentsInfo[i].getBetsize();
+	}
+
+	return max;
+}

@@ -72,6 +72,7 @@
     <ClInclude Include="src\currentPlayerInfo.h" />
     <ClInclude Include="src\database.h" />
     <ClInclude Include="src\evaluator.h" />
+    <ClInclude Include="src\globalConst.h" />
     <ClInclude Include="src\Hand.h" />
     <ClInclude Include="src\HandHistory.h" />
     <ClInclude Include="src\handHistoryParser.h" />
