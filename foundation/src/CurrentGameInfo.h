@@ -55,4 +55,5 @@ public:
 
 	CurrentPlayerInfo& getPlayerByName(string name);
 	double getBiggestBet();
+	CurrentPlayerInfo& getPlayerbyPosition(int position);
 };

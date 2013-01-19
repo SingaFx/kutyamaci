@@ -36,7 +36,6 @@ PlayerRange& BayesDecision::getCallRaiseRange(double betsize, PlayerRange& range
 
 	return res;
 }
-
 double BayesDecision::calculateEQ(vector<PlayerRange>& ranges, vector<Card>& board, Hand& hand)
 {
 	EqCalculator calc;
@@ -47,14 +46,12 @@ double BayesDecision::calculateEQ(vector<PlayerRange>& ranges, vector<Card>& boa
 
 	return calc.calculate(ranges, board, 25000);
 }
-
 char BayesDecision::calculateDecision(CurrentGameInfo& game, vector<PlayerRange>& ranges, BayesUserPreflop& preflop, BayesUserFlop& flop, BayesUserTurn& turn, BayesUserRiver& river)
 {
 	char res = 'n';
 
 	return res;
 }
-
 Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& rangesFirst, BayesUserPreflop& preflop, BayesUserFlop& flop, BayesUserTurn& turn, BayesUserRiver& river)
 {
 	vector<PlayerRange> ranges;
@@ -185,7 +182,6 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 				CurrentPlayerInfo player = game.getPlayerByName(ranges[i].getName());
 				double akt = turn.getProbabilityFE(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * game.getBblind(), 
 					player.getLine(), player.getBetsize() * game.getBblind(), game.getBblind(), game.getPotcommon() * game.getBblind(), patternsNeeded);
-
 				if (akt < 0) return Action('n', 0);
 
 				fe *= akt;
