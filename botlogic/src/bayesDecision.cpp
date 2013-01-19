@@ -28,6 +28,16 @@ static char calculateDecision(CurrentGameInfo& game, vector<PlayerRange>& ranges
 	return res;
 }
 
+double BayesDecision::calculateBetSize(CurrentGameInfo& game, vector<PlayerRange>& ranges, BayesUserPreflop& preflop, BayesUserFlop& flop, BayesUserTurn& turn, BayesUserRiver& river)
+{
+	// preflop
+	if (game.getStreet() == 0)
+	{
+		// first in
+		
+	}
+}
+
 Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& ranges, BayesUserPreflop& preflop, BayesUserFlop& flop, BayesUserTurn& turn, BayesUserRiver& river)
 {
 	Action res;
