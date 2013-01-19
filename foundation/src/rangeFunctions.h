@@ -8,6 +8,7 @@
 
 class PlayerRange
 {
+	string name;
 public:
 	std::set<pair<Hand, double> > range;
 
@@ -22,7 +23,6 @@ public:
 		}
 		printf("Total = %lf\n", total);
 	}
-
 	double totalPercentage()
 	{
 		std::set<pair<Hand, double> >::iterator it;
@@ -34,7 +34,6 @@ public:
 
 		return total;
 	}
-
 	PlayerRange normalize()
 	{
 		PlayerRange res;
@@ -48,6 +47,15 @@ public:
 		}
 
 		return res;
+	}
+
+	void setName(string& name)
+	{
+		this->name = name;
+	};
+	string& getName()
+	{
+		return name;
 	}
 };
 class RangeUtils
