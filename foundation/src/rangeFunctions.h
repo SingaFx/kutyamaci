@@ -9,8 +9,15 @@
 class PlayerRange
 {
 	string name;
+	bool valid;
+	bool preflopNotPlaying;
 public:
 	std::set<pair<Hand, double> > range;
+
+	PlayerRange()
+	{
+		preflopNotPlaying = true;
+	}
 
 	void printRange()
 	{
@@ -23,6 +30,61 @@ public:
 		}
 		printf("Total = %lf\n", total);
 	}
+	void create100()
+	{
+		valid = true;
+		char map[4];
+		map[0] = 's';
+		map[1] = 'h';
+		map[2] = 'd';
+		map[3] = 'c';
+
+		int count1 = 0;
+		for (int i1 = 0; i1 < 4; ++i1)
+		{
+			for (int j1 = 0; j1 < 13; ++j1)
+			{
+				count1 = 13 * i1 + j1;
+
+				int count2 = 0;
+
+				for (int i2 = 0; i2 < 4; ++i2)
+				{
+					for (int j2 = j1 + 1; j2 < 13; ++j2)
+					{
+						count2 = 13 * i2 + j2;
+						if (count1 == count2) continue;
+
+						int rank1 = j1 + 2;
+						int rank2 = j2 + 2;
+						Hand hand;
+						hand.getCard1().setRank(numberToCard(rank1));
+						hand.getCard2().setRank(numberToCard(rank2));
+						hand.getCard1().setSuit(map[i1]);
+						hand.getCard2().setSuit(map[i2]);
+
+						range.insert(make_pair(hand, 1/1326));
+						
+					}
+
+					if (i2 > i1)
+					{
+						int rank1 = j1 + 2;
+						int rank2 = j1 + 2;
+						Hand hand;
+						hand.getCard1().setRank(numberToCard(rank1));
+						hand.getCard2().setRank(numberToCard(rank2));
+						hand.getCard1().setSuit(map[i1]);
+						hand.getCard2().setSuit(map[i2]);
+
+						range.insert(make_pair(hand, 1/1326));
+					}
+				}
+			}
+		}
+
+		normalize();
+	}
 	double totalPercentage()
 	{
 		std::set<pair<Hand, double> >::iterator it;
@@ -34,7 +96,7 @@ public:
 
 		return total;
 	}
-	PlayerRange normalize()
+	PlayerRange& normalize()
 	{
 		PlayerRange res;
 		double total = totalPercentage();
@@ -56,6 +118,23 @@ public:
 	string& getName()
 	{
 		return name;
+	}
+	void setValid(bool valid)
+	{
+		this->valid;
+	}
+	bool getValid()
+	{
+		return valid;
+	}
+
+	void setPreflopNotPlaying(bool preflopNotPlaying)
+	{
+		this->preflopNotPlaying = preflopNotPlaying;
+	}
+	double getPreflopNotPlaying()
+	{
+		return preflopNotPlaying;
 	}
 };
 class RangeUtils
@@ -338,6 +417,42 @@ public:
 					res.range.insert(make_pair(it1->first, akt));
 			}
 		}
+		return res;
+	}
+
+	static PlayerRange addRange(PlayerRange& r1, PlayerRange& r2)
+	{
+		PlayerRange res;
+
+		set<pair<Hand, double> >::iterator it1, iter;
+		for (it1 = r2.range.begin(); it1 != r2.range.end(); it1++)
+		{
+
+			iter = r1.range.lower_bound(make_pair(it1->first, 0.0));
+			if (iter->first == it1->first)
+			{
+				double prob = it1->second + iter->second;
+				res.range.insert(make_pair(it1->first, prob));
+			}
+			else
+			{
+				res.range.insert(make_pair(it1->first, it1->second));
+			}
+		}
+
+		for (it1 = r1.range.begin(); it1 != r1.range.end(); it1++)
+		{
+			iter = res.range.lower_bound(make_pair(it1->first, 0.0));
+			if (iter->first == it1->first)
+			{
+
+			}
+			else
+			{
+				res.range.insert(make_pair(it1->first, it1->second));
+			}
+		}
+
 		return res;
 	}
 	//FE randomizalas a FOLD szerint

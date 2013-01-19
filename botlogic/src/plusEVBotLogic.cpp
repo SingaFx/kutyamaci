@@ -57,7 +57,15 @@ PlayerRange& PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameIn
 		res = RangeUtils::mergeRange(oldPlayerRange, actual, gameInfo.getBoard());
 	}
 
+	res.setPreflopNotPlaying(false);
 
+	if (res.range.size() == 0)
+	{
+		oldPlayerRange.setValid(false);
+		return oldPlayerRange;
+	}
+
+	res.setValid(true);
 	return res;
 }
 
