@@ -513,6 +513,21 @@ public:
 		return -2.0;
 	}
 
+	double getProbabilityFE(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, int x)
+	{
+		int v[8];
+		v[0] = 0;
+		v[1] = normalizePotSize(2, potcommon, bblind);
+		v[2] = normalizeStackSize(stackSize, bblind);
+		v[3] = normalizeBetSize(2, betsize, potcommon, bblind);
+		v[4] = line;
+		v[5] = normalizeVPIP(VPIP);
+		v[6] = normalizePFR(PFR);
+		v[7] = normalizeAF(AF);
+
+		return getProbabilityFE(v, x);
+	}
+
 	PlayerRange getRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x)
 	{
 		PlayerRange res;
@@ -730,6 +745,21 @@ public:
 		return -2.0;
 	}
 
+	double getProbabilityFE(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, int x)
+	{
+		int v[8];
+		v[0] = 0;
+		v[1] = normalizePotSize(2, potcommon, bblind);
+		v[2] = normalizeStackSize(stackSize, bblind);
+		v[3] = normalizeBetSize(2, betsize, potcommon, bblind);
+		v[4] = line;
+		v[5] = normalizeVPIP(VPIP);
+		v[6] = normalizePFR(PFR);
+		v[7] = normalizeAF(AF);
+
+		return getProbabilityFE(v, x);
+	}
+
 	PlayerRange getRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x)
 	{
 		PlayerRange res;
@@ -903,6 +933,21 @@ public:
 		if (x <= total) return (double) res / (double) total;
 
 		return -2.0;
+	}
+
+	double getProbabilityFE(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, int x)
+	{
+		int v[8];
+		v[0] = 0;
+		v[1] = normalizePotSize(2, potcommon, bblind);
+		v[2] = normalizeStackSize(stackSize, bblind);
+		v[3] = normalizeBetSize(2, betsize, potcommon, bblind);
+		v[4] = line;
+		v[5] = normalizeVPIP(VPIP);
+		v[6] = normalizePFR(PFR);
+		v[7] = normalizeAF(AF);
+
+		return getProbabilityFE(v, x);
 	}
 
 	PlayerRange getRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x)
