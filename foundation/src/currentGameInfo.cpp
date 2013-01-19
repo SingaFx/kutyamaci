@@ -104,3 +104,12 @@ CurrentPlayerInfo& CurrentGameInfo::getPlayerByName(string name)
 		if (opponentsInfo[i].getName() == name) return opponentsInfo[i];
 	}
 }
+
+CurrentPlayerInfo& CurrentGameInfo::getPlayerbyPosition(int position)
+{
+	for (int i = 0; i < opponentsInfo.size(); ++i)
+	{
+		if (opponentsInfo[i].getPoz() == position)
+			return opponentsInfo[i];
+	}
+}

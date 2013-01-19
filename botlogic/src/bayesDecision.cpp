@@ -44,12 +44,15 @@ char BayesDecision::calculateDecision(CurrentGameInfo& game, vector<PlayerRange>
 
 double BayesDecision::calculateBetSize(CurrentGameInfo& game, vector<PlayerRange>& ranges, BayesUserPreflop& preflop, BayesUserFlop& flop, BayesUserTurn& turn, BayesUserRiver& river)
 {
+	double betsize = 0;
+
 	// preflop
 	if (game.getStreet() == 0)
 	{
-		// first in
 		
 	}
+
+	return betsize*game.getBblind();
 }
 
 Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& ranges, BayesUserPreflop& preflop, BayesUserFlop& flop, BayesUserTurn& turn, BayesUserRiver& river)
