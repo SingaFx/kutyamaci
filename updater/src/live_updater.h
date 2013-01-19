@@ -1,12 +1,24 @@
 #pragma once
 
 #include "updater.h"
+#include "Worker.h"
+#include "HandHistory.h"
 
-//#include <boost/thread.hpp>
-//#include <boost/date_time.hpp>
+#include <boost/thread.hpp>
+#include <boost/date_time.hpp>
+#include <boost/regex.hpp>
+
+#include <set>
+#include <string>
+
+#include <conio.h>
+#include <windows.h>
+
+using namespace std;
 
 class LiveUpdater : public Updater
 {
+    boost::mutex updateMutex;
 public:
 	LiveUpdater(string folder, Database* database)
 	{
@@ -14,21 +26,10 @@ public:
 		this->folder = folder;
 	}
 
-	//threadworker
-	void worker()
-	{
-		//give it to the parser!
-		//update the database according to the parser!
-	}
-
 	void  run()
 	{
-		//=> DELETE all the history files in the folder!! => zip them, and copy to a folder?
-		//run a batch file for this?
-
-		//get importing path
-			//1a make a new thread for every history file there
-		//update database
+        set<string> S;
+        boost::regex fileName("^Supersonic_[[:digit:]]*\.txt");
 		while(1)
 		{
 			HANDLE hFind;
@@ -40,90 +41,150 @@ public:
 			{
 				printf("No files found!\n");
 				DisplayErrorBox(TEXT("FindFirstFile"));
+                cout << "No files found" << endl;
     			return;
 			}
 
 			do
 			{
-				if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+				if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 				{
-				}
-				else
-				{
-					_tprintf(TEXT("%s\n"), ffd.cFileName);
-					//create a thread!
+					//TODO: Log the files from the directory using the logger.
+
+                    char ch[1000];
+				    char DefChar = ' ';
+				    WideCharToMultiByte(CP_ACP,0,ffd.cFileName,-1,ch,1000,&DefChar,NULL);
+				    if (regex_match(ch, fileName)) {
+                        string s = folder + "\\";
+				        string s2 = ch;
+
+                        string akt = s + s2;
+
+                        if (S.find(akt) == S.end())
+                        {
+                            S.insert(akt);
+                            Worker w(akt, this, this->updateMutex);
+                            boost::thread workerThread(w);
+
+                            std::cout << "main: waiting for thread" << std::endl;
+
+                            std::cout << "main: done" << std::endl;
+                        }
+                    }
 				}
 			}
 			while (FindNextFile(hFind, &ffd) != 0);
-			FindClose(hFind);
-			//some sleep
+
+		FindClose(hFind);
+		Sleep(10000);
 		}
 	}
-	/*
-	void parseAndUpdate(string filename)
-	{
-		//cout << "Parsing file: " << filename << endl;
 
-		OngameParser parser;
-		vector<HandHistory> history =  parser.parse(filename);
-		HandHistoryUtils::exportToFile(history,"hh.txt");
-
-		for (int i = 0; i < history.size(); ++i)
+    void update(vector<HandHistory>& history)
+    {
+        set<string>* Players = new set<string>();
+		map<string, double>* VPIP = new map<string, double>();
+		map<string, double>* PFR = new map<string, double>();
+		map<string, int>* aggrM = new map<string, int>();
+		map<string, int>* passM = new map<string, int>();
+		map<string, int>* handnr = new map<string, int>();
+        for (int i = 0; i < history.size(); ++i)
 		{
-			if (database->isHand(history[i].id)) continue;
-			database->insertHand(history[i].id);
+			if (database->isHand(history[i].getId())) continue;
+				database->insertHand(history[i].getId());
 
-			for (int j = 0; j < history[i].players.size(); ++j)
+			for (int j = 0; j < history[i].getPlayerHistories().size(); ++j)
 			{
-				PlayerHistory player = history[i].players[j];
-
-				if (!database->isUser(player.player.name))
+				PlayerHistory player = history[i].getPlayerHistories()[j];
+				/*
+				if (!database->isUser(player.getPlayerName()))
 				{
-					database->insertUser(player.player.name);
+					database->insertUser(player.getPlayerName());
+				}
+				*/
+				if (Players->find(player.getPlayerName()) == Players->end())
+				{
+					Players->insert(player.getPlayerName());
 				}
 				bool raised = false;
 				bool called = false;
-				for (int k = 0; k < player.preflopAction.size(); ++k)
+				for (int k = 0; k < player.getPreflopAction().size(); ++k)
 				{
-					if (player.preflopAction[k].type == 'r') raised = true;
-					if (player.preflopAction[k].type == 'c') called = true;
+					if (player.getPreflopAction()[k].getType() == 'r') raised = true;
+					if (player.getPreflopAction()[k].getType() == 'c') called = true;
 				}
-				
+
 				if (called || raised)
-					database->setVPIP(100, player.player.name);
+				{
+					//database->setVPIP(100, player.getPlayerName());
+					(*VPIP)[player.getPlayerName()] = ((*VPIP)[player.getPlayerName()] * (*handnr)[player.getPlayerName()] + 100) / ((*handnr)[player.getPlayerName()] + 1);
+				}
 				else
-					database->setVPIP(0, player.player.name);
+				{
+					//database->setVPIP(0, player.getPlayerName());
+					(*VPIP)[player.getPlayerName()] = ((*VPIP)[player.getPlayerName()] * (*handnr)[player.getPlayerName()]) / ((*handnr)[player.getPlayerName()] + 1);
+				}
 
 				if (raised)
-					database->setPFR(100, player.player.name);
+				{
+					//database->setPFR(100, player.getPlayerName());
+					(*PFR)[player.getPlayerName()] = ((*PFR)[player.getPlayerName()] * (*handnr)[player.getPlayerName()] + 100) / ((*handnr)[player.getPlayerName()] + 1);
+				}
 				else
-					database->setPFR(0, player.player.name);
+				{
+					//database->setPFR(0, player.getPlayerName());
+					(*PFR)[player.getPlayerName()] = ((*PFR)[player.getPlayerName()] * (*handnr)[player.getPlayerName()]) / ((*handnr)[player.getPlayerName()] + 1);
+				}
 
 				int aggr = 0;
 				int pass = 0;
-				for (int k = 0; k < player.flopAction.size(); ++k)
+				for (int k = 0; k < player.getFlopAction().size(); ++k)
 				{
-					if (player.flopAction[k].type == 'c') pass++;
-					if (player.flopAction[k].type == 'r') aggr++;
-					//if (player.flopAction[k].type == 'x') pass++;
+					if (player.getFlopAction()[k].getType() == 'c') pass++;
+					if (player.getFlopAction()[k].getType() == 'r') aggr++;
+					//if (player.getFlopAction()[k].getType() == 'x') pass++;
 				}
-				for (int k = 0; k < player.turnAction.size(); ++k)
+				for (int k = 0; k < player.getTurnAction().size(); ++k)
 				{
-					if (player.flopAction[k].type == 'c') pass++;
-					if (player.flopAction[k].type == 'r') aggr++;
-					//if (player.flopAction[k].type == 'x') pass++;
+					if (player.getFlopAction()[k].getType() == 'c') pass++;
+					if (player.getFlopAction()[k].getType() == 'r') aggr++;
+					//if (player.getFlopAction()[k].getType() == 'x') pass++;
 				}
-				for (int k = 0; k < player.riverAction.size(); ++k)
+				for (int k = 0; k < player.getRiverAction().size(); ++k)
 				{
-					if (player.flopAction[k].type == 'c') pass++;
-					if (player.flopAction[k].type == 'r') aggr++;
-					//if (player.flopAction[k].type == 'x') pass++;
+					if (player.getFlopAction()[k].getType() == 'c') pass++;
+					if (player.getFlopAction()[k].getType() == 'r') aggr++;
+					//if (player.getFlopAction()[k].getType() == 'x') pass++;
 				}
 
-				database->setAGGR(aggr, player.player.name);
-				database->setPASS(pass, player.player.name);
+				//database->setAGGR(aggr, player.getPlayerName());
+				//database->setPASS(pass, player.getPlayerName());
+				(*aggrM)[player.getPlayerName()] += aggr;
+				(*passM)[player.getPlayerName()] += pass;
+				(*handnr)[player.getPlayerName()]++;
 			}
 		}
+
+		for (set<string>::iterator it = Players->begin(); it != Players->end(); ++it)
+		{
+			if (!database->isUser(*it))
+			{
+				database->insertUser(*it);
+			}
+			database->setAGGR((*aggrM)[*it], *it);
+			database->setPASS((*passM)[*it], *it);
+			database->setPFR((*PFR)[*it], (*handnr)[*it], *it);
+			database->setVPIP((*VPIP)[*it], (*handnr)[*it], *it);
+			database->incHandnr((*handnr)[*it], *it);
+		}
+
+		delete Players;
+		delete aggrM;
+		delete passM;
+		delete VPIP;
+		delete PFR;
+		delete handnr;
+
+        cout << "Databases has been updated!" << endl;
 	}
-	*/
 };
