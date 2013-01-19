@@ -249,8 +249,6 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 		EVCALL = eq * (game.getTotalPot() + game.getAmountToCall()) - (1 - eq) * (game.getAmountToCall());
 	}
 
-
-
 	if (EVRAISE > 0 || EVCALL > 0)
 	{
 		if (EVRAISE > EVCALL)

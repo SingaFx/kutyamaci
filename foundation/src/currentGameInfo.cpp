@@ -115,3 +115,12 @@ double CurrentGameInfo::getBiggestBet()
 
 	return max;
 }
+
+CurrentPlayerInfo& CurrentGameInfo::getPlayerbyPosition(int position)
+{
+	for (int i = 0; i < opponentsInfo.size(); ++i)
+	{
+		if (opponentsInfo[i].getPoz() == position)
+			return opponentsInfo[i];
+	}
+}
