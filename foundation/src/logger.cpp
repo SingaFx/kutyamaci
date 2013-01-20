@@ -3,6 +3,7 @@
 
 const string Logger::DLL_INTERFACE_OUTPUT_FILENAME = "dllinterface.log";
 const string Logger::HAND_HISTORY_PARSER_OUTPUT_FILENAME = "handhistoryparser.log";
+const string Logger::BOT_LOGIC_OUTPUT_FILENAME = "botlogic.log";
 
 ofstream* Logger::dllInterfaceLogger_ = 0;
 ofstream* Logger::handHistoryParserLogger_ = 0;
@@ -39,24 +40,35 @@ Logger& Logger::getLogger(LOGGER_TYPE lt)
 	{
 		logger_ = new Logger();
 	}
-   
-    switch (lt)
-    {
-    case DLL_INTERFACE_LOGGER:
-        {
-            outfile_ = Logger::dllInterfaceLogger_;
-        }
-        break;
-    case HAND_HISTORY_PARSER:
-        {
-            outfile_ = Logger::handHistoryParserLogger_;
-        }
-        break;
-    };
 
 	return *logger_;
 }
 
+ofstream* Logger::getStream(LOGGER_TYPE lt)
+{
+	ofstream* currentStream;
+	switch(lt)
+	{
+	case DLL_INTERFACE_LOGGER:
+		{
+			currentStream = dllInterfaceLogger_;
+		}
+		break;
+	case HAND_HISTORY_PARSER:
+		{
+			currentStream = handHistoryParserLogger_;
+		}
+		break;
+	case BOT_LOGIC:
+		{
+			currentStream = botLogicLogger_;
+		}
+		break;
+
+	}
+
+	return currentStream;
+}
 // --------------------------------------------------
 /*
 template <class T> void Logger::log(T exp)
