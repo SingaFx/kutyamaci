@@ -29,7 +29,7 @@ PlayerRange& PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameIn
 		PlayerRange actual = preflop.getRange(player.getVPIP(), player.getPFR(), player.getStacksize() * bblind, player.getPoz(), player.getLine(), player.getBetsize() * bblind, gameInfo.getBblind(), 0, patternsNeeded);
 
 		vector<Card> cards;
-		res = RangeUtils::mergeRange(oldPlayerRange, actual, cards);
+		res = RangeUtils::mergeRange(oldPlayerRange, actual, cards, gameInfo.getHand());
 	}
 
 	if (gameInfo.getStreet() == 1)
@@ -39,7 +39,7 @@ PlayerRange& PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameIn
 		PlayerRange actual = flop.getRange(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * bblind, player.getLine(), player.getBetsize() * bblind, gameInfo.getBblind(), 
 			gameInfo.getPotcommon() * bblind, gameInfo.getBoard(), gameInfo.getHand(), patternsNeeded);
 
-		res = RangeUtils::mergeRange(oldPlayerRange, actual, gameInfo.getBoard());
+		res = RangeUtils::mergeRange(oldPlayerRange, actual, gameInfo.getBoard(), gameInfo.getHand());
 	}
 
 	if (gameInfo.getStreet() == 2)
@@ -49,7 +49,7 @@ PlayerRange& PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameIn
 		PlayerRange actual = turn.getRange(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * bblind, player.getLine(), player.getBetsize() * bblind, gameInfo.getBblind(), 
 											gameInfo.getPotcommon() * bblind, gameInfo.getBoard(), gameInfo.getHand(), patternsNeeded);
 
-		res = RangeUtils::mergeRange(oldPlayerRange, actual, gameInfo.getBoard());
+		res = RangeUtils::mergeRange(oldPlayerRange, actual, gameInfo.getBoard(), gameInfo.getHand());
 	}
 
 	if (gameInfo.getStreet() == 3)
@@ -59,7 +59,7 @@ PlayerRange& PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameIn
 		PlayerRange actual = river.getRange(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize(), player.getLine(), player.getBetsize(), gameInfo.getBblind(), 
 											gameInfo.getPotcommon(), gameInfo.getBoard(), gameInfo.getHand(), patternsNeeded);
 
-		res = RangeUtils::mergeRange(oldPlayerRange, actual, gameInfo.getBoard());
+		res = RangeUtils::mergeRange(oldPlayerRange, actual, gameInfo.getBoard(), gameInfo.getHand());
 	}
 
 	res.setPreflopNotPlaying(false);

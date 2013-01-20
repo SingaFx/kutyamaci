@@ -32,20 +32,25 @@ PlayerRange& BayesDecision::getCallRaiseRange(double betsize, PlayerRange& range
 	}
 
 	if (totalRange.range.size() == 0) return res;
-	totalRange = RangeUtils::mergeRange(range, totalRange, game.getBoard());
+	totalRange = RangeUtils::mergeRange(range, totalRange, game.getBoard(), game.getHand());
 
 	return res;
 }
 
 double BayesDecision::calculateEQ(vector<PlayerRange>& ranges, vector<Card>& board, Hand& hand)
 {
+	vector<PlayerRange> result;
 	EqCalculator calc;
-
 	PlayerRange myRange;
 	myRange.range.insert(make_pair(hand, 1));
-	ranges.push_back(myRange);
 
-	return calc.calculate(ranges, board, 25000);
+	result.push_back(myRange);
+
+	for (int i = 0; i < ranges.size(); ++i)
+	{
+		result.push_back(ranges[i]);
+	}
+	return calc.calculate(result, board, 25000);
 }
 
 char BayesDecision::calculateDecision(CurrentGameInfo& game, vector<PlayerRange>& ranges, BayesUserPreflop& preflop, BayesUserFlop& flop, BayesUserTurn& turn, BayesUserRiver& river)

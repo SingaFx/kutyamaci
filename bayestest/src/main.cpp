@@ -1,12 +1,15 @@
+#include "plusEVBotLogic.h"
 #include <iostream>
 #include <vector>
 #include "bayesUserFunctions.h"
+#include "eqcalculator.h"
 
 using namespace std;
 
 BayesUserPreflop preflop;
 BayesUserFlop flop;
 BayesUserTurn turn;
+BayesUserRiver river;
 
 
 void basic()
@@ -156,7 +159,6 @@ void basic()
 	//TODO: normalizalasok!//turn/river
 	//TODO: test full line!
 }
-
 void test1()
 {
 }
@@ -165,19 +167,54 @@ int main()
 {
     try
     {
+		EqCalculator calc;
+		PlusEVBotLogic botlogic;
+		BayesDecision decision;
+
+		preflop.read("preflopBayes");
 		flop.read("flopBayes");
-		
-		int nPotSize = 0;
-		int nStackSize = 1;
-		int nBetSize = 5;
-		int nLine = 1;
-		int nVPIP = 3;
-		int nPFR = 1;
-		int nAF = 2;
-		
+
+
+		int nPotSize;
+		int nStackSize;
+		int nBetSize;
+		int nLine;
+		int nVPIP;
+		int nPFR;
+		int nAF;
+		int poz;
 
 		int v[8];
 
+		nStackSize = 2; //150
+		nBetSize = 1;  //betsize 0 - limp, 1 - emeles, 2 - 3bet
+		nLine = 1;
+		nVPIP = 1;
+		nPFR = 1;
+		poz = 0;
+
+		v[1] = nStackSize;
+		v[2] = nBetSize;
+		v[3] = nLine;
+		v[4] = nVPIP;
+		v[5] = nPFR;
+		v[6] = poz;
+
+		//preflop.printRange(v);
+		PlayerRange preflopRange = preflop.getRange(v, 100);
+		
+		printf("PREFLOP\n");
+		preflopRange.printRange();
+
+		//FLOP
+		nPotSize = 1;
+		nStackSize = 2;
+		nBetSize = 1;
+		nLine = 1;
+		nVPIP = 1;
+		nPFR = 1;
+		nAF = 1;
+		
 		v[1] = nPotSize;	
 		v[2] = nStackSize;
 		v[3] = nBetSize;
@@ -186,8 +223,44 @@ int main()
 		v[6] = nPFR;
 		v[7] = nAF;
 
-		cout << "FE = " << flop.getProbabilityFE(v, 0) << endl;
-		flop.printRange(v);
+		cout << "FE = " << flop.getProbabilityFE(v, 100) << endl;
+		flop.printRange(v, 100);
+
+		vector<Card> cards;
+		cards.push_back(Card('A','c'));
+		cards.push_back(Card('T','d'));
+		cards.push_back(Card('3','s'));
+		Hand own(Card('A','s'), Card('Q','d'));
+		PlayerRange range = flop.getRange(v, cards, own, 50);
+		printf("FLOP\n");
+		range.printRange();
+
+		range = RangeUtils::mergeRange(preflopRange, range, cards, own);
+
+		vector<PlayerRange> ranges;
+		PlayerRange myrange;
+		myrange.range.insert(make_pair(own, 1));
+		ranges.push_back(myrange);
+		ranges.push_back(range);
+
+		printf("FLOP MERGED\n");
+		range.printRange();
+
+		double EQ = calc.calculate(ranges, cards, 25000);
+		printf("%.2lf\n", EQ);
+
+
+		printf("BOTLOGIC TESTS\n");
+
+		CurrentPlayerInfo info;
+		CurrentGameInfo gameInfo;
+
+		info.setVPIP(40);
+		info.setPFR(30);
+		info.setStacksize(100);
+		
+		gameInfo.setPotcommon(100);
+		range = decision.getCallRaiseRange(10, range, gameInfo, preflop, flop, turn, river);
     }
     catch (std::exception& e)
     {

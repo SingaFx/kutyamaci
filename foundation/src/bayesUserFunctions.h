@@ -487,21 +487,14 @@ public:
 		res += probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
 		
 		if (x <= total) return (double) res / (double) total;
-		//af szerint
-		for (int i = 0; i < PLAYER_AF_NUM; ++i)
-		{
-			if (i == v[7]) continue;
-			total += totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][i];
-			res += probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][i];
-		}
-		if (x <= total) return (double) res / (double) total;
-		//stacksize szerint
+
 		for (int i = 0; i < PLAYER_STACK_SIZE_NUM; ++i)
 		{
-			if (i == v[1]) continue;
-			total += totalS[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
-			res += probabilityHS[v[0]][i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
+			if (v[2] == i) continue;
+			total += totalS[v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]];
+			res += probabilityHS[v[0]][v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]];
 		}
+		printf("Total %d\n", total);
 		if (x <= total) return (double) res / (double) total;
 
 		return -2.0;
@@ -524,6 +517,7 @@ public:
 			total += totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][i];
 			res += probabilityFE[0][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][i];
 		}
+
 		if (x <= total) return (double) res / (double) total;
 		//stacksize szerint
 		for (int i = 0; i < PLAYER_STACK_SIZE_NUM; ++i)
@@ -631,15 +625,15 @@ public:
 		return callingRange;
 	}
 
-	void printRange(int v[])
+	void printRange(int v[], int x)
 	{
 		cout << "Total situations = " << totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]] << endl;
 		double total = 0;
 		for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
 		{
 			v[0] = i;
-			cout << "P(HS = " << i << ") = " << getProbabilityHS(v, 0) << endl;
-			total += getProbabilityHS(v, 0);
+			cout << "P(HS = " << i << ") = " << getProbabilityHS(v, 50) << endl;
+			total += getProbabilityHS(v, 50);
 		}
 		printf("Total = %lf\n", total);
 	}
@@ -770,21 +764,14 @@ public:
 		res += probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
 		
 		if (x <= total) return (double) res / (double) total;
-		//af szerint
-		for (int i = 0; i < PLAYER_AF_NUM; ++i)
-		{
-			if (i == v[7]) continue;
-			total += totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][i];
-			res += probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][i];
-		}
-		if (x <= total) return (double) res / (double) total;
-		//stacksize szerint
+
 		for (int i = 0; i < PLAYER_STACK_SIZE_NUM; ++i)
 		{
-			if (i == v[1]) continue;
-			total += totalS[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
-			res += probabilityHS[v[0]][i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
+			if (v[2] == i) continue;
+			total += totalS[v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]];
+			res += probabilityHS[v[0]][v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]];
 		}
+		printf("Total %d\n", total);
 		if (x <= total) return (double) res / (double) total;
 
 		return -2.0;
@@ -1046,21 +1033,14 @@ public:
 		res += probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
 		
 		if (x <= total) return (double) res / (double) total;
-		//af szerint
-		for (int i = 0; i < PLAYER_AF_NUM; ++i)
-		{
-			if (i == v[7]) continue;
-			total += totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][i];
-			res += probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][i];
-		}
-		if (x <= total) return (double) res / (double) total;
-		//stacksize szerint
+
 		for (int i = 0; i < PLAYER_STACK_SIZE_NUM; ++i)
 		{
-			if (i == v[1]) continue;
-			total += totalS[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
-			res += probabilityHS[v[0]][i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
+			if (v[2] == i) continue;
+			total += totalS[v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]];
+			res += probabilityHS[v[0]][v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]];
 		}
+		printf("Total %d\n", total);
 		if (x <= total) return (double) res / (double) total;
 
 		return -2.0;
