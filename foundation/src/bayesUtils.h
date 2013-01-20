@@ -178,35 +178,30 @@ static int normalizeBetSize(int street, double betsize, double potcommon, double
 			return 0;
 		}
 
-		if ((betsize/potcommon) <= 0.5)
+		if ((betsize/potcommon) <= 0.7)
 		{
 			return 1;
 		}
 
-		if ((betsize/potcommon) <= 0.7)
+		if ((betsize/potcommon) <= 1)
 		{
 			return 2;
 		}
 
-		if ((betsize/potcommon) <= 1)
+		if ((betsize/potcommon) <= 2)
 		{
 			return 3;
 		}
 
-		if ((betsize/potcommon) <= 2)
+		if ((betsize/potcommon) <= 3)
 		{
 			return 4;
 		}
 
-		if ((betsize/potcommon) <= 3)
-		{
-			return 5;
-		}
-
-		return 6;
+		return 5;
 	}
 
-	return 6;
+	return 5;
 }
 static int normalizePotSize(int street, double potcommon, double bblind)
 {
@@ -304,7 +299,12 @@ static int normalizeStackSize(double stacksize, double bblind)
 		return 2;
 	}
 
-	return 3;
+	if (stacksize < 150 * bblind)
+	{
+		return 3;
+	}
+
+	return 4;
 }
 
 static double getBetsize(int street, int betsize, double potcommon)
@@ -322,30 +322,25 @@ static double getBetsize(int street, int betsize, double potcommon)
 
 		if (betsize == 1)
 		{
-			return potcommon * 0.5;
+			return potcommon * 0.7;
 		}
 
 		if (betsize == 2)
 		{
-			return potcommon * 0.7;
+			return potcommon * 1;
 		}
 
 		if (betsize == 3)
 		{
-			return potcommon * 1;
+			return potcommon * 2;
 		}
 
 		if (betsize == 4)
 		{
-			return potcommon * 2;
-		}
-
-		if (betsize == 5)
-		{
 			return potcommon * 3;
 		}
 
-		if (betsize == 6)
+		if (betsize == 5)
 		{
 			return potcommon * 5;
 		}

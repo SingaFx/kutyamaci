@@ -38,10 +38,10 @@
     <ClCompile Include="src\bayesDecision.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\plusEVBotLogic.cpp">
+    <ClCompile Include="src\botmanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\botmanager.cpp">
+    <ClCompile Include="src\plusEVBotLogic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
