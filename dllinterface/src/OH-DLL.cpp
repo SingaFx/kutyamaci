@@ -453,6 +453,8 @@ double process_state(holdem_state* pstate)
         return 0;
     }
 
+	CurrentGameInfo* old_cgi = gamestateManager.getCurrentGameInfo();
+	delete old_cgi;
     gamestateManager.setCurrentGameInfo(cgi);
 
     // testing new hand    
@@ -573,9 +575,6 @@ double process_state(holdem_state* pstate)
             logger.logExp(buffer, DLL_INTERFACE_LOGGER);
         }
     }
-               
-           
-    delete cgi;
 
 	return 0;
 
