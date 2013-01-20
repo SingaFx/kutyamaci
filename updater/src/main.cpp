@@ -25,8 +25,13 @@ int main(int argc, char *argv[])
 	po::store(po::parse_command_line(argc, argv, desc), vm);
 	po::notify(vm);
 
-	database = new Database("192.168.0.100", "root", "root", "kutya");
-	printf("%s\n", database->query("show tables").c_str());
+	//LOCALS settings
+    database = new Database("127.0.0.1", "root", "maratsafin", "kutya");
+
+    //SETTINGS FOR ROBI TEST
+    //database = new Database("192.168.0.100", "root", "root", "kutya");
+
+    printf("%s\n", database->query("show tables").c_str());
 
 	if (vm.count("live"))
 	{

@@ -69,6 +69,8 @@ vector<HandHistory> BwinPartyParser::parse(string filename)
         }
     }
 
+    bool isInHand = false;
+
 	while (!file.eof())
 	{
 		getline(file, line);
@@ -76,22 +78,17 @@ vector<HandHistory> BwinPartyParser::parse(string filename)
 		// Found a new hand
 		if (regex_search(line, what, handstart, flags))
 		{
-			actualhand.setId(string(what[1].first, what[1].second));
+			isInHand = true;
+            actualhand.setId(string(what[1].first, what[1].second));
 			actualhand.setFinalBetRound(0);
 		}
 
 		// Found end of hand
 		else if (regex_match(line, handend))
 		{
-			actualhand.setButtonSeat(buttonSeat);
-			HandHistoryUtils::setPlayersPosition(actualhand, buttonSeat);
-            if (false != HandHistoryUtils::isValidHandHistory(actualhand))
-            {
-                result.push_back(actualhand);
-            }
-
-			actualhand.getPlayerHistories().clear();
-			round = 0;
+			isInHand = false;
+            this->pushActualHandToParseResult(result, actualhand, buttonSeat);
+            this->clearActualHandInfo(actualhand, round);
 		}
 
 		// Found the table
@@ -222,8 +219,29 @@ vector<HandHistory> BwinPartyParser::parse(string filename)
 
 	file.close();
 
+    if (true == isInHand) {
+        this->pushActualHandToParseResult(result, actualhand, buttonSeat);
+        this->clearActualHandInfo(actualhand, round);
+    }
+
 	Logger& logger = Logger::getLogger(LOGGER_TYPE::HAND_HISTORY_PARSER);
     logger.logExp("The BWINPARSER has parsed the following number of hands: ", (int)result.size(), LOGGER_TYPE::HAND_HISTORY_PARSER);
 
     return result;
+}
+
+void BwinPartyParser::pushActualHandToParseResult(vector<HandHistory>& result, HandHistory& actualhand, int& buttonSeat)
+{
+    actualhand.setButtonSeat(buttonSeat);
+	HandHistoryUtils::setPlayersPosition(actualhand, buttonSeat);
+    if (false != HandHistoryUtils::isValidHandHistory(actualhand))
+    {
+        result.push_back(actualhand);
+    }
+}
+
+void BwinPartyParser::clearActualHandInfo(HandHistory& actualhand, int& round)
+{
+    actualhand.getPlayerHistories().clear();
+	round = 0;
 }
