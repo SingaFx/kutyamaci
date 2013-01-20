@@ -26,7 +26,7 @@ void PlayerRangeManager::resetRanges()
     playerRanges.clear();
 
     PlayerRange pr;
-    // initialization goes here!!! newly created ranges shoudl be 100% range
+	pr.create100();
     for (int idx = 0; idx < 6; ++idx)
     {
         playerRanges.push_back(pr);
