@@ -10,6 +10,11 @@ PlusEVBotLogic::PlusEVBotLogic()
 	river.read("riverBayes");
 }
 
+PlusEVBotLogic::~PlusEVBotLogic()
+{
+
+}
+
 PlayerRange& PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameInfo, PlayerRange& oldPlayerRange)
 {
 	extendGameInfo(gameInfo);
