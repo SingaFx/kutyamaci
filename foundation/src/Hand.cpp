@@ -47,6 +47,11 @@ bool Hand::operator == (const Hand& h) const
         || ((h.card1 == card2) && (h.card2 == card1));
 }
 
+bool Hand::operator!=(const Hand& h) const
+{
+    return !(*this == h);
+}
+
 bool Hand::operator < (const Hand& h) const
 {
 	bool less = false;

@@ -22,7 +22,7 @@ public:
 
     void setCard(char, char);
 
-    bool operator == (const Card& c) const;
+    bool operator == (const Card& c) const;    
     bool operator < (const Card& c) const;
 };
 

@@ -64,12 +64,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\AbstractBotLogic.h" />
     <ClInclude Include="src\bayesDecision.h" />
+    <ClInclude Include="src\botmanager.h" />
     <ClInclude Include="src\plusEVBotLogic.h" />
     <ClInclude Include="src\simpleDecision.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\bayesDecision.cpp" />
+    <ClCompile Include="src\botmanager.cpp" />
     <ClCompile Include="src\plusEVBotLogic.cpp" />
     <ClCompile Include="src\simpleDecision.cpp" />
   </ItemGroup>

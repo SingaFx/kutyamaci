@@ -18,9 +18,21 @@
     <ClInclude Include="src\OH-DLL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\gamestatemanager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\playerrangemanager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\OH-DLL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gamestatemanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\playerrangemanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

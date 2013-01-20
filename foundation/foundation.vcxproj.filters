@@ -60,9 +60,6 @@
     <ClInclude Include="src\PlayerHistory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\AbstractBotLogic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\currentGameInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>

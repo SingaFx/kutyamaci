@@ -97,6 +97,9 @@ char SimpleDecision::calculateDecision(CurrentGameInfo& game)
 			}
 		}
 	}
+
+    // !!!! it's dummy - without return doesn't compile
+    return 'x';
 }
 
 double SimpleDecision::calculateBetSize(CurrentGameInfo& game)

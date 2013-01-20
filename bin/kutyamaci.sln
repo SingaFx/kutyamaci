@@ -28,6 +28,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpptest", "..\tests\cpptest
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dllinterface", "..\dllinterface\dllinterface.vcxproj", "{AC4F0D74-7FFF-469A-A57E-36C40FCB21B3}"
 	ProjectSection(ProjectDependencies) = postProject
+		{6DF510AB-0E81-4DE0-B510-B478A72B32FA} = {6DF510AB-0E81-4DE0-B510-B478A72B32FA}
 		{D9C913C6-DCB8-42DE-A4AE-B9C081D643C8} = {D9C913C6-DCB8-42DE-A4AE-B9C081D643C8}
 	EndProjectSection
 EndProject

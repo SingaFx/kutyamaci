@@ -21,6 +21,7 @@ public:
     Card& getCard2();
 
     bool operator == (const Hand& h) const;
+    bool operator != (const Hand& h) const;
     bool operator < (const Hand& h) const;
 };
 

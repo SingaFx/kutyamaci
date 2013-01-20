@@ -6,7 +6,7 @@
 #include "bayesDecision.h"
 #include "simpleDecision.h"
 
-class PlusEVBotLogic : AbstractBotLogic //implements interface
+class PlusEVBotLogic : public AbstractBotLogic //implements interface
 {
 private:
 	static const int patternsNeeded = 10;
@@ -21,8 +21,8 @@ private:
 
 public:
 	PlusEVBotLogic();
-	~PlusEVBotLogic();
+	virtual ~PlusEVBotLogic();
 
-    PlayerRange& calculateRange(string name, CurrentGameInfo&, PlayerRange&);
-    Action makeDecision(CurrentGameInfo&, vector<PlayerRange>&);
+    virtual PlayerRange& calculateRange(string name, CurrentGameInfo&, PlayerRange&);
+    virtual Action makeDecision(CurrentGameInfo&, vector<PlayerRange>&);
 };

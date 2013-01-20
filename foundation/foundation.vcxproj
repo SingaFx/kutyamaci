@@ -62,7 +62,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\AbstractBotLogic.h" />
     <ClInclude Include="src\Action.h" />
     <ClInclude Include="src\bayesFunctions.h" />
     <ClInclude Include="src\bayesUserFunctions.h" />

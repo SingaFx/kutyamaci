@@ -24,6 +24,12 @@
     <ClInclude Include="src\plusEVBotLogic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\botmanager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\AbstractBotLogic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\simpleDecision.cpp">
@@ -33,6 +39,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\plusEVBotLogic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\botmanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

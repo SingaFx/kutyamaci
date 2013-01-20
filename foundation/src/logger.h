@@ -23,14 +23,33 @@ public:
 	{
 		(*outfile_) << exp << std::endl;
 	}
-
+    /*
 	template <class T> void logExp(const char* description, T expression)
 	{
 		(*outfile_) << description << expression << std::endl;
-	}
+	}*/
 	//void logExp(const char* description, bool expression);
 	//void logExp(const char* description, int expression);
-	//void logExp(const char* description, double expression);
+	void logExp(const char* description, double expression)
+    {
+        (*outfile_) << description << expression << std::endl;
+    }
+	void logExp(const char* description, const char* expression)
+    {
+        (*outfile_) << description << expression << std::endl;
+    }
+	void logExp(const char* description, int expression)
+    {
+        (*outfile_) << description << expression << std::endl;
+    }
+	void logExp(const char* description, bool expression)
+    {
+        (*outfile_) << description << expression << std::endl;
+    }
+	void logExp(const char* description, char expression)
+    {
+        (*outfile_) << description << expression << std::endl;
+    }
 
     static const string DLL_INTERFACE_OUTPUT_FILENAME;
     static const string HAND_HISTORY_PARSER_OUTPUT_FILENAME;
