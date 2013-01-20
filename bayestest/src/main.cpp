@@ -11,7 +11,6 @@ BayesUserFlop flop;
 BayesUserTurn turn;
 BayesUserRiver river;
 
-
 void basic()
 {
 	//nev
@@ -31,18 +30,14 @@ void basic()
 	double betsize = 0.2;
 	int poz = 0;
 	double stacksize = 2;
-		
+
 	//preflop.read("preflopBayes");
 	flop.read("flopBayes");
 	//turn.read("turnBayes");
 
-
-
-
 	//preflop.read("..\\..\\tests\\resource\\bayes\\preflopBayes");
 	//flop.read("..\\..\\tests\\resource\\bayes\\flopBayes");
 	//turn.read("..\\..\\tests\\resource\\bayes\\turnBayes");
-
 
 	//======PREFLOP===================================================
 	/*
@@ -54,7 +49,7 @@ void basic()
 	poz = 4;
 	int nAF;
 	int nPotSize;
-		
+
 	int v[8];
 	v[1] = nStackSize;
 	v[2] = nBetSize;
@@ -62,13 +57,13 @@ void basic()
 	v[4] = nVPIP;
 	v[5] = nPFR;
 	v[6] = poz;
-		
+
 	PlayerRange rangePre = preflop.getRange(v, 0);
 	rangePre = rangePre.normalize();
 	preflop.printRange(v);
 	v[0] = 0;
 	cout << "FOLD = " << preflop.getProbability(v, 0) << endl;
-		
+
 	printf("PREFLOP RANGE\n");
 	rangePre.printRange();
 
@@ -82,19 +77,18 @@ void basic()
 	nAF = 1;
 	nPotSize = 2; //35*bblind
 
-	v[1] = nPotSize;	
+	v[1] = nPotSize;
 	v[2] = nStackSize;
 	v[3] = nBetSize;
 	v[4] = nLine;
 	v[5] = nVPIP;
 	v[6] = nPFR;
 	v[7] = nAF;
-		
 
 	printf("FLOP RANGE\n");
 
 	cout << "FE = " << flop.getProbabilityFE(v, 0) << endl;
-	flop.printRange(v); 
+	flop.printRange(v);
 
 	double HS[10];
 	for (int i = 0; i < flop.HAND_STRENGTH_NUM; ++i)
@@ -102,15 +96,14 @@ void basic()
 		v[0] = i;
 		HS[i] = flop.getProbabilityHS(v, 0);
 	}
-		
+
 	Card card1('A','s'), card2('A','d'), card3('A','c');
 	vector<Card> cards;
 	cards.push_back(card1); cards.push_back(card2); cards.push_back(card3);
 
-
 	Hand own;
 	PlayerRange range1 = RangeUtils::createRange(8, HS, cards, own);
-		
+
 	range1.printRange();
 	range1 = RangeUtils::mergeRange(rangePre, range1, cards);
 	printf("MERGED PREFLOP-FLOP RANGE\n");
@@ -126,7 +119,7 @@ void basic()
 	nAF = 1;
 	nPotSize = 2; //30 - 70 *bblind
 
-	v[1] = nPotSize;	
+	v[1] = nPotSize;
 	v[2] = nStackSize;
 	v[3] = nBetSize;
 	v[4] = nLine;
@@ -149,7 +142,7 @@ void basic()
 	cards.push_back(card4);
 
 	PlayerRange rangeTurn = RangeUtils::createRange(8, HS, cards, own);
-		
+
 	rangeTurn.printRange();
 
 	range1 = RangeUtils::mergeRange(range1, rangeTurn, cards);
@@ -173,7 +166,6 @@ int main()
 
 		preflop.read("preflopBayes");
 		flop.read("flopBayes");
-
 
 		int nPotSize;
 		int nStackSize;
@@ -202,7 +194,7 @@ int main()
 
 		//preflop.printRange(v);
 		PlayerRange preflopRange = preflop.getRange(v, 100);
-		
+
 		printf("PREFLOP\n");
 		preflopRange.printRange();
 
@@ -214,8 +206,8 @@ int main()
 		nVPIP = 1;
 		nPFR = 1;
 		nAF = 1;
-		
-		v[1] = nPotSize;	
+
+		v[1] = nPotSize;
 		v[2] = nStackSize;
 		v[3] = nBetSize;
 		v[4] = nLine;
@@ -249,7 +241,6 @@ int main()
 		double EQ = calc.calculate(ranges, cards, 25000);
 		printf("%.2lf\n", EQ);
 
-
 		printf("BOTLOGIC TESTS\n");
 
 		CurrentPlayerInfo info;
@@ -258,7 +249,7 @@ int main()
 		info.setVPIP(40);
 		info.setPFR(30);
 		info.setStacksize(100);
-		
+
 		gameInfo.setPotcommon(100);
 		range = decision.getCallRaiseRange(10, range, gameInfo, preflop, flop, turn, river);
     }
@@ -270,7 +261,3 @@ int main()
         cin.get();
     }
 }
-
-
-
-

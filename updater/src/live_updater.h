@@ -3,6 +3,7 @@
 #include "updater.h"
 #include "Worker.h"
 #include "HandHistory.h"
+#include "logger.h"
 
 #include <boost/thread.hpp>
 #include <boost/date_time.hpp>
@@ -18,8 +19,11 @@ using namespace std;
 
 class LiveUpdater : public Updater
 {
+private:
+
     boost::mutex updateMutex;
 public:
+
 	LiveUpdater(string folder, Database* database)
 	{
 		this->database = database;
@@ -30,6 +34,7 @@ public:
 	{
         set<string> S;
         boost::regex fileName("^Supersonic_[[:digit:]]*\.txt");
+        Logger& logger = Logger::getLogger(LOGGER_TYPE::HAND_HISTORY_PARSER);
 		while(1)
 		{
 			HANDLE hFind;
@@ -39,13 +44,12 @@ public:
 
 			if ((hFind = FindFirstFile(s2ws(s).c_str(), &ffd)) == INVALID_HANDLE_VALUE)
 			{
-				printf("No files found!\n");
-				DisplayErrorBox(TEXT("FindFirstFile"));
-                cout << "No files found" << endl;
+				Logger& logger = Logger::getLogger(LOGGER_TYPE::HAND_HISTORY_PARSER);
+                logger.logExp("Invalid path specified for the hand history files.", LOGGER_TYPE::HAND_HISTORY_PARSER);
     			return;
 			}
 
-			do
+            do
 			{
 				if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 				{
@@ -65,10 +69,6 @@ public:
                             S.insert(akt);
                             Worker w(akt, this, this->updateMutex);
                             boost::thread workerThread(w);
-
-                            std::cout << "main: waiting for thread" << std::endl;
-
-                            std::cout << "main: done" << std::endl;
                         }
                     }
 				}
@@ -82,6 +82,8 @@ public:
 
     void update(vector<HandHistory>& history)
     {
+        Logger& logger = Logger::getLogger(LOGGER_TYPE::HAND_HISTORY_PARSER);
+
         set<string>* Players = new set<string>();
 		map<string, double>* VPIP = new map<string, double>();
 		map<string, double>* PFR = new map<string, double>();
@@ -91,7 +93,9 @@ public:
         for (int i = 0; i < history.size(); ++i)
 		{
 			if (database->isHand(history[i].getId())) continue;
-				database->insertHand(history[i].getId());
+            Logger& logger = Logger::getLogger(LOGGER_TYPE::HAND_HISTORY_PARSER);
+            logger.logExp("The following hand does not exist in the database: ", history[i].getId().c_str(), LOGGER_TYPE::HAND_HISTORY_PARSER);
+            database->insertHand(history[i].getId());
 
 			for (int j = 0; j < history[i].getPlayerHistories().size(); ++j)
 			{
