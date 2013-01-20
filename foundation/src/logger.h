@@ -19,8 +19,9 @@ public:
 
 	static Logger& getLogger(LOGGER_TYPE);
 
-	template <class T> void logExp(T exp)
+	template <class T> void logExp(T exp, LOGGER_TYPE lt)
 	{
+		outfile_ = getStream(lt);
 		(*outfile_) << exp << std::endl;
 	}
     /*
@@ -30,29 +31,41 @@ public:
 	}*/
 	//void logExp(const char* description, bool expression);
 	//void logExp(const char* description, int expression);
-	void logExp(const char* description, double expression)
-    {
-        (*outfile_) << description << expression << std::endl;
-    }
-	void logExp(const char* description, const char* expression)
-    {
-        (*outfile_) << description << expression << std::endl;
-    }
-	void logExp(const char* description, int expression)
-    {
-        (*outfile_) << description << expression << std::endl;
-    }
-	void logExp(const char* description, bool expression)
-    {
-        (*outfile_) << description << expression << std::endl;
-    }
-	void logExp(const char* description, char expression)
-    {
+	void logExp(const char* description, double expression, LOGGER_TYPE lt)
+	{
+		outfile_ = getStream(lt);
         (*outfile_) << description << expression << std::endl;
     }
 
+	void logExp(const char* description, const char* expression, LOGGER_TYPE lt)
+    {
+		outfile_ = getStream(lt);
+        (*outfile_) << description << expression << std::endl;
+    }
+
+	void logExp(const char* description, int expression, LOGGER_TYPE lt)
+    {
+		outfile_ = getStream(lt);
+        (*outfile_) << description << expression << std::endl;
+    }
+
+	void logExp(const char* description, bool expression, LOGGER_TYPE lt)
+    {
+		outfile_ = getStream(lt);
+        (*outfile_) << description << expression << std::endl;
+    }
+
+	void logExp(const char* description, char expression, LOGGER_TYPE lt)
+    {
+		outfile_ = getStream(lt);
+        (*outfile_) << description << expression << std::endl;
+    }
+
+	ofstream* getStream(LOGGER_TYPE lt);
+
     static const string DLL_INTERFACE_OUTPUT_FILENAME;
     static const string HAND_HISTORY_PARSER_OUTPUT_FILENAME;
+    static const string BOT_LOGIC_OUTPUT_FILENAME;
 
 private:
 
@@ -63,6 +76,7 @@ private:
 	
 	static ofstream* dllInterfaceLogger_;
     static ofstream* handHistoryParserLogger_;
+	static ofstream* botLogicLogger_;
     static ofstream* outfile_;
 };
 

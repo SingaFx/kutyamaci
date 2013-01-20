@@ -99,29 +99,29 @@ CurrentGameInfo* createCurrentGameInfo(bool& isValid)
 {
     isValid = true; // we are optimistic as always    
     Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);
-    logger.logExp("CurrentGameInfo : ");
+    logger.logExp("CurrentGameInfo : ", DLL_INTERFACE_LOGGER);
 
     CurrentGameInfo* currentGameInfo = new CurrentGameInfo();
     // big blind
     double bblind = gws("bblind");
-    logger.logExp("[-> bblind] : ", bblind);
+    logger.logExp("[-> bblind] : ", bblind, DLL_INTERFACE_LOGGER);
     currentGameInfo->setBblind(bblind);
 
     // hero cards
     double rank1 = gws("$$pr0");
-    logger.logExp("-> $$pr0 : ", rank1);
+    logger.logExp("-> $$pr0 : ", rank1, DLL_INTERFACE_LOGGER);
 
     isValid = isValid && (rank1 >= 2 && rank1 <= 14);
 
     char crank1 = convertRankToChar((int)rank1);
 
     double suit1 = gws("$$ps0");    
-    logger.logExp("-> $$ps0 : ", suit1);
+    logger.logExp("-> $$ps0 : ", suit1, DLL_INTERFACE_LOGGER);
 
     char csuit1 = convertSuitToChar((int)suit1);
         
-    logger.logExp("-> rank1 : ", crank1);
-    logger.logExp("-> suit1 : ", csuit1);
+    logger.logExp("-> rank1 : ", crank1, DLL_INTERFACE_LOGGER);
+    logger.logExp("-> suit1 : ", csuit1, DLL_INTERFACE_LOGGER);
 
     double rank2 = gws("$$pr1");
     isValid = isValid && (rank1 >= 2 && rank1 <= 14);
@@ -129,8 +129,8 @@ CurrentGameInfo* createCurrentGameInfo(bool& isValid)
     char crank2 = convertRankToChar((int)rank2);
     double suit2 = gws("$$ps1");
     char csuit2 = convertSuitToChar((int)suit2);
-    logger.logExp("-> rank2 : ", rank2);
-    logger.logExp("-> suit2 : ", suit2);
+    logger.logExp("-> rank2 : ", rank2, DLL_INTERFACE_LOGGER);
+    logger.logExp("-> suit2 : ", suit2, DLL_INTERFACE_LOGGER);
     
     Card hero1(crank1, csuit1);
     Card hero2(crank2, csuit2);
@@ -139,7 +139,7 @@ CurrentGameInfo* createCurrentGameInfo(bool& isValid)
 
     char buffer[100];
     sprintf(buffer,"-> hole cards : %c%c%c%c", crank1, csuit1, crank2, csuit2);
-    logger.logExp(buffer);
+    logger.logExp(buffer, DLL_INTERFACE_LOGGER);
     // common cards
     vector<Card> board;
     // flop
@@ -185,19 +185,19 @@ CurrentGameInfo* createCurrentGameInfo(bool& isValid)
 
     // betting round
     double bettingRound = gws("br");
-    logger.logExp("-> betting round : ", bettingRound);
+    logger.logExp("-> betting round : ", bettingRound, DLL_INTERFACE_LOGGER);
     currentGameInfo->setStreet(bettingRound-1);
 
     double amountToCall = gws("call");
-    logger.logExp("-> amount to call : ", amountToCall);
+    logger.logExp("-> amount to call : ", amountToCall, DLL_INTERFACE_LOGGER);
     currentGameInfo->setAmountToCall(amountToCall / bblind);
 
     double potCommon = gws("potcommon");
-    logger.logExp("-> pot common : ", potCommon / bblind);
+    logger.logExp("-> pot common : ", potCommon / bblind, DLL_INTERFACE_LOGGER);
     currentGameInfo->setPotcommon(potCommon);
     
     double totalPot = gws("potplayer");
-    logger.logExp("-> total in pot : ", (potCommon + totalPot) / bblind);
+    logger.logExp("-> total in pot : ", (potCommon + totalPot) / bblind, DLL_INTERFACE_LOGGER);
     currentGameInfo->setTotalPot(totalPot);
 
 
@@ -263,7 +263,7 @@ void refreshPlayersName(holdem_state* pstate)
         if (hp.m_name_known & 0x01)
         {
             sprintf(buffer, "holdem_player[%d] -> player name : ", idx);
-            logger.logExp(buffer, hp.m_name);
+            logger.logExp(buffer, hp.m_name, DLL_INTERFACE_LOGGER);
 
             gameStateManager.setPlayer(string(hp.m_name), idx);
         }
@@ -273,16 +273,16 @@ void refreshPlayersName(holdem_state* pstate)
 void resetHand(holdem_state* pstate, Hand hand)
 {
     Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);
-    logger.logExp("[New hand] : resetting game state!");
+    logger.logExp("[New hand] : resetting game state!", DLL_INTERFACE_LOGGER);
 
     double dealerchair = gws("dealerchair");
-    logger.logExp("-> dealerchair : ", dealerchair);
+    logger.logExp("-> dealerchair : ", dealerchair, DLL_INTERFACE_LOGGER);
 
     GameStateManager& gameStateManager = GameStateManager::getGameStateManager();
     gameStateManager.resetState((int)dealerchair, hand);
 
     // setting up starting balances
-    for (int idx = 0; idx < 5; ++idx)
+    for (int idx = 0; idx <= 5; ++idx)
     {        
         gameStateManager.setInitialBalance(idx, getBalanceByPos(idx));
     }
@@ -348,7 +348,7 @@ void detectMissedCallsAndUpdatePlayerRanges()
 double process_query(const char* pquery)
 {
     Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);            
-    logger.logExp(string("[Processing query] : ").append(pquery).c_str());
+    logger.logExp(string("[Processing query] : ").append(pquery).c_str(), DLL_INTERFACE_LOGGER);
 
 	if(pquery == NULL)
     {
@@ -390,7 +390,7 @@ double process_state(holdem_state* pstate)
     ++scrape_cycle;
 
     Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);
-    logger.logExp("[Processing state] : ");
+    logger.logExp("[Processing state] : ", DLL_INTERFACE_LOGGER);
 
     BotManager& botManager = BotManager::getBotManager();
     AbstractBotLogic* botLogic = botManager.getPluggableBot();
@@ -404,7 +404,7 @@ double process_state(holdem_state* pstate)
     if (!isValid)
     {
         delete cgi;
-        logger.logExp("[SKIPPING SCRAPPING CYCLE] : hero hole cards are not valid!");
+        logger.logExp("[SKIPPING SCRAPPING CYCLE] : hero hole cards are not valid!", DLL_INTERFACE_LOGGER);
         return 0;
     }
 
@@ -440,14 +440,14 @@ double process_state(holdem_state* pstate)
     //}
 
     double playersplayingbits = gws("playersplayingbits");
-    logger.logExp("-> playersplayingbits : ", playersplayingbits);
+    logger.logExp("-> playersplayingbits : ", playersplayingbits, DLL_INTERFACE_LOGGER);
     for (int idx = 1; idx < 6; ++idx) // hero always sits at 0!
     {
         char buffer[100];            
         if (isBitSet((int)playersplayingbits, idx))
         {
             sprintf_s(buffer, "--> Player %d is playing!",idx);
-            logger.logExp(buffer);
+            logger.logExp(buffer, DLL_INTERFACE_LOGGER);
 
             double currentBet = currentBets[idx];
 
@@ -473,7 +473,7 @@ double process_state(holdem_state* pstate)
                     else
                     {
                         // this is impossible - something went wrong :(
-                        logger.logExp("[ERROR at setting last line !]");
+                        logger.logExp("[ERROR at setting last line !]", DLL_INTERFACE_LOGGER);
                     }
 
                     // this player did something so we update his/her range
@@ -507,7 +507,7 @@ double process_state(holdem_state* pstate)
                     else
                     {
                         // this is impossible - something went wrong :(
-                        logger.logExp("[ERROR at setting last line !]");
+                        logger.logExp("[ERROR at setting last line !]", DLL_INTERFACE_LOGGER);
                     }
 
                     gamestateManager.setCurrentPlayerInfo(idx, currentPlayerInfo);
@@ -523,7 +523,7 @@ double process_state(holdem_state* pstate)
         else
         {
             sprintf_s(buffer, "--> Player %d has already folded!",idx);
-            logger.logExp(buffer);
+            logger.logExp(buffer, DLL_INTERFACE_LOGGER);
         }
     }
                
