@@ -21,7 +21,7 @@ class Database
 
 	FILE* logfile;
 	MYSQL* conn;
-	
+
 public:
 	Database(char* server, char* user, char* password, char* database)
 	{
@@ -45,10 +45,10 @@ public:
 	{
 		string result="";
 
-		MYSQL_RES *res;	  
-		MYSQL_ROW row;	
+		MYSQL_RES *res;
+		MYSQL_ROW row;
 		res = mysql_perform_query(conn, (char *) s.c_str());
-		if (res == NULL) 
+		if (res == NULL)
 		{
 			mysql_free_result(res);
 			return result;
@@ -61,7 +61,7 @@ public:
 		}
 		*/
 		row = mysql_fetch_row(res);
-		if (row == NULL) 
+		if (row == NULL)
 		{
 			mysql_free_result(res);
 			return result;
@@ -102,7 +102,7 @@ public:
 	{
 		string q = "SELECT handnr FROM user WHERE name='" + name + "'";
 		string result = query(q);
-		
+
 		istringstream input(result);
 		int handnr;
 		input >> handnr;
@@ -112,7 +112,7 @@ public:
 	{
 		string q = "SELECT VPIP FROM user WHERE name='" + name + "'";
 		string result = query(q);
-		
+
 		istringstream input(result);
 		double vpip;
 		input >> vpip;
@@ -131,7 +131,7 @@ public:
 	{
 		string q = "SELECT PFR FROM user WHERE name='" + name + "'";
 		string result = query(q);
-		
+
 		istringstream input(result);
 		double pfr;
 		input >> pfr;
@@ -142,7 +142,7 @@ public:
 	{
 		string q = "SELECT pass FROM user WHERE name='" + name + "'";
 		string result = query(q);
-		
+
 		istringstream input(result);
 		int pass;
 		input >> pass;
@@ -153,7 +153,7 @@ public:
 	{
 		string q = "SELECT aggr FROM user WHERE name='" + name + "'";
 		string result = query(q);
-		
+
 		istringstream input(result);
 		int aggr;
 		input >> aggr;
@@ -168,7 +168,7 @@ public:
 		double af = (double)aggr/pass;
 		return af;
 	}
-	
+
 	void incHandnr(int nr, string name)
 	{
 		int handnr = getHandnr(name);
@@ -177,7 +177,7 @@ public:
 		s << handnr;
 		string hand;
 		s >> hand;
-		query("UPDATE user SET handnr="+hand+" WHERE name='"+name+"'");		
+		query("UPDATE user SET handnr="+hand+" WHERE name='"+name+"'");
 	}
 	void setVPIP(double VPIP, int newhandnr, string name)
 	{
@@ -261,7 +261,7 @@ private:
 	{
 		 // first of all create a mysql instance and initialize the variables within
 		MYSQL *connection = mysql_init(NULL);
- 
+
 		// connect to the database with the details attached.
 		if (!mysql_real_connect(connection,mysql_details.server, mysql_details.user, mysql_details.password, mysql_details.database, 0, NULL, 0)) {
 		  printf("Conection error : %s\n", mysql_error(connection));
@@ -278,7 +278,7 @@ private:
 		  printf("MySQL query error : %s\n", mysql_error(connection));
 		  exit(1);
 	   }
- 
+
 	   return mysql_use_result(connection);
 	}
 };

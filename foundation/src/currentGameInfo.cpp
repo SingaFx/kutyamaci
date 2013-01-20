@@ -61,6 +61,15 @@ vector<CurrentPlayerInfo>& CurrentGameInfo::getOpponentsInfo()
 	return opponentsInfo;
 }
 
+void CurrentGameInfo::setHero(CurrentPlayerInfo& hero)
+{
+	this->hero = hero;
+}
+CurrentPlayerInfo& CurrentGameInfo::getHero()
+{
+	return hero;
+}
+
 void CurrentGameInfo::setAmountToCall(double amountToCall)
 {
 	this->amountToCall = amountToCall;
@@ -93,5 +102,25 @@ CurrentPlayerInfo& CurrentGameInfo::getPlayerByName(string name)
 	for (int i = 0; i < opponentsInfo.size(); ++i)
 	{
 		if (opponentsInfo[i].getName() == name) return opponentsInfo[i];
+	}
+}
+
+double CurrentGameInfo::getBiggestBet()
+{
+	double max = 0;
+	for (int i = 0; i < opponentsInfo.size(); ++i)
+	{
+		if (opponentsInfo[i].getBetsize() > max) max = opponentsInfo[i].getBetsize();
+	}
+
+	return max;
+}
+
+CurrentPlayerInfo& CurrentGameInfo::getPlayerbyPosition(int position)
+{
+	for (int i = 0; i < opponentsInfo.size(); ++i)
+	{
+		if (opponentsInfo[i].getPoz() == position)
+			return opponentsInfo[i];
 	}
 }
