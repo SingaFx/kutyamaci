@@ -93,19 +93,16 @@ public:
         for (int i = 0; i < history.size(); ++i)
 		{
 			if (database->isHand(history[i].getId())) continue;
+
             Logger& logger = Logger::getLogger(LOGGER_TYPE::HAND_HISTORY_PARSER);
             logger.logExp("The following hand does not exist in the database: ", history[i].getId().c_str(), LOGGER_TYPE::HAND_HISTORY_PARSER);
+
             database->insertHand(history[i].getId());
 
 			for (int j = 0; j < history[i].getPlayerHistories().size(); ++j)
 			{
 				PlayerHistory player = history[i].getPlayerHistories()[j];
-				/*
-				if (!database->isUser(player.getPlayerName()))
-				{
-					database->insertUser(player.getPlayerName());
-				}
-				*/
+
 				if (Players->find(player.getPlayerName()) == Players->end())
 				{
 					Players->insert(player.getPlayerName());
@@ -120,23 +117,19 @@ public:
 
 				if (called || raised)
 				{
-					//database->setVPIP(100, player.getPlayerName());
 					(*VPIP)[player.getPlayerName()] = ((*VPIP)[player.getPlayerName()] * (*handnr)[player.getPlayerName()] + 100) / ((*handnr)[player.getPlayerName()] + 1);
 				}
 				else
 				{
-					//database->setVPIP(0, player.getPlayerName());
 					(*VPIP)[player.getPlayerName()] = ((*VPIP)[player.getPlayerName()] * (*handnr)[player.getPlayerName()]) / ((*handnr)[player.getPlayerName()] + 1);
 				}
 
 				if (raised)
 				{
-					//database->setPFR(100, player.getPlayerName());
 					(*PFR)[player.getPlayerName()] = ((*PFR)[player.getPlayerName()] * (*handnr)[player.getPlayerName()] + 100) / ((*handnr)[player.getPlayerName()] + 1);
 				}
 				else
 				{
-					//database->setPFR(0, player.getPlayerName());
 					(*PFR)[player.getPlayerName()] = ((*PFR)[player.getPlayerName()] * (*handnr)[player.getPlayerName()]) / ((*handnr)[player.getPlayerName()] + 1);
 				}
 
@@ -146,23 +139,18 @@ public:
 				{
 					if (player.getFlopAction()[k].getType() == 'c') pass++;
 					if (player.getFlopAction()[k].getType() == 'r') aggr++;
-					//if (player.getFlopAction()[k].getType() == 'x') pass++;
 				}
 				for (int k = 0; k < player.getTurnAction().size(); ++k)
 				{
 					if (player.getFlopAction()[k].getType() == 'c') pass++;
 					if (player.getFlopAction()[k].getType() == 'r') aggr++;
-					//if (player.getFlopAction()[k].getType() == 'x') pass++;
 				}
 				for (int k = 0; k < player.getRiverAction().size(); ++k)
 				{
 					if (player.getFlopAction()[k].getType() == 'c') pass++;
 					if (player.getFlopAction()[k].getType() == 'r') aggr++;
-					//if (player.getFlopAction()[k].getType() == 'x') pass++;
 				}
 
-				//database->setAGGR(aggr, player.getPlayerName());
-				//database->setPASS(pass, player.getPlayerName());
 				(*aggrM)[player.getPlayerName()] += aggr;
 				(*passM)[player.getPlayerName()] += pass;
 				(*handnr)[player.getPlayerName()]++;
@@ -173,7 +161,8 @@ public:
 		{
 			if (!database->isUser(*it))
 			{
-				database->insertUser(*it);
+				logger.logExp("The following user does not exist in the database: ", (*it).c_str(), LOGGER_TYPE::HAND_HISTORY_PARSER);
+                database->insertUser(*it);
 			}
 			database->setAGGR((*aggrM)[*it], *it);
 			database->setPASS((*passM)[*it], *it);

@@ -80,9 +80,9 @@ public:
 		return result.size() > 0;
 	}
 
-	void insertHand(string name)
+	void insertHand(string hand)
 	{
-		query("INSERT INTO hands(id) VALUES ('" + name + "')");
+		query("INSERT INTO hands(id) VALUES ('" + hand + "')");
 	}
 
 	bool isUser(string name)
