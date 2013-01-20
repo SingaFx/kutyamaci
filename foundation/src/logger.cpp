@@ -7,6 +7,7 @@ const string Logger::BOT_LOGIC_OUTPUT_FILENAME = "botlogic.log";
 
 ofstream* Logger::dllInterfaceLogger_ = 0;
 ofstream* Logger::handHistoryParserLogger_ = 0;
+ofstream* Logger::botLogicLogger_ = 0;
 ofstream* Logger::outfile_ = 0;
 
 Logger* Logger::logger_ = 0;
@@ -18,6 +19,9 @@ Logger::Logger()
 
     handHistoryParserLogger_ = new ofstream();
     handHistoryParserLogger_->open(HAND_HISTORY_PARSER_OUTPUT_FILENAME.c_str());
+
+	botLogicLogger_ = new ofstream();
+	botLogicLogger_->open(BOT_LOGIC_OUTPUT_FILENAME.c_str());
 }
 
 // --------------------------------------------------
