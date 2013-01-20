@@ -25,7 +25,7 @@ BwinPartyParser::BwinPartyParser()
 
 vector<HandHistory> BwinPartyParser::parse(string filename)
 {
-	ifstream file;
+    ifstream file;
 	file.open(filename);
 
 	vector<HandHistory> result;
@@ -57,9 +57,15 @@ vector<HandHistory> BwinPartyParser::parse(string filename)
 	boost::regex showdown(SHOWDOWN);
 	boost::regex button(BUTTON);
 
-    if (!file.eof())
+    bool foundFirstHandEnd = false;
+
+    while (!file.eof() && !foundFirstHandEnd)
     {
         getline(file, line);
+        if (regex_match(line, handend))
+        {
+            foundFirstHandEnd = true;
+        }
     }
 
 	while (!file.eof())
@@ -78,7 +84,11 @@ vector<HandHistory> BwinPartyParser::parse(string filename)
 		{
 			actualhand.setButtonSeat(buttonSeat);
 			HandHistoryUtils::setPlayersPosition(actualhand, buttonSeat);
-			result.push_back(actualhand);
+            if (false != HandHistoryUtils::isValidHandHistory(actualhand))
+            {
+                result.push_back(actualhand);
+            }
+
 			actualhand.getPlayerHistories().clear();
 			round = 0;
             cout << "Nr of hands parsed: " << result.size() << endl;
