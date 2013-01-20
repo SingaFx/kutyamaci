@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Action.h"
 #include "Hand.h"
 #include <vector>
 #include <string>
@@ -28,6 +29,9 @@ private:
     double maxRaiseSize;
 
     CurrentGameInfo* currentGameInfo;
+
+	Action actionCache;
+	bool cacheAvalaible;
 
     int nextPosition(int position);
 
@@ -74,4 +78,10 @@ public:
 
     void setCurrentGameInfo(CurrentGameInfo*);
     CurrentGameInfo* getCurrentGameInfo();
+
+	void setAction(Action action);
+	Action getAction();
+
+	void setCache(bool);
+	bool isCacheAvalaible();
 };

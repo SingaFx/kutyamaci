@@ -188,3 +188,23 @@ CurrentGameInfo* GameStateManager::getCurrentGameInfo()
 {
     return currentGameInfo;
 }
+
+void GameStateManager::setAction(Action action)
+{
+	actionCache = action;
+}
+
+Action GameStateManager::getAction()
+{
+	return actionCache;
+}
+
+bool GameStateManager::isCacheAvalaible()
+{
+	return cacheAvalaible;
+}
+
+void GameStateManager::setCache(bool cache)
+{
+	cacheAvalaible = cache;
+}

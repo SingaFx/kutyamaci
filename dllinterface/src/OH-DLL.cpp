@@ -339,6 +339,7 @@ void detectMissedCallsAndUpdatePlayerRanges()
                 string playerName = currentPlayerInfo.getName();
                 PlayerRange& updatedRange = botLogic->calculateRange(playerName, *gamestateManager.getCurrentGameInfo(), playerRangeManager.getPlayerRange(idx));
 
+				gamestateManager.setCache(false);
                 playerRangeManager.setPlayerRange(idx, updatedRange);
             }
         }
@@ -362,22 +363,66 @@ double process_query(const char* pquery)
     PlayerRangeManager& playerRangeManager = PlayerRangeManager::getPlayerRangeManager();
 
     vector<PlayerRange> ranges = playerRangeManager.getPlayerRanges();
-    Action action = botLogic->makeDecision(*gamestateManager.getCurrentGameInfo(), ranges);
+	Action action;
+	if (gamestateManager.isCacheAvalaible())
+	{
+		action = gamestateManager.getAction();
+	}
+	else
+	{
+		action = botLogic->makeDecision(*gamestateManager.getCurrentGameInfo(), ranges);
+	} 
 
     if(strcmp(pquery,"dll$swag") == 0)
-    {        
-		return action.getSize();
-    }
-    if(strcmp(pquery,"dll$srai")==0)
     {
+		double result = 0.0;
+		if (action.getType() == 'n')
+		{
+			result = -1;
+		}
+		else
+		{
+			result = action.getSize();
+		}
+
+		gamestateManager.setAction(action);
+		gamestateManager.setCache(true);
+		return result;
+    }
+
+    if(strcmp(pquery,"dll$srai") == 0)
+    {
+		if (action.getType() == 'n')
+		{
+			return -1;
+		}
+
+		gamestateManager.setAction(action);
+		gamestateManager.setCache(true);
         return action.getType() == 'r';
     }    
+
     if(strcmp(pquery,"dll$call")==0)
     {
+		if (action.getType() == 'n')
+		{
+			return -1;
+		}
+
+		gamestateManager.setAction(action);
+		gamestateManager.setCache(true);
 		return action.getType() == 'c';
     }
+
     if(strcmp(pquery,"dll$prefold")==0)
     {
+		if (action.getType() == 'n')
+		{
+			return -1;
+		}
+
+		gamestateManager.setAction(action);
+		gamestateManager.setCache(true);
 		return action.getType() == 'f';
     }
 
@@ -482,6 +527,7 @@ double process_state(holdem_state* pstate)
                     //playerRange.set
                     PlayerRange& updatedRange = botLogic->calculateRange(playerName, *cgi, playerRange);
 
+					gamestateManager.setCache(false);
                     playerRangeManager.setPlayerRange(idx, updatedRange);
                 }
                 else
@@ -516,6 +562,7 @@ double process_state(holdem_state* pstate)
                     string playerName = currentPlayerInfo.getName();
                     PlayerRange& updatedRange = botLogic->calculateRange(playerName, *cgi, playerRangeManager.getPlayerRange(idx));
 
+					gamestateManager.setCache(false);
                     playerRangeManager.setPlayerRange(idx, updatedRange);
                 }
             }
