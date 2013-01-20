@@ -446,3 +446,10 @@ std::vector<HandHistory> HandHistoryUtils::importFromFile(FILE *f, int historyNu
 	fclose(logfile);
 	return res;
 }
+
+bool HandHistoryUtils::isValidHandHistory(HandHistory &history)
+{
+    if (history.getId().size() < 5) return false;
+
+    return true;
+}

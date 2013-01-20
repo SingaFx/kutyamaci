@@ -27,4 +27,6 @@ public:
     static int exportToFile(vector<HandHistory> &history, string filename);
 
     static std::vector<HandHistory> importFromFile(FILE *f, int historyNumber);
+
+    static bool isValidHandHistory(HandHistory &history);
 };
