@@ -15,7 +15,7 @@ vector<HandHistory> OnGameParser::parse(string filename)
 	string actualPlayer;
 	string line;
 	int round = 0;
-	int buttonSeat;
+	int buttonSeat = 0;
 	boost::match_results<std::string::const_iterator> what;
 	boost::match_flag_type flags = boost::match_default;
 
@@ -46,7 +46,7 @@ vector<HandHistory> OnGameParser::parse(string filename)
 		}
 
 		// Found end of hand
-		else if (regex_match(line,handend))
+		else if (regex_match(line, handend))
 		{
 			actualhand.setButtonSeat(buttonSeat);
 			HandHistoryUtils::setPlayersPosition(actualhand, buttonSeat);

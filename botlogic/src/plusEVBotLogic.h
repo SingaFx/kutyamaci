@@ -5,11 +5,11 @@
 #include "database.h"
 #include "bayesDecision.h"
 #include "simpleDecision.h"
+#include "globalConst.h"
 
 class PlusEVBotLogic : public AbstractBotLogic //implements interface
 {
 private:
-	static const int patternsNeeded = 10;
 	BayesUserPreflop preflop;
 	BayesUserFlop flop;
 	BayesUserTurn turn;

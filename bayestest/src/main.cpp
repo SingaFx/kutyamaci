@@ -29,9 +29,12 @@ void basic()
 	int poz = 0;
 	double stacksize = 2;
 		
-	preflop.read("preflopBayes");
+	//preflop.read("preflopBayes");
 	flop.read("flopBayes");
-	turn.read("turnBayes");
+	//turn.read("turnBayes");
+
+
+
 
 	//preflop.read("..\\..\\tests\\resource\\bayes\\preflopBayes");
 	//flop.read("..\\..\\tests\\resource\\bayes\\flopBayes");
@@ -39,7 +42,7 @@ void basic()
 
 
 	//======PREFLOP===================================================
-
+	/*
 	int nStackSize = 2; //150
 	int nBetSize = 0;  //betsize 0 - limp, 1 - emeles, 2 - 3bet
 	int nLine = 0;
@@ -149,7 +152,7 @@ void basic()
 	range1 = RangeUtils::mergeRange(range1, rangeTurn, cards);
 	printf("PREFLOP - FLOP - TURN RANGE\n");
 	range1.printRange();
-
+	*/
 	//TODO: normalizalasok!//turn/river
 	//TODO: test full line!
 }
@@ -162,6 +165,29 @@ int main()
 {
     try
     {
+		flop.read("flopBayes");
+		
+		int nPotSize = 0;
+		int nStackSize = 1;
+		int nBetSize = 5;
+		int nLine = 1;
+		int nVPIP = 3;
+		int nPFR = 1;
+		int nAF = 2;
+		
+
+		int v[8];
+
+		v[1] = nPotSize;	
+		v[2] = nStackSize;
+		v[3] = nBetSize;
+		v[4] = nLine;
+		v[5] = nVPIP;
+		v[6] = nPFR;
+		v[7] = nAF;
+
+		cout << "FE = " << flop.getProbabilityFE(v, 0) << endl;
+		flop.printRange(v);
     }
     catch (std::exception& e)
     {

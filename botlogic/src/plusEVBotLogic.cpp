@@ -10,6 +10,11 @@ PlusEVBotLogic::PlusEVBotLogic()
 	river.read("riverBayes");
 }
 
+PlusEVBotLogic::~PlusEVBotLogic()
+{
+
+}
+
 PlayerRange& PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameInfo, PlayerRange& oldPlayerRange)
 {
 	extendGameInfo(gameInfo);
@@ -57,7 +62,15 @@ PlayerRange& PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameIn
 		res = RangeUtils::mergeRange(oldPlayerRange, actual, gameInfo.getBoard());
 	}
 
+	res.setPreflopNotPlaying(false);
 
+	if (res.range.size() == 0)
+	{
+		oldPlayerRange.setValid(false);
+		return oldPlayerRange;
+	}
+
+	res.setValid(true);
 	return res;
 }
 

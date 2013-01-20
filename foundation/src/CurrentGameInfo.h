@@ -41,6 +41,9 @@ public:
 	void setOpponentsInfo(vector<CurrentPlayerInfo>&);
 	vector<CurrentPlayerInfo>& getOpponentsInfo();
 
+	void setHero(CurrentPlayerInfo&);
+	CurrentPlayerInfo& getHero();
+
 	void setAmountToCall(double);
 	double getAmountToCall();
 
@@ -51,4 +54,7 @@ public:
 	vector<Card>& getBoard();
 
 	CurrentPlayerInfo& getPlayerByName(string name);
+	double getBiggestBet();
+	CurrentPlayerInfo& getPlayerbyPosition(int position);
+
 };
