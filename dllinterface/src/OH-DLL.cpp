@@ -282,7 +282,7 @@ void resetHand(holdem_state* pstate, Hand hand)
     gameStateManager.resetState((int)dealerchair, hand);
 
     // setting up starting balances
-    for (int idx = 0; idx < 5; ++idx)
+    for (int idx = 0; idx <= 5; ++idx)
     {        
         gameStateManager.setInitialBalance(idx, getBalanceByPos(idx));
     }
