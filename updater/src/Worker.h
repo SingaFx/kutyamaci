@@ -14,6 +14,7 @@ private:
     string hFind;
     LiveUpdater* updater;
     boost::mutex& updateLock;
+    static int threadCounter;
 
 public:
 
