@@ -6,6 +6,7 @@ BotManager* BotManager::botManager = 0;
 
 BotManager::BotManager()
 {
+	ourSexyBotLogic = new PlusEVBotLogic();
 }
 
 BotManager::~BotManager()
@@ -24,5 +25,5 @@ BotManager& BotManager::getBotManager()
 
 AbstractBotLogic* BotManager::getPluggableBot()
 {
-    return new PlusEVBotLogic();
+    return ourSexyBotLogic;
 }

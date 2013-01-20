@@ -10,6 +10,10 @@ private:
 
     static BotManager* botManager;
 
+	AbstractBotLogic* ourSexyBotLogic;
+
+	AbstractBotLogic* instantiate();
+
     BotManager();
     ~BotManager();
 
