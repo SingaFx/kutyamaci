@@ -92,9 +92,12 @@ public:
 		map<string, int>* handnr = new map<string, int>();
         for (int i = 0; i < history.size(); ++i)
 		{
-			if (database->isHand(history[i].getId())) continue;
+			if (database->isHand(history[i].getId()))
+            {
+                logger.logExp("The following hand does EXIST in the database: ", history[i].getId().c_str(), LOGGER_TYPE::HAND_HISTORY_PARSER);
+                continue;
+            }
 
-            Logger& logger = Logger::getLogger(LOGGER_TYPE::HAND_HISTORY_PARSER);
             logger.logExp("The following hand does not exist in the database: ", history[i].getId().c_str(), LOGGER_TYPE::HAND_HISTORY_PARSER);
 
             database->insertHand(history[i].getId());
@@ -163,7 +166,9 @@ public:
 			{
 				logger.logExp("The following user does not exist in the database: ", (*it).c_str(), LOGGER_TYPE::HAND_HISTORY_PARSER);
                 database->insertUser(*it);
-			}
+			} else {
+                logger.logExp("The following user does EXIST in the database: ", (*it).c_str(), LOGGER_TYPE::HAND_HISTORY_PARSER);
+            }
 			database->setAGGR((*aggrM)[*it], *it);
 			database->setPASS((*passM)[*it], *it);
 			database->setPFR((*PFR)[*it], (*handnr)[*it], *it);
