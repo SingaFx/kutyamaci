@@ -71,4 +71,14 @@ bool Card::operator < (const Card& c) const
     }
 
     return less;
-} 
+}
+
+string Card::toString()
+{
+	string res;
+
+	res.push_back(rank);
+	res.push_back(suit);
+
+	return res;
+}

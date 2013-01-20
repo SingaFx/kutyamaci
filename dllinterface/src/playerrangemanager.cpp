@@ -1,5 +1,7 @@
 #include "playerrangemanager.h"
 
+#include "logger.h"
+
 PlayerRangeManager* PlayerRangeManager::playerRangeManager = 0;
 
 PlayerRangeManager::PlayerRangeManager()
@@ -23,6 +25,9 @@ PlayerRangeManager& PlayerRangeManager::getPlayerRangeManager()
 
 void PlayerRangeManager::resetRanges()
 {
+	Logger& logger = Logger::getLogger(LOGGER_TYPE::DLL_INTERFACE_LOGGER);
+	logger.logExp("[Resetting player ranges]", LOGGER_TYPE::DLL_INTERFACE_LOGGER);
+
     playerRanges.clear();
 
     PlayerRange pr;

@@ -2,6 +2,9 @@
 #define HAND_H
 
 #include "Card.h"
+#include <string>
+
+using namespace std;
 
 class Hand
 {
@@ -23,6 +26,8 @@ public:
     bool operator == (const Hand& h) const;
     bool operator != (const Hand& h) const;
     bool operator < (const Hand& h) const;
+
+	string toString();
 };
 
 #endif HAND_H

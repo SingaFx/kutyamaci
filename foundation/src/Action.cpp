@@ -29,3 +29,11 @@ const double Action::getSize()
 {
     return size;
 };
+
+std::string Action::toString()
+{
+	std::string res = "";
+	res += type;
+
+	return res;
+}

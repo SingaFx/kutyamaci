@@ -40,6 +40,8 @@ public:
 
 	void setOpponentsInfo(vector<CurrentPlayerInfo>&);
 	vector<CurrentPlayerInfo>& getOpponentsInfo();
+	void addCurrentPlayerInfo(CurrentPlayerInfo&);
+	
 
 	void setHero(CurrentPlayerInfo&);
 	CurrentPlayerInfo& getHero();

@@ -107,6 +107,11 @@ CurrentGameInfo* createCurrentGameInfo(bool& isValid)
     logger.logExp("[-> bblind] : ", bblind, DLL_INTERFACE_LOGGER);
     currentGameInfo->setBblind(bblind);
 
+	// betting round
+    double bettingRound = gws("br");
+    logger.logExp("-> betting round : ", bettingRound, DLL_INTERFACE_LOGGER);
+    currentGameInfo->setStreet(bettingRound-1);
+
     // hero cards
     double rank1 = gws("$$pr0");
     logger.logExp("-> $$pr0 : ", rank1, DLL_INTERFACE_LOGGER);
@@ -143,50 +148,54 @@ CurrentGameInfo* createCurrentGameInfo(bool& isValid)
     // common cards
     vector<Card> board;
     // flop
-    double flop1rank = gws("$$cr0");    
-    double flop1suit = gws("$$cs0");    
+	if (bettingRound > 1)
+	{
+		double flop1rank = gws("$$cr0");    
+		double flop1suit = gws("$$cs0");    
 
-    char f1rank = convertRankToChar((int)flop1rank);
-    char f1suit = convertSuitToChar((int)flop1suit);
-    Card flop1(f1rank, f1suit);
-    board.push_back(flop1);    
+		char f1rank = convertRankToChar((int)flop1rank);
+		char f1suit = convertSuitToChar((int)flop1suit);
+		Card flop1(f1rank, f1suit);
+		board.push_back(flop1);    
 
-    double flop2rank = gws("$$cr1");
-    double flop2suit = gws("$$cs1");
-    char f2rank = convertRankToChar((int)flop2rank);
-    char f2suit = convertSuitToChar((int)flop2suit);
-    Card flop2(f2rank, f2suit);
-    board.push_back(flop2);
+		double flop2rank = gws("$$cr1");
+		double flop2suit = gws("$$cs1");
+		char f2rank = convertRankToChar((int)flop2rank);
+		char f2suit = convertSuitToChar((int)flop2suit);
+		Card flop2(f2rank, f2suit);
+		board.push_back(flop2);
 
-    double flop3rank = gws("$$cr2");
-    double flop3suit = gws("$$cs2");
-    char f3rank = convertRankToChar((int)flop3rank);
-    char f3suit = convertSuitToChar((int)flop3suit);
-    Card flop3(f3rank, f3suit);
-    board.push_back(flop3);
+		double flop3rank = gws("$$cr2");
+		double flop3suit = gws("$$cs2");
+		char f3rank = convertRankToChar((int)flop3rank);
+		char f3suit = convertSuitToChar((int)flop3suit);
+		Card flop3(f3rank, f3suit);
+		board.push_back(flop3);
+	}
 
     // turn
-    double turnrank = gws("$$cr3");
-    double turnsuit = gws("$$cs3");
-    char trank = convertRankToChar((int)turnrank);
-    char tsuit = convertSuitToChar((int)turnsuit);
-    Card turn(trank, tsuit);
-    board.push_back(turn);
+	if (bettingRound > 2)
+	{
+		double turnrank = gws("$$cr3");
+		double turnsuit = gws("$$cs3");
+		char trank = convertRankToChar((int)turnrank);
+		char tsuit = convertSuitToChar((int)turnsuit);
+		Card turn(trank, tsuit);
+		board.push_back(turn);
+	}
 
-    // river
-    double riverrank = gws("$$cr4");    
-    double riversuit = gws("$$cs4");
-    char rrank = convertRankToChar((int)riverrank);
-    char rsuit = convertSuitToChar((int)riversuit);
-    Card river(rrank, rsuit);
-    board.push_back(river);
+	    // river
+	if (bettingRound > 3)
+	{
 
+		double riverrank = gws("$$cr4");    
+		double riversuit = gws("$$cs4");
+		char rrank = convertRankToChar((int)riverrank);
+		char rsuit = convertSuitToChar((int)riversuit);
+		Card river(rrank, rsuit);
+		board.push_back(river);
+	}
     currentGameInfo->setBoard(board);
-
-    // betting round
-    double bettingRound = gws("br");
-    logger.logExp("-> betting round : ", bettingRound, DLL_INTERFACE_LOGGER);
-    currentGameInfo->setStreet(bettingRound-1);
 
     double amountToCall = gws("call");
     logger.logExp("-> amount to call : ", amountToCall, DLL_INTERFACE_LOGGER);
@@ -194,12 +203,11 @@ CurrentGameInfo* createCurrentGameInfo(bool& isValid)
 
     double potCommon = gws("potcommon");
     logger.logExp("-> pot common : ", potCommon / bblind, DLL_INTERFACE_LOGGER);
-    currentGameInfo->setPotcommon(potCommon);
+    currentGameInfo->setPotcommon(potCommon / bblind);
     
-    double totalPot = gws("potplayer");
+    double totalPot = gws("pot");
     logger.logExp("-> total in pot : ", (potCommon + totalPot) / bblind, DLL_INTERFACE_LOGGER);
-    currentGameInfo->setTotalPot(totalPot);
-
+    currentGameInfo->setTotalPot(totalPot / bblind);
 
     return currentGameInfo;
 }
@@ -237,14 +245,17 @@ double getBalanceByPos(int idx)
 
 void getCurrentBets(vector<double>& currentBets)
 {
+	Logger& logger = Logger::getLogger(LOGGER_TYPE::DLL_INTERFACE_LOGGER);
+	
     currentBets.clear();
 
     char buffer[100];
     for (int idx = 0; idx < 6; ++idx)
     {
         sprintf(buffer, "currentbet%d", idx);
+		logger.logExp("-> symbol : ", buffer, LOGGER_TYPE::DLL_INTERFACE_LOGGER);
         double currentBet = gws(buffer);
-
+		logger.logExp("-> currentbet : ", currentBet, LOGGER_TYPE::DLL_INTERFACE_LOGGER);
         currentBets.push_back(currentBet);
     }
 }
@@ -293,7 +304,7 @@ void calculateRelativPositions(vector<int>& relativPositions, int dealerPosition
     int absolutePositionsMap[6];
         
     int pos = dealerPosition;
-    for (int idx = 0; idx = 5; ++idx)
+    for (int idx = 0; idx <= 5; ++idx)
     {
         absolutePositionsMap[pos] = idx;
         pos = nextPosition(pos);        
@@ -334,7 +345,16 @@ void detectMissedCallsAndUpdatePlayerRanges()
             CurrentPlayerInfo& currentPlayerInfo = gamestateManager.getCurrentPlayerInfo(idx);
             if (!isEqual(maxRaise, currentPlayerInfo.getBetsize()))
             {
-                currentPlayerInfo.setLine('c');
+                currentPlayerInfo.setLine(0);
+
+				for (int idx = 0; idx <=5; ++idx)
+				{
+					if (isBitSet((int)playersplayingbits, idx) && gamestateManager.isCurrentPlayerInfoSet(idx))
+					{
+						CurrentGameInfo* cgi = gamestateManager.getCurrentGameInfo();
+						cgi->addCurrentPlayerInfo(gamestateManager.getCurrentPlayerInfo(idx));
+					}
+				}
 
                 string playerName = currentPlayerInfo.getName();
                 PlayerRange& updatedRange = botLogic->calculateRange(playerName, *gamestateManager.getCurrentGameInfo(), playerRangeManager.getPlayerRange(idx));
@@ -348,8 +368,12 @@ void detectMissedCallsAndUpdatePlayerRanges()
 
 double process_query(const char* pquery)
 {
-    Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);            
-    logger.logExp(string("[Processing query] : ").append(pquery).c_str(), DLL_INTERFACE_LOGGER);
+	Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER); 
+	logger.logExp(string("[Processing query] : ").append(pquery).c_str(), DLL_INTERFACE_LOGGER);
+
+	if (strcmp(pquery,"dll$swag") && strcmp(pquery,"dll$srai") && strcmp(pquery,"dll$call") && strcmp(pquery,"dll$prefold"))
+		return 0;          
+    
 
 	if(pquery == NULL)
     {
@@ -362,6 +386,8 @@ double process_query(const char* pquery)
     GameStateManager& gamestateManager = GameStateManager::getGameStateManager();
     PlayerRangeManager& playerRangeManager = PlayerRangeManager::getPlayerRangeManager();
 
+	//if (gamestateManager.getHand()
+
     vector<PlayerRange> ranges = playerRangeManager.getPlayerRanges();
 	Action action;
 	if (gamestateManager.isCacheAvalaible())
@@ -370,8 +396,22 @@ double process_query(const char* pquery)
 	}
 	else
 	{
-		action = botLogic->makeDecision(*gamestateManager.getCurrentGameInfo(), ranges);
+		CurrentGameInfo* cgi = gamestateManager.getCurrentGameInfo();
+
+		double playersplayingbits = gws("playersplayingbits");
+
+		for (int idx = 0; idx <=5; ++idx)
+		{
+			if (isBitSet((int)playersplayingbits, idx) && gamestateManager.isCurrentPlayerInfoSet(idx))
+			{
+				cgi->addCurrentPlayerInfo(gamestateManager.getCurrentPlayerInfo(idx));
+			}
+		}
+
+		action = botLogic->makeDecision(*cgi, ranges);
 	} 
+
+	logger.logExp("Got action: " + action.toString(), DLL_INTERFACE_LOGGER);
 
     if(strcmp(pquery,"dll$swag") == 0)
     {
@@ -454,7 +494,11 @@ double process_state(holdem_state* pstate)
     }
 
 	CurrentGameInfo* old_cgi = gamestateManager.getCurrentGameInfo();
-	delete old_cgi;
+	if (old_cgi)
+	{
+		delete old_cgi;
+	}
+	
     gamestateManager.setCurrentGameInfo(cgi);
 
     // testing new hand    
@@ -480,6 +524,7 @@ double process_state(holdem_state* pstate)
     vector<int> relativePositions;
     calculateRelativPositions(relativePositions, gamestateManager.getDealerPosition());
 
+	logger.logExp("here!!!", DLL_INTERFACE_LOGGER);
     //if (cgi->getStreet() == 0) // preflop
     //{
      //   int smallblindPos = nextPosition(gamestateManager.getDealerPosition());
@@ -504,17 +549,19 @@ double process_state(holdem_state* pstate)
                 {
                     CurrentPlayerInfo& currentPlayerInfo = gamestateManager.getCurrentPlayerInfo(idx);
 
-                    currentPlayerInfo.setActualStacksize(getBalanceByPos(idx));
-                    currentPlayerInfo.setBetsize(currentBet);
+					double bblind = cgi->getBblind();
+
+                    currentPlayerInfo.setActualStacksize(getBalanceByPos(idx) / bblind);
+                    currentPlayerInfo.setBetsize(currentBet / bblind);
 
                     double maxRaise = gamestateManager.getMaxRaise();
                     if (isEqual(currentBet, maxRaise))
                     {
-                        currentPlayerInfo.setLine('c');
+                        currentPlayerInfo.setLine(0);
                     }
                     else if (currentBet > maxRaise)
                     {
-                        currentPlayerInfo.setLine('r');
+                        currentPlayerInfo.setLine(1);
                         gamestateManager.setMaxRaise(currentBet);
                     }
                     else
@@ -526,6 +573,9 @@ double process_state(holdem_state* pstate)
                     // this player did something so we update his/her range
                     string playerName = currentPlayerInfo.getName();
                     PlayerRange playerRange = playerRangeManager.getPlayerRange(idx);
+
+					cgi->addCurrentPlayerInfo(currentPlayerInfo);
+					
                     //playerRange.set
                     PlayerRange& updatedRange = botLogic->calculateRange(playerName, *cgi, playerRange);
 
@@ -534,22 +584,24 @@ double process_state(holdem_state* pstate)
                 }
                 else
                 {
+					double bblind = cgi->getBblind();
+
                     CurrentPlayerInfo currentPlayerInfo;
                         
-                    currentPlayerInfo.setStacksize(gamestateManager.getInitialBalanceByPos(idx));
-                    currentPlayerInfo.setActualStacksize(getBalanceByPos(idx));
-                    currentPlayerInfo.setBetsize(currentBet);
+                    currentPlayerInfo.setStacksize(gamestateManager.getInitialBalanceByPos(idx) / bblind);
+                    currentPlayerInfo.setActualStacksize(getBalanceByPos(idx) / bblind);
+                    currentPlayerInfo.setBetsize(currentBet / bblind);
                     currentPlayerInfo.setName(gamestateManager.getPlayerNameByPos(idx));
                     currentPlayerInfo.setPoz(relativePositions[idx]);
 
                     double maxRaise = gamestateManager.getMaxRaise();
                     if (isEqual(currentBet, maxRaise))
                     {
-                        currentPlayerInfo.setLine('c');
+                        currentPlayerInfo.setLine(0);
                     }
                     else if (currentBet > maxRaise)
                     {
-                        currentPlayerInfo.setLine('r');
+                        currentPlayerInfo.setLine(1);
                         gamestateManager.setMaxRaise(currentBet);
                     }
                     else
@@ -560,9 +612,13 @@ double process_state(holdem_state* pstate)
 
                     gamestateManager.setCurrentPlayerInfo(idx, currentPlayerInfo);
 
+					cgi->addCurrentPlayerInfo(currentPlayerInfo);
+					
                     // let's update
                     string playerName = currentPlayerInfo.getName();
-                    PlayerRange& updatedRange = botLogic->calculateRange(playerName, *cgi, playerRangeManager.getPlayerRange(idx));
+					PlayerRange pr = playerRangeManager.getPlayerRange(idx);
+					pr.setName(playerName);
+                    PlayerRange& updatedRange = botLogic->calculateRange(playerName, *cgi, pr);
 
 					gamestateManager.setCache(false);
                     playerRangeManager.setPlayerRange(idx, updatedRange);

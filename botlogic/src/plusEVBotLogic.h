@@ -16,7 +16,7 @@ private:
 	BayesUserRiver river;
 	Database* database;
 
-	CurrentPlayerInfo& setStandardPlayerType(CurrentPlayerInfo&, double);
+	CurrentPlayerInfo setStandardPlayerType(CurrentPlayerInfo&, double);
 	void extendGameInfo(CurrentGameInfo&);
 
 public:

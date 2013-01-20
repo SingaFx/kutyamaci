@@ -1,6 +1,10 @@
 #ifndef CARD_H
 #define CARD_H
 
+#include <string>
+
+using namespace std;
+
 class Card
 {
 private:
@@ -24,6 +28,8 @@ public:
 
     bool operator == (const Card& c) const;    
     bool operator < (const Card& c) const;
+
+	string toString();
 };
 
 #endif

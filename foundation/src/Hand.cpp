@@ -65,3 +65,13 @@ bool Hand::operator < (const Hand& h) const
 
     return less;
 }
+
+string Hand::toString()
+{
+	string res = "";
+
+	res += card1.toString();
+	res += card2.toString();
+
+	return res;
+}

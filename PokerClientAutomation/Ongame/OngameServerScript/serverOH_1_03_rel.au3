@@ -76,6 +76,7 @@
 Global $MAX_TABLES = IniRead("serverdata.ini", "other", "maxtables", "-1")
 Enum $TAB_X = 0, $TAB_Y, $TAB_HWND, $OH_HWND, $TAB_MAX_DATA
 
+
 ;~ Password used for communication encryption
 ;~ This should be set to the same value on autoit client hopper
 ;~ Will be used later on when encryption is enabled and working again...
@@ -123,7 +124,7 @@ AutoItSetOption("WinTitleMatchMode", 2)
 AutoItSetOption("MustDeclareVars", 1)
 
 
-;~ _DebugSetup("Log window", True) ; start displaying debug environment
+_DebugSetup("Log window", True) ; start displaying debug environment
 Sleep(500)
 WinMove("Log window", "", 0, 600)
 dbgOut("Server-side Hopper for OH v1.03, Copyright (C) 2010 nik0")
@@ -225,7 +226,8 @@ While $end = 0
 				   WinWaitActive("Select Remote Connection")
    ;~ 				Following needs to be changed if more than 1 connection possible
 ;~ 				   Sleep(50)
-				   MouseClick("left", 100, 100, 1, 1)
+;~ 				   MouseClick("left", 100, 100, 1, 1) ;XP
+				   MouseClick("left", 100, 110, 1, 1)  
 ;~ 				   Sleep(50)
 				   MouseClick("left", 60, 75, 1, 1)
    ;~ 				Select the right window to bring
@@ -400,9 +402,9 @@ EndFunc   ;==>getHwndFromPID
 
 
 Func dbgOut($str)
-;~ 	$curHwnd = WinGetHandle("")
-;~ 	_DebugOut($str)
-;~ 	WinActivate($curHwnd)
+	$curHwnd = WinGetHandle("")
+	_DebugOut($str)
+	WinActivate($curHwnd)
 ;~ 	Sleep(50)
 EndFunc   ;==>dbgOut
 
