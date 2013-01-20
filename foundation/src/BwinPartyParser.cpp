@@ -2,6 +2,7 @@
 
 #include <boost/regex.hpp>
 #include "HandHistoryUtils.h"
+#include "logger.h"
 
 BwinPartyParser::BwinPartyParser()
  : HAND_START("^\\*{5} Hand History for Game (.+) \\*{5}")
@@ -91,7 +92,6 @@ vector<HandHistory> BwinPartyParser::parse(string filename)
 
 			actualhand.getPlayerHistories().clear();
 			round = 0;
-            cout << "Nr of hands parsed: " << result.size() << endl;
 		}
 
 		// Found the table
@@ -164,7 +164,7 @@ vector<HandHistory> BwinPartyParser::parse(string filename)
             tempAction.setAction('r', atof(string(what[2].first,what[2].second).c_str()));
 			string player_name = string(what[1].first,what[1].second);
 			HandHistoryUtils::addActiontoPlayer(actualhand, tempAction, player_name, round);
-		}//, ALLIN("^(.*) is all-In \\[\\$(.*)")
+		}
 		// Found dealing flop
 		else if (regex_search(line, what, flop, flags))
 		{
@@ -222,5 +222,8 @@ vector<HandHistory> BwinPartyParser::parse(string filename)
 
 	file.close();
 
-	return result;
+	Logger& logger = Logger::getLogger(LOGGER_TYPE::HAND_HISTORY_PARSER);
+    logger.logExp("The BWINPARSER has parsed the following number of hands: ", (int)result.size(), LOGGER_TYPE::HAND_HISTORY_PARSER);
+
+    return result;
 }
