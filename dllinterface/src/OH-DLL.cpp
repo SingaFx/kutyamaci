@@ -11,7 +11,7 @@
 #include "playerrangemanager.h"
 #include "plusEVBotLogic.h"
 #include "botmanager.h"
-#include "abstractbotlogic.h""
+#include "abstractbotlogic.h"
 
 using namespace std;
 ///////////////////////////////////// 
@@ -211,7 +211,7 @@ CurrentGameInfo* createCurrentGameInfo(bool& isValid)
     currentGameInfo->setPotcommon(potCommon / bblind);
     
     double totalPot = gws("pot");
-    logger.logExp("-> total in pot : ", (potCommon + totalPot) / bblind, DLL_INTERFACE_LOGGER);
+    logger.logExp("-> total in pot : ", (totalPot) / bblind, DLL_INTERFACE_LOGGER);
     currentGameInfo->setTotalPot(totalPot / bblind);
 
     return currentGameInfo;
@@ -270,6 +270,7 @@ void refreshPlayersName(holdem_state* pstate)
     Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);
 
     GameStateManager& gameStateManager = GameStateManager::getGameStateManager();
+	PlayerRangeManager& playerRangeManager = PlayerRangeManager::getPlayerRangeManager();
 
     char buffer[100];
     for (int idx = 0; idx <= 5; ++idx)
@@ -282,6 +283,7 @@ void refreshPlayersName(holdem_state* pstate)
             logger.logExp(buffer, hp.m_name, DLL_INTERFACE_LOGGER);
 
             gameStateManager.setPlayer(string(hp.m_name), idx);
+			playerRangeManager.setPlayerName(idx, string(hp.m_name));
         }
     }
 }
@@ -506,6 +508,8 @@ double process_state(holdem_state* pstate)
 		gamestateManager.setHandNumber(cgi->getHandNumber());
         resetHand(pstate, cgi->getHand());
 
+		refreshPlayersName(pstate);
+
 		playerRangeManager.resetRanges(gamestateManager);
     }
 
@@ -531,16 +535,14 @@ double process_state(holdem_state* pstate)
     vector<int> relativePositions;
     calculateRelativPositions(relativePositions, gamestateManager.getDealerPosition());
 
-    //if (cgi->getStreet() == 0) // preflop
-    //{
-     //   int smallblindPos = nextPosition(gamestateManager.getDealerPosition());
-     //   int bigBlindPos = nextPosition(smallblindPos);
-    //}
-
     double playersplayingbits = gws("playersplayingbits");
     logger.logExp("-> playersplayingbits : ", playersplayingbits, DLL_INTERFACE_LOGGER);
     for (int idx = 1; idx < 6; ++idx) // hero always sits at 0!
     {
+		// skip this frame if someone's name is unknown - this way we can avoid a lot of crashes
+		if (gamestateManager.getPlayerNameByPos(idx) == "")
+			continue;
+
         char buffer[100];            
         if (isBitSet((int)playersplayingbits, idx))
         {
@@ -580,6 +582,7 @@ double process_state(holdem_state* pstate)
                     string playerName = currentPlayerInfo.getName();
                     PlayerRange playerRange = playerRangeManager.getPlayerRange(idx);
 
+					// needed by botlogic
 					cgi->addCurrentPlayerInfo(currentPlayerInfo);
 					
                     //playerRange.set
@@ -587,6 +590,7 @@ double process_state(holdem_state* pstate)
 
 					gamestateManager.setCache(false);
                     playerRangeManager.setPlayerRange(idx, updatedRange);
+					gamestateManager.setCurrentPlayerInfo(idx, currentPlayerInfo);
                 }
                 else
                 {

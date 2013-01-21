@@ -22,7 +22,6 @@ private:
     //vector<double> currentBets;
     vector<string> players;
 
-
     vector<CurrentPlayerInfo> currentPlayerInfos;
     vector<bool> isCurrentPlayerInfosSet;
 
