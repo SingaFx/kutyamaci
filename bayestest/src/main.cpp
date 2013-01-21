@@ -1,4 +1,4 @@
-#include "plusEVBotLogic.h"
+//#include "plusEVBotLogic.h"
 #include <iostream>
 #include <vector>
 #include "bayesUserFunctions.h"
@@ -161,8 +161,8 @@ int main()
     try
     {
 		EqCalculator calc;
-		PlusEVBotLogic botlogic;
-		BayesDecision decision;
+		//PlusEVBotLogic botlogic;
+		//BayesDecision decision;
 
 		preflop.read("preflopBayes");
 		flop.read("flopBayes");
@@ -238,11 +238,15 @@ int main()
 		printf("FLOP MERGED\n");
 		range.printRange();
 
-		double EQ = calc.calculate(ranges, cards, 25000);
-		printf("%.2lf\n", EQ);
+		//double EQ = calc.calculate(ranges, cards, 25000);
+		//printf("%.2lf\n", EQ);
+
+		
+		printf("total = %lf\n", range.totalPercentage());
 
 		printf("BOTLOGIC TESTS\n");
 
+		/*
 		CurrentPlayerInfo info;
 		CurrentGameInfo gameInfo;
 
@@ -252,6 +256,7 @@ int main()
 
 		gameInfo.setPotcommon(100);
 		range = decision.getCallRaiseRange(10, range, gameInfo, preflop, flop, turn, river);
+		*/
     }
     catch (std::exception& e)
     {
