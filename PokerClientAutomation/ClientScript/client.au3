@@ -20,6 +20,8 @@ Global $endfolder = IniRead($datafile, "startup", "endfolder", "-1")
 Global $updaterfolder = IniRead($datafile, "startup", "updaterfolder", "-1")
 Global $password = IniRead($datafile, "startup", "password", "-1")
 
+
+
 _FileCreate("bla.bat")
 FileWriteLine("bla.bat","xcopy " & $startfolder & "* " & $endfolder & " /e /-y")
 FileWriteLine("bla.bat","rd " & $startfolder & " /s /q")
@@ -34,30 +36,52 @@ Sleep(2000)
 Send($password & "ENTER")
 
 dbgOut(_NowDate())
+Global $date = _NowDate()
+;$date = StringReplace($date, '.', '')
+$date = StringSplit($date, '/')
+Global $datestr
 
-; Run("updater --live "& $updaterfolder & )
+Local $i = $date[0]
+While $i > 0 
+   if StringLen($date[$i]) < 2 Then
+	  $datestr = $datestr & '0' & $date[$i]
+   Else
+	  $datestr = $datestr & $date[$i]
+   EndIf
+  $i = $i - 1 
+WEnd
+
+;dbgOut($datestr)
+
+;Run("updater --live "& $updaterfolder & $datestr)
 
 ; MsgBox(_NowDate())
 
-Exit
+;Exit
 
-; Global $g_IP = IniRead($datafile, "connections", "serverip", "-1")
-; Global $g_PORT = IniRead($datafile, "connections", "serverport", "-1")
-; Global $encrypt_key = "bla"
+Global $g_IP = IniRead($datafile, "connections", "serverip", "-1")
+Global $g_PORT = IniRead($datafile, "connections", "serverport", "-1")
+Global $encrypt_key = "bla"
 
-; TCPStartup()
-; Local $socket = TCPConnect($g_IP, $g_PORT)
-; dbgOut($socket);
-; If $socket = -1 Then
-   ; MsgBox(4096, "", "Cannot connect to server fool!")
-   ; Exit
-; EndIf
+TCPStartup()
+Local $socket = TCPConnect($g_IP, $g_PORT)
+
+;dbgOut($socket);
+If $socket = -1 Then
+   MsgBox(4096, "", "Cannot connect to server fool!")
+   Exit
+EndIf
 ; dbgOut("Connected to the server")
+
 
 Global $run_path = IniRead($datafile, "startup", "runpath", "-1")
 Global $run = IniRead($datafile, "startup", "run", "-1")
 Global $casinoname = IniRead($datafile, "startup", "casinoname", "-1")
 
+
+dbgOut($run_path&$run)
+
+Run($run_path&$run)
 
 ; Global $MAX_TABLES = IniRead($datafile, "other", "maxtables", "-1") 
 
@@ -125,8 +149,7 @@ for $i = 1 to $array[0][0]
     EndIf
     
     ;~ SEND DATA TO DA SERVER
-    
-    Bring(StringTrimLeft($array[$i][1],2), $tableX, $tableY, $i)
+    Bring(StringTrimLeft($array[$i][1],2), $tableX, $tableY, $i - 1)
 Next
 
 

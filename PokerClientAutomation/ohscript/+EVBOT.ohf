@@ -1,4 +1,4 @@
-##2012-12-10 00:09:33##
+##2013-01-20 16:21:21##
 
 ##notes##
 
@@ -22,34 +22,31 @@
 
 
 ##f$swag##
-f$srai ? 
-	f$BetSize > 0.4 * f$ActualStack ? f$TotalBalance
-    :((f$BetSize/sblind)^0)*sblind
-:0
+dll$swag == -1 ?
+	f$mySrai ? 
+		f$BetSize > 0.4 * f$ActualStack ? f$TotalBalance
+		 :((f$BetSize/sblind)^0)*sblind
+	:0
+:dll$srai ? 
+		dll$swag > 0.4 * f$ActualStack ? f$TotalBalance
+		 :((dll$swag/sblind)^0)*sblind
+	:0
 
 ##f$srai##
-nhandshi <= 1 ? 1
-:br == 1 ? f$PreflopRaise
-:br == 2 ? f$FlopBet
-:br == 3 ? f$TurnBet
-:br == 4 ? f$RiverBet
-:0
+dll$srai == -1 ? f$mySrai : dll$srai
 
 ##f$rais##
 
 
 ##f$call##
-f$srai ||
-(
-(call/(call+pot) <= 1/15 ? 1
-:br == 1 ? f$PreflopCall
-:br == 2 ? f$FlopCall
-:br == 3 ? f$TurnCall
-:br == 4 ? f$RiverCall
-:0) && call > 0)
+dll$call == -1 ? f$myCall : dll$call
 
 ##f$prefold##
-
+(f$PositionEP ? !islist01 :
+f$PositionMP ? !islist02 :
+f$PositionCO ? !islist03 :
+f$PositionBU ? !islist04 : 
+f$PositionSB ? !islist03 : 0)
 
 ##f$rebuy##
 
@@ -1136,4 +1133,28 @@ $$pr0 > rankhicommon && $$pr1 > rankhicommon
 
 ##f$IsPair##
 isonepair && nrankedcommon == 1
+
+##f$mySrai##
+nhandshi <= 1 ? 1
+:br == 1 ? f$PreflopRaise
+:br == 2 ? f$FlopBet
+:br == 3 ? f$TurnBet
+:br == 4 ? f$RiverBet
+:0
+
+##f$mySwag##
+f$mySrai ? 
+	f$BetSize > 0.4 * f$ActualStack ? f$TotalBalance
+    :((f$BetSize/sblind)^0)*sblind
+:0
+
+##f$myCall##
+f$mySrai ||
+(
+(call/(call+pot) <= 1/15 ? 1
+:br == 1 ? f$PreflopCall
+:br == 2 ? f$FlopCall
+:br == 3 ? f$TurnCall
+:br == 4 ? f$RiverCall
+:0) && call > 0)
 

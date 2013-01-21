@@ -61,6 +61,11 @@ vector<CurrentPlayerInfo>& CurrentGameInfo::getOpponentsInfo()
 	return opponentsInfo;
 }
 
+void CurrentGameInfo::addCurrentPlayerInfo(CurrentPlayerInfo& cpi)
+{
+	opponentsInfo.push_back(cpi);
+}
+
 void CurrentGameInfo::setHero(CurrentPlayerInfo& hero)
 {
 	this->hero = hero;

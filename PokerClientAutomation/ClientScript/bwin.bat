@@ -1,0 +1,1 @@
+C:\Programs\bwincom\bwincom.exe -P=bwincomPoker

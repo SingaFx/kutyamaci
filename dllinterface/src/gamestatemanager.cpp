@@ -11,6 +11,7 @@ GameStateManager::GameStateManager()
     , balance(6)
     , players(6)
     , maxRaiseSize(0.0)
+	, currentGameInfo(0)
 {
 }
 
@@ -47,10 +48,9 @@ bool GameStateManager::IsHandReset(Hand hand)
 void GameStateManager::resetState(int dealerPos, Hand hand)
 {
     // reset players
-    players.clear();
     for (int idx = 0; idx < 6; ++idx)
     {
-        players[idx] = string("");
+		players[idx] = string("");
         isCurrentPlayerInfosSet[idx] = false;
         balance[idx] = 0.0;
     }

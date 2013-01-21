@@ -63,7 +63,7 @@ public:
 						hand.getCard1().setSuit(map[i1]);
 						hand.getCard2().setSuit(map[i2]);
 
-						range.insert(make_pair(hand, 1/1326));
+						range.insert(make_pair(hand, 1.0/1326));
 						
 					}
 
@@ -77,7 +77,7 @@ public:
 						hand.getCard1().setSuit(map[i1]);
 						hand.getCard2().setSuit(map[i2]);
 
-						range.insert(make_pair(hand, 1/1326));
+						range.insert(make_pair(hand, 1.0/1326));
 					}
 				}
 			}

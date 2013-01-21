@@ -1,5 +1,6 @@
 #include "plusEVBotLogic.h"
 #include "rangeFunctions.h"
+#include "logger.h"
 
 PlusEVBotLogic::PlusEVBotLogic()
 {
@@ -9,7 +10,6 @@ PlusEVBotLogic::PlusEVBotLogic()
 	turn.read("turnBayes");
 	river.read("riverBayes");
 }
-
 PlusEVBotLogic::~PlusEVBotLogic()
 {
 
@@ -89,7 +89,7 @@ Action PlusEVBotLogic::makeDecision(CurrentGameInfo& gameInfo, vector<PlayerRang
 	return res;
 }
 
-CurrentPlayerInfo& PlusEVBotLogic::setStandardPlayerType(CurrentPlayerInfo& playerInfo, double bblind)
+CurrentPlayerInfo PlusEVBotLogic::setStandardPlayerType(CurrentPlayerInfo& playerInfo, double bblind)
 {
 	CurrentPlayerInfo result = playerInfo;
 

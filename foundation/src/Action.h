@@ -1,6 +1,8 @@
 #ifndef ACTION_H
 #define ACTION_H
 
+#include <string>
+
 class Action
 {
 private:
@@ -15,6 +17,8 @@ public:
     void setAction(char, double);
     const char getType();
     const double getSize();
+
+	std::string toString();
 };
 
 #endif

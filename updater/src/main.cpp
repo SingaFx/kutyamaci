@@ -25,13 +25,9 @@ int main(int argc, char *argv[])
 	po::store(po::parse_command_line(argc, argv, desc), vm);
 	po::notify(vm);
 
-	//LOCALS settings
-    database = new Database("127.0.0.1", "root", "maratsafin", "kutya");
-
-    //SETTINGS FOR ROBI TEST
-    //database = new Database("192.168.0.100", "root", "root", "kutya");
-
-    printf("%s\n", database->query("show tables").c_str());
+	////TODO:command line arguments for this!
+	database = new Database("192.168.1.100", "root", "root", "kutya");
+	printf("%s\n", database->query("show tables").c_str());
 
 	if (vm.count("live"))
 	{
@@ -44,6 +40,7 @@ int main(int argc, char *argv[])
 		printf("Import mode!\n");
 		printf("The specified directory: %s\n", vm["import"].as<string>().c_str());
         cout << vm["import"].as<string>();
+        cout << "Hello!";
 		updater = new ImportUpdater(vm["import"].as<string>(), database);
 	}
 
@@ -51,4 +48,6 @@ int main(int argc, char *argv[])
 	{
 		updater->run();
 	}
+
+	//return 0;
 }
