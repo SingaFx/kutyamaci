@@ -50,6 +50,11 @@ void PlayerRangeManager::setPlayerRange(int pos, PlayerRange& pr)
     playerRanges[pos] = pr;
 }
 
+void PlayerRangeManager::setPlayerName(int pos, string name)
+{
+	playerRanges[pos].setName(name);
+}
+
 vector<PlayerRange> PlayerRangeManager::getPlayerRanges()
 {
     return playerRanges;

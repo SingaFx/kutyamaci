@@ -48,7 +48,7 @@ bool GameStateManager::IsHandReset(Hand hand)
 
 bool GameStateManager::IsHandReset(double handNumber)
 {
-	return this->handNumber != handNumber;
+	return abs(this->handNumber - handNumber) > 0.001;
 }
 
 void GameStateManager::resetState(int dealerPos, Hand hand)
