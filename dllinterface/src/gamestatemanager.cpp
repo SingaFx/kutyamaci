@@ -70,11 +70,10 @@ void GameStateManager::resetState(int dealerPos, Hand hand)
 
     resetCurrentBets();
 
-	//HARD CODE!!!
-    getCurrentPlayerInfo(smallBlindPosition).setBetsize(0.02);       
-    getCurrentPlayerInfo(bigBlindPosition).setBetsize(0.04);    
+    getCurrentPlayerInfo(smallBlindPosition).setBetsize(0.5);       
+    getCurrentPlayerInfo(bigBlindPosition).setBetsize(1);    
     
-    maxRaiseSize = 0.04;
+    maxRaiseSize = 1;
     //
     bettingRound = 0;
     lastHand = hand;
@@ -150,7 +149,7 @@ string GameStateManager::getPlayerNameByPos(int idx)
     return players[idx];
 }
 
-void GameStateManager::setCurrentPlayerInfo(int pos, CurrentPlayerInfo& cpi)
+void GameStateManager::setCurrentPlayerInfo(int pos, CurrentPlayerInfo cpi)
 {
     currentPlayerInfos[pos] = cpi;
     isCurrentPlayerInfosSet[pos] = true;
@@ -216,7 +215,7 @@ void GameStateManager::setCache(bool cache)
 	cacheAvalaible = cache;
 }
 
-void GameStateManager::setHandNumber(double)
+void GameStateManager::setHandNumber(double handNumber)
 {
 	this->handNumber = handNumber;
 }

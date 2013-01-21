@@ -20,6 +20,9 @@
 
 using namespace std;
 
+#define BBLIND (GameStateManager::getGameStateManager().getCurrentGameInfo()->getBblind())
+
+
 #define MYMENU_EXIT         (WM_APP + 101)
 #define MYMENU_MESSAGEBOX   (WM_APP + 102) 
 
@@ -28,6 +31,8 @@ HWND       prnt_hWnd;            //Parent Window Handle
 HWND hwnd;
 
 vector<string> myOutput;
+
+void getCurrentBets(vector<double>& currentbets);
 
 void WriteToDebugWindow()
 {
@@ -45,14 +50,82 @@ void WriteToDebugWindow()
 		return ;
 	}
 
-	
+	//POT
+	/*
 	double totalpot = cgi->getTotalPot();
 	stream << totalpot;
 
 	myOutput.push_back("Totalpot = " + stream.str());
 	logger.logExp("Totalpot = " + stream.str(), DLL_INTERFACE_LOGGER);
-	RedrawWindow(hwnd , NULL , NULL , RDW_INVALIDATE);
+	*/
+
+	/*
+	double newHandNumber = cgi->getHandNumber();
+	double oldHandNumber = gamestate.getHandNumber();
+	stream.clear();
+	stream << "Hand numbers: " << newHandNumber << " " << oldHandNumber;
+	myOutput.push_back(stream.str());
+	*/
+
+	//USERS
+	/*
+	for (int i = 0; i < 6; ++i)
+	{
+		string s = gamestate.getPlayerNameByPos(i);
+		myOutput.push_back(s);
+	}
+
+	for (int i = 0; i < 6; ++i)
+	{
+		if (!gamestate.isCurrentPlayerInfoSet(i)) continue;
+		string s = gamestate.getCurrentPlayerInfo(i).getName();
+		myOutput.push_back(s);
+	}
+	*/
+
+
+	/*
+	stream.clear();
+	double betround1 = gamestate.getBettingRound();
+	double betround2 = cgi->getStreet();
+
+	stream << "Betround= " << betround1 << " " << betround2;
+	myOutput.push_back(stream.str());
+	*/
+
+	//CURRENTBETS
 	
+	stream.clear();
+
+	vector<double> currentBets(6);
+    getCurrentBets(currentBets);
+
+	for (int i = 0; i < currentBets.size(); ++i)
+	{
+		stream << currentBets[i] << " ";
+	}
+	stream << endl;
+	myOutput.push_back(stream.str());
+
+	//stream.clear();
+	
+
+	for (int idx = 0; idx < 6; ++idx)
+	{
+		if (gamestate.isCurrentPlayerInfoSet(idx))
+		{
+			ostringstream os;
+			string name = gamestate.getCurrentPlayerInfo(idx).getName();
+			double line = gamestate.getCurrentPlayerInfo(idx).getLine();
+			double betsize = gamestate.getCurrentPlayerInfo(idx).getBetsize();
+			double betsize2 = gamestate.getCurrentBetByPos(idx);
+			double bblind = cgi->getBblind();
+
+			os << name << " " << line << " " << betsize << " " << betsize2 << " " << bblind;
+			myOutput.push_back(os.str());
+		}
+	}
+
 	/*
 	stream.clear();
 	int random = rand() % 1000;
@@ -65,11 +138,10 @@ void WriteToDebugWindow()
 	random = rand() % 1000;
 	stream << random;
 	myOutput.push_back("random= " + stream.str());
-	RedrawWindow(hwnd , NULL , NULL , RDW_INVALIDATE);
 	*/
 	//myOutput.clear();
+	RedrawWindow(hwnd , NULL , NULL , RDW_INVALIDATE);
 }
-
 
 ///////////////////////////////////// 
 //card macros
@@ -318,7 +390,7 @@ void getCurrentBets(vector<double>& currentBets)
 		logger.logExp("-> symbol : ", buffer, LOGGER_TYPE::DLL_INTERFACE_LOGGER);
         double currentBet = gws(buffer);
 		logger.logExp("-> currentbet : ", currentBet, LOGGER_TYPE::DLL_INTERFACE_LOGGER);
-        currentBets.push_back(currentBet);
+        currentBets.push_back(currentBet / BBLIND);
     }
 }
 
@@ -392,6 +464,11 @@ void calculateRelativPositions(vector<int>& relativPositions, int dealerPosition
 
 void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
 {
+	if (old_cgi == NULL)
+	{
+		return ;
+	}
+
     GameStateManager& gamestateManager = GameStateManager::getGameStateManager();
 
     BotManager& botManager = BotManager::getBotManager();
@@ -406,7 +483,10 @@ void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
     {        
         if (isBitSet((int)playersplayingbits, idx))
         {
+			if (!gamestateManager.isCurrentPlayerInfoSet(idx)) continue;
+
             CurrentPlayerInfo& currentPlayerInfo = gamestateManager.getCurrentPlayerInfo(idx);
+
             if (!isEqual(maxRaise, currentPlayerInfo.getBetsize()))
             {
                 currentPlayerInfo.setLine(0);
@@ -548,13 +628,6 @@ double process_state(holdem_state* pstate)
     // first we should test if game state is valid
     bool isValid = true;
     CurrentGameInfo* cgi = createCurrentGameInfo(isValid);
-	
-	//DEBUG CODE
-	gamestateManager.setCurrentGameInfo(cgi);
-
-	WriteToDebugWindow();
-
-	return 0;
 
 	if (!isValid)
     {
@@ -566,16 +639,19 @@ double process_state(holdem_state* pstate)
 	CurrentGameInfo* old_cgi = gamestateManager.getCurrentGameInfo();
     gamestateManager.setCurrentGameInfo(cgi);
 
-    // testing new hand    
+    // testing new hand   
+	
+
 	if (gamestateManager.IsHandReset(cgi->getHandNumber()))
     {
 		gamestateManager.setHandNumber(cgi->getHandNumber());
         resetHand(pstate, cgi->getHand());
 
-		refreshPlayersName(pstate);
-
 		playerRangeManager.resetRanges(gamestateManager);
+		refreshPlayersName(pstate);
     }
+
+	refreshPlayersName(pstate);
 
     // testing if we advanced to the next betting round
     if (cgi->getStreet() > gamestateManager.getBettingRound())
@@ -589,11 +665,8 @@ double process_state(holdem_state* pstate)
 		delete old_cgi;
 	}
 
-	refreshPlayersName(pstate);
-    
     vector<double> currentBets(6);
     getCurrentBets(currentBets);
-
 
 	//ITS DUMMY HERE
     vector<int> relativePositions;
@@ -605,7 +678,7 @@ double process_state(holdem_state* pstate)
     {
 		// skip this frame if someone's name is unknown - this way we can avoid a lot of crashes
 		if (gamestateManager.getPlayerNameByPos(idx) == "")
-			continue;
+			return 0;
 
         char buffer[100];            
         if (isBitSet((int)playersplayingbits, idx))
@@ -615,7 +688,7 @@ double process_state(holdem_state* pstate)
 
             double currentBet = currentBets[idx];
 
-            if (!isEqual(currentBet, gamestateManager.getCurrentBetByPos(idx)))
+			if (!isEqual(currentBet, gamestateManager.getCurrentBetByPos(idx)))
             {
                 if (gamestateManager.isCurrentPlayerInfoSet(idx))
                 {
@@ -624,7 +697,7 @@ double process_state(holdem_state* pstate)
 					double bblind = cgi->getBblind();
 
                     currentPlayerInfo.setActualStacksize(getBalanceByPos(idx) / bblind);
-                    currentPlayerInfo.setBetsize(currentBet / bblind);
+                    currentPlayerInfo.setBetsize(currentBet);
 
                     double maxRaise = gamestateManager.getMaxRaise();
                     if (isEqual(currentBet, maxRaise))
@@ -653,8 +726,7 @@ double process_state(holdem_state* pstate)
                     PlayerRange& updatedRange = botLogic->calculateRange(playerName, *cgi, playerRange);
 
 					gamestateManager.setCache(false);
-                    playerRangeManager.setPlayerRange(idx, updatedRange);
-					gamestateManager.setCurrentPlayerInfo(idx, currentPlayerInfo);
+                    playerRangeManager.setPlayerRange(idx, updatedRange);		
                 }
                 else
                 {
@@ -664,7 +736,7 @@ double process_state(holdem_state* pstate)
                         
                     currentPlayerInfo.setStacksize(gamestateManager.getInitialBalanceByPos(idx) / bblind);
                     currentPlayerInfo.setActualStacksize(getBalanceByPos(idx) / bblind);
-                    currentPlayerInfo.setBetsize(currentBet / bblind);
+                    currentPlayerInfo.setBetsize(currentBet);
                     currentPlayerInfo.setName(gamestateManager.getPlayerNameByPos(idx));
                     currentPlayerInfo.setPoz(relativePositions[idx]);
 
@@ -706,6 +778,8 @@ double process_state(holdem_state* pstate)
         }
     }
 	//SET HERO's things
+
+	WriteToDebugWindow();
 
 	return 0;
 }

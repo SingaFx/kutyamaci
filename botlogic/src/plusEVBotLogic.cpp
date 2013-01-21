@@ -15,7 +15,7 @@ PlusEVBotLogic::~PlusEVBotLogic()
 
 }
 
-PlayerRange& PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameInfo, PlayerRange& oldPlayerRange)
+PlayerRange PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameInfo, PlayerRange& oldPlayerRange)
 {
 	extendGameInfo(gameInfo);
 
