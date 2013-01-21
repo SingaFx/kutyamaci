@@ -1,7 +1,9 @@
 #define WHUSER_EXPORTS 
 
+#include "windows.h"
+//#include "stdafx.h"
+
 #include "OH-DLL.h"
-#include <windows.h>
 #include "logger.h"
 #include <string>
 #include "currentGameInfo.h"
@@ -11,11 +13,65 @@
 #include "playerrangemanager.h"
 #include "plusEVBotLogic.h"
 #include "botmanager.h"
-#include "abstractbotlogic.h""
+#include "abstractbotlogic.h"
+
+#include <sstream>
 
 using namespace std;
+
+#define MYMENU_EXIT         (WM_APP + 101)
+#define MYMENU_MESSAGEBOX   (WM_APP + 102) 
+
+HINSTANCE  inj_hModule;          //Injected Modules Handle
+HWND       prnt_hWnd;            //Parent Window Handle
+HWND hwnd;
+
+vector<string> myOutput;
+
+void WriteToDebugWindow()
+{
+	Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);
+   
+	stringstream stream;
+
+	GameStateManager& gamestate = GameStateManager::getGameStateManager();
+	CurrentGameInfo* cgi = gamestate.getCurrentGameInfo();
+
+	if (cgi == NULL) 
+	{
+		myOutput.push_back("cgi == NULL");
+		RedrawWindow(hwnd , NULL , NULL , RDW_INVALIDATE);
+		return ;
+	}
+
+	
+	double totalpot = cgi->getTotalPot();
+	stream << totalpot;
+
+	myOutput.push_back("Totalpot = " + stream.str());
+	logger.logExp("Totalpot = " + stream.str(), DLL_INTERFACE_LOGGER);
+	RedrawWindow(hwnd , NULL , NULL , RDW_INVALIDATE);
+	
+	/*
+	stream.clear();
+	int random = rand() % 1000;
+	stream << random;
+	myOutput.push_back("random= " + stream.str());
+	*/
+
+	/*
+	stream.clear();
+	random = rand() % 1000;
+	stream << random;
+	myOutput.push_back("random= " + stream.str());
+	RedrawWindow(hwnd , NULL , NULL , RDW_INVALIDATE);
+	*/
+	//myOutput.clear();
+}
+
+
 ///////////////////////////////////// 
-//card macros 
+//card macros
 #define RANK(c)	         ((c>>4)&0x0f) 
 #define SUIT(c)          ((c>>0)&0x0f) 
 #define ISCARDBACK(c)	 (c==0xff) 
@@ -489,7 +545,15 @@ double process_state(holdem_state* pstate)
     // first we should test if game state is valid
     bool isValid = true;
     CurrentGameInfo* cgi = createCurrentGameInfo(isValid);
-    if (!isValid)
+	
+	//DEBUG CODE
+	gamestateManager.setCurrentGameInfo(cgi);
+
+	WriteToDebugWindow();
+
+	return 0;
+
+	if (!isValid)
     {
         delete cgi;
         logger.logExp("[SKIPPING SCRAPPING CYCLE] : hero hole cards are not valid!", DLL_INTERFACE_LOGGER);
@@ -497,7 +561,6 @@ double process_state(holdem_state* pstate)
     }
 
 	CurrentGameInfo* old_cgi = gamestateManager.getCurrentGameInfo();
-	
     gamestateManager.setCurrentGameInfo(cgi);
 
     // testing new hand    
@@ -639,7 +702,6 @@ double process_state(holdem_state* pstate)
     }
 	//SET HERO's things
 
-
 	return 0;
 }
 ///////////////////////////////////////////////////// 
@@ -683,11 +745,67 @@ WHUSER_API double process_message(const char* pmessage, const void* param){
 
 }
 
-HINSTANCE  inj_hModule;          //Injected Modules Handle
-HWND       prnt_hWnd;            //Parent Window Handle
-#define MYMENU_EXIT         (WM_APP + 101)
-#define MYMENU_MESSAGEBOX   (WM_APP + 102)
 
+
+//WndProc for the new window
+LRESULT CALLBACK DLLWindowProc (HWND, UINT, WPARAM, LPARAM);
+
+//Register our windows Class
+BOOL RegisterDLLWindowClass(wchar_t szClassName[])
+{
+    WNDCLASSEXW wc;
+    wc.hInstance =  inj_hModule;
+	wc.lpszClassName = (LPCWSTR)L"InjectedDLLWindowClass";
+    wc.lpszClassName = (LPCWSTR)szClassName;
+    wc.lpfnWndProc = DLLWindowProc;
+    wc.style = CS_DBLCLKS;
+    wc.cbSize = sizeof (WNDCLASSEX);
+    wc.hIcon = LoadIcon (NULL, IDI_APPLICATION);
+    wc.hIconSm = LoadIcon (NULL, IDI_APPLICATION);
+    wc.hCursor = LoadCursor (NULL, IDC_ARROW);
+    wc.lpszMenuName = NULL;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
+    wc.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
+    if (!RegisterClassExW (&wc))
+		return 0;
+}
+//Creating our windows Menu
+HMENU CreateDLLWindowMenu()
+{
+	HMENU hMenu;
+	hMenu = CreateMenu();
+	HMENU hMenuPopup;
+    if(hMenu==NULL)
+        return FALSE;
+    hMenuPopup = CreatePopupMenu();
+	AppendMenu (hMenuPopup, MF_STRING, MYMENU_EXIT, TEXT("Exit"));
+    AppendMenu (hMenu, MF_POPUP, (UINT_PTR) hMenuPopup, TEXT("File")); 
+
+	hMenuPopup = CreatePopupMenu();
+    AppendMenu (hMenuPopup, MF_STRING,MYMENU_MESSAGEBOX, TEXT("MessageBox")); 
+    AppendMenu (hMenu, MF_POPUP, (UINT_PTR) hMenuPopup, TEXT("Test")); 
+	return hMenu;
+}
+
+//The new thread
+DWORD WINAPI ThreadProc( LPVOID lpParam )
+{
+    MSG messages;
+	wchar_t *pString = reinterpret_cast<wchar_t * > (lpParam);
+	HMENU hMenu = CreateDLLWindowMenu();
+	RegisterDLLWindowClass(L"InjectedDLLWindowClass");
+	prnt_hWnd = FindWindowW(L"Window Injected Into ClassName", L"Window Injected Into Caption");
+	hwnd = CreateWindowExW (0, L"InjectedDLLWindowClass", pString, WS_EX_PALETTEWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 400, 300, prnt_hWnd, hMenu,inj_hModule, NULL );
+	ShowWindow (hwnd, SW_SHOWNORMAL);
+    while (GetMessageW (&messages, NULL, 0, 0))
+    {
+		TranslateMessage(&messages);
+        DispatchMessage(&messages);
+    }
+    return 1;
+}
+//Our new windows proc
 LRESULT CALLBACK DLLWindowProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -699,10 +817,28 @@ LRESULT CALLBACK DLLWindowProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 						SendMessage(hwnd, WM_CLOSE, 0, 0);
                         break;
                     case MYMENU_MESSAGEBOX:
-						MessageBox(hwnd, (LPCSTR)"Test", (LPCSTR)"MessageBox",MB_OK);
+						MessageBoxW(hwnd, L"Test", L"MessageBox",MB_OK);
                         break;
                }
                break;
+		case WM_PAINT: 
+			{
+				PAINTSTRUCT ps;
+				HDC hDC = BeginPaint (hwnd, &ps);
+
+				HBRUSH background = CreateSolidBrush(RGB(0,155,0));
+				FillRect(hDC, &ps.rcPaint, background);
+
+				int iY = 5;
+				for (int i = 0; i < myOutput.size(); ++i, iY += 20)
+				{
+					TextOut (hDC, 5, iY, myOutput[i].c_str(), myOutput[i].size());
+				}
+				EndPaint (hwnd, &ps);
+
+				myOutput.clear();
+			}
+			break;
 		case WM_DESTROY:
 			PostQuitMessage (0);
 			break;
@@ -712,74 +848,21 @@ LRESULT CALLBACK DLLWindowProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM l
     return 0;
 }
 
-HMENU CreateDLLWindowMenu()
-{
-	HMENU hMenu;
-	hMenu = CreateMenu();
-	HMENU hMenuPopup;
-	if(hMenu==NULL)
-           return FALSE;
-	hMenuPopup = CreatePopupMenu();
-	AppendMenu (hMenuPopup, MF_STRING, MYMENU_EXIT, TEXT("Exit"));
-	AppendMenu (hMenu, MF_POPUP, (UINT_PTR) hMenuPopup, TEXT("File")); 
-
-	hMenuPopup = CreatePopupMenu();
-	AppendMenu (hMenuPopup, MF_STRING,MYMENU_MESSAGEBOX, TEXT("MessageBox")); 
-	AppendMenu (hMenu, MF_POPUP, (UINT_PTR) hMenuPopup, TEXT("Test")); 
-	return hMenu;
-}
-
-BOOL RegisterDLLWindowClass(wchar_t szClassName[])
-{
-    WNDCLASSEX wc;
-    wc.hInstance =  inj_hModule;
-    wc.lpszClassName = (LPCSTR)L"InjectedDLLWindowClass";
-    wc.lpfnWndProc = DLLWindowProc;
-    wc.style = CS_DBLCLKS;
-    wc.cbSize = sizeof (WNDCLASSEX);
-    wc.hIcon = LoadIcon (NULL, IDI_APPLICATION);
-    wc.hIconSm = LoadIcon (NULL, IDI_APPLICATION);
-    wc.hCursor = LoadCursor (NULL, IDC_ARROW);
-    wc.lpszMenuName = NULL;
-    wc.cbClsExtra = 0;
-    wc.cbWndExtra = 0;
-    wc.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
-    if (!RegisterClassEx (&wc))
-		return 0;
-}
-
-DWORD WINAPI ThreadProc( LPVOID lpParam )
-{
-	MSG messages;
-	wchar_t *pString = reinterpret_cast<wchar_t * > (lpParam);
-	HMENU hMenu = CreateDLLWindowMenu();
-	RegisterDLLWindowClass(L"InjectedDLLWindowClass");
-	prnt_hWnd = FindWindow((LPCSTR)"Window Injected Into ClassName", (LPCSTR)"Window Injected Into Caption");
-	HWND hwnd = CreateWindowEx (0, (LPCSTR)"InjectedDLLWindowClass", (LPCSTR)pString, WS_EX_PALETTEWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 400, 300, prnt_hWnd, hMenu,inj_hModule, NULL );
-	ShowWindow (hwnd, SW_SHOWNORMAL);
-	while (GetMessage (&messages, NULL, 0, 0))
-	{
-		TranslateMessage(&messages);
-        	DispatchMessage(&messages);
-	}
-	return 1;
-}
-
 
 
 ///////////////////////////////// 
 //DLLMAIN 
 ///////////////////////////////// 
-BOOL APIENTRY DllMain( HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved){
+BOOL APIENTRY DllMain( HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved){
 
 	switch(ul_reason_for_call)
     {
 		case DLL_PROCESS_ATTACH:
-			//inj_hModule = hModule;
-			//CreateThread(0, NULL, ThreadProc, (LPVOID)L"Window Title", NULL, NULL);
+			inj_hModule = hModule;
+			CreateThread(0, NULL, ThreadProc, (LPVOID)L"Window Title", NULL, NULL);
 			break; 
 		case DLL_THREAD_ATTACH:
-			//inj_hModule = (HINSTANCE) hModule;
+			//inj_hModule = hModule;
 			//CreateThread(0, NULL, ThreadProc, (LPVOID)L"Window Title", NULL, NULL);
 			break; 
 		case DLL_THREAD_DETACH:
