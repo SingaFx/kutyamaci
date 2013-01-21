@@ -386,7 +386,11 @@ double process_query(const char* pquery)
     GameStateManager& gamestateManager = GameStateManager::getGameStateManager();
     PlayerRangeManager& playerRangeManager = PlayerRangeManager::getPlayerRangeManager();
 
-	//if (gamestateManager.getHand()
+	if (!gamestateManager.getHand().valid())
+	{
+		logger.logExp("Hand validation failed. Returning.", DLL_INTERFACE_LOGGER);
+		return 0;
+	}
 
     vector<PlayerRange> ranges = playerRangeManager.getPlayerRanges();
 	Action action;

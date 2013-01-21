@@ -28,6 +28,7 @@ public:
     bool operator < (const Hand& h) const;
 
 	string toString();
+	bool valid();
 };
 
 #endif HAND_H

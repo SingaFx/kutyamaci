@@ -75,3 +75,8 @@ string Hand::toString()
 
 	return res;
 }
+
+bool Hand::valid()
+{
+	return card1.valid() && card2.valid() && !(card1 == card2);
+}

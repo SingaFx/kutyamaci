@@ -30,6 +30,7 @@ public:
     bool operator < (const Card& c) const;
 
 	string toString();
+	bool valid();
 };
 
 #endif
