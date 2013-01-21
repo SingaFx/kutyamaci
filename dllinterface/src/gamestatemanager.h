@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Action.h"
 #include "Hand.h"
 #include <vector>
 #include <string>
@@ -12,6 +13,8 @@ class GameStateManager
 {
 private:
 
+	double handNumber;
+
     int dealerPosition;
     int bettingRound;
     Hand lastHand;
@@ -19,15 +22,15 @@ private:
     //vector<double> currentBets;
     vector<string> players;
 
-
     vector<CurrentPlayerInfo> currentPlayerInfos;
     vector<bool> isCurrentPlayerInfosSet;
 
     vector<double> balance;
-
     double maxRaiseSize;
-
     CurrentGameInfo* currentGameInfo;
+
+	Action actionCache;
+	bool cacheAvalaible;
 
     int nextPosition(int position);
 
@@ -41,6 +44,7 @@ public:
     static GameStateManager& getGameStateManager();
 
     bool IsHandReset(Hand hand);
+	bool IsHandReset(double handNumber);
 
     void resetCurrentBets();
 
@@ -63,7 +67,7 @@ public:
     string getPlayerNameByPos(int idx);
 
     CurrentPlayerInfo& getCurrentPlayerInfo(int pos);
-    void setCurrentPlayerInfo(int pos, CurrentPlayerInfo& currentPlayerInfo);
+    void setCurrentPlayerInfo(int pos, CurrentPlayerInfo currentPlayerInfo);
     bool isCurrentPlayerInfoSet(int pos);
 
     void setInitialBalance(int pos, double balance);
@@ -74,4 +78,13 @@ public:
 
     void setCurrentGameInfo(CurrentGameInfo*);
     CurrentGameInfo* getCurrentGameInfo();
+
+	void setAction(Action action);
+	Action getAction();
+
+	void setCache(bool);
+	bool isCacheAvalaible();
+
+	void setHandNumber(double);
+	double getHandNumber();
 };

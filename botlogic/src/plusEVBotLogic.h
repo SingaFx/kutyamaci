@@ -16,13 +16,13 @@ private:
 	BayesUserRiver river;
 	Database* database;
 
-	CurrentPlayerInfo& setStandardPlayerType(CurrentPlayerInfo&, double);
+	CurrentPlayerInfo setStandardPlayerType(CurrentPlayerInfo&, double);
 	void extendGameInfo(CurrentGameInfo&);
 
 public:
 	PlusEVBotLogic();
 	virtual ~PlusEVBotLogic();
 
-    virtual PlayerRange& calculateRange(string name, CurrentGameInfo&, PlayerRange&);
+    virtual PlayerRange calculateRange(string name, CurrentGameInfo&, PlayerRange&);
     virtual Action makeDecision(CurrentGameInfo&, vector<PlayerRange>&);
 };

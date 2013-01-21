@@ -11,6 +11,8 @@ GameStateManager::GameStateManager()
     , balance(6)
     , players(6)
     , maxRaiseSize(0.0)
+	, currentGameInfo(0)
+	, handNumber(-1)
 {
 }
 
@@ -44,13 +46,17 @@ bool GameStateManager::IsHandReset(Hand hand)
     return lastHand != hand;    
 }
 
+bool GameStateManager::IsHandReset(double handNumber)
+{
+	return abs(this->handNumber - handNumber) > 0.001;
+}
+
 void GameStateManager::resetState(int dealerPos, Hand hand)
 {
     // reset players
-    players.clear();
     for (int idx = 0; idx < 6; ++idx)
     {
-        players[idx] = string("");
+		players[idx] = string("");
         isCurrentPlayerInfosSet[idx] = false;
         balance[idx] = 0.0;
     }
@@ -64,10 +70,10 @@ void GameStateManager::resetState(int dealerPos, Hand hand)
 
     resetCurrentBets();
 
-    getCurrentPlayerInfo(smallBlindPosition).setBetsize(0.02);       
-    getCurrentPlayerInfo(bigBlindPosition).setBetsize(0.04);    
+    getCurrentPlayerInfo(smallBlindPosition).setBetsize(0.5);       
+    getCurrentPlayerInfo(bigBlindPosition).setBetsize(1);    
     
-    maxRaiseSize = 0.04;
+    maxRaiseSize = 1;
     //
     bettingRound = 0;
     lastHand = hand;
@@ -143,7 +149,7 @@ string GameStateManager::getPlayerNameByPos(int idx)
     return players[idx];
 }
 
-void GameStateManager::setCurrentPlayerInfo(int pos, CurrentPlayerInfo& cpi)
+void GameStateManager::setCurrentPlayerInfo(int pos, CurrentPlayerInfo cpi)
 {
     currentPlayerInfos[pos] = cpi;
     isCurrentPlayerInfosSet[pos] = true;
@@ -187,4 +193,33 @@ void GameStateManager::setCurrentGameInfo(CurrentGameInfo* cgi)
 CurrentGameInfo* GameStateManager::getCurrentGameInfo()
 {
     return currentGameInfo;
+}
+
+void GameStateManager::setAction(Action action)
+{
+	actionCache = action;
+}
+
+Action GameStateManager::getAction()
+{
+	return actionCache;
+}
+
+bool GameStateManager::isCacheAvalaible()
+{
+	return cacheAvalaible;
+}
+
+void GameStateManager::setCache(bool cache)
+{
+	cacheAvalaible = cache;
+}
+
+void GameStateManager::setHandNumber(double handNumber)
+{
+	this->handNumber = handNumber;
+}
+double GameStateManager::getHandNumber()
+{
+	return handNumber;
 }

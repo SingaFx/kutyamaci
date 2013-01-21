@@ -8,6 +8,7 @@
 class BayesDecision
 {
 private:
+public:
 	//static double calculateEV(
 	static double calculateEQ(vector<PlayerRange>&, vector<Card>&, Hand&);
 	static PlayerRange& getCallRaiseRange(double, PlayerRange&, CurrentGameInfo&, BayesUserPreflop&, BayesUserFlop&, BayesUserTurn&, BayesUserRiver&);

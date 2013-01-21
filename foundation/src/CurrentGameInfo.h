@@ -20,6 +20,8 @@ private:
 	Hand hand; //own hand
 	vector<Card> board;
 
+	double handNumber;
+
 public:
 
 	CurrentGameInfo();
@@ -40,6 +42,8 @@ public:
 
 	void setOpponentsInfo(vector<CurrentPlayerInfo>&);
 	vector<CurrentPlayerInfo>& getOpponentsInfo();
+	void addCurrentPlayerInfo(CurrentPlayerInfo&);
+	
 
 	void setHero(CurrentPlayerInfo&);
 	CurrentPlayerInfo& getHero();
@@ -57,4 +61,6 @@ public:
 	double getBiggestBet();
 	CurrentPlayerInfo& getPlayerbyPosition(int position);
 
+	void setHandNumber(double);
+	double getHandNumber();
 };

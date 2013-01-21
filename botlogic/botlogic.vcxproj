@@ -69,12 +69,14 @@
     <ClInclude Include="src\botmanager.h" />
     <ClInclude Include="src\plusEVBotLogic.h" />
     <ClInclude Include="src\simpleDecision.h" />
+    <ClInclude Include="src\testBotLogic.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\bayesDecision.cpp" />
     <ClCompile Include="src\botmanager.cpp" />
     <ClCompile Include="src\plusEVBotLogic.cpp" />
     <ClCompile Include="src\simpleDecision.cpp" />
+    <ClCompile Include="src\testBotLogic.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

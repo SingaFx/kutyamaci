@@ -63,7 +63,7 @@ public:
 						hand.getCard1().setSuit(map[i1]);
 						hand.getCard2().setSuit(map[i2]);
 
-						range.insert(make_pair(hand, 1/1326));
+						range.insert(make_pair(hand, 1.0/1326));
 						
 					}
 
@@ -77,7 +77,7 @@ public:
 						hand.getCard1().setSuit(map[i1]);
 						hand.getCard2().setSuit(map[i2]);
 
-						range.insert(make_pair(hand, 1/1326));
+						range.insert(make_pair(hand, 1.0/1326));
 					}
 				}
 			}
@@ -96,7 +96,7 @@ public:
 
 		return total;
 	}
-	PlayerRange& normalize()
+	PlayerRange normalize()
 	{
 		PlayerRange res;
 		double total = totalPercentage();
@@ -343,6 +343,22 @@ private:
 		}
 	}
 
+	static PlayerRange reCreate(PlayerRange& range, vector<Card>& cards, Hand& own)
+	{
+		PlayerRange res;
+		set<pair<Hand, double> >::iterator it;
+		for (it = range.range.begin(); it != range.range.end(); ++it)
+		{
+			if (Validator::softValidate(cards, it->first, own))
+			{
+				res.range.insert(*it);
+			}
+		}
+
+		//res = res.normalize();
+		return res;
+	}
+
 public:
 
 	//create range from HS
@@ -384,22 +400,32 @@ public:
 
 		return res;
 	}
-	static PlayerRange mergeRange(PlayerRange& r1, PlayerRange& r2, vector<Card>& v)
+
+	static PlayerRange mergeRange(PlayerRange& r1, PlayerRange& r2, vector<Card>& v, Hand& own)
 	{
 		double hsr1[20], hsr2[20];
 		memset(hsr1, 0, sizeof(hsr1));
 		memset(hsr2, 0, sizeof(hsr2));
 
+		r1 = reCreate(r1, v, own);
+		r2 = reCreate(r2, v, own);
+
 		set<pair<Hand, double> >::iterator it1, it2, iter;
 		for (it1 = r1.range.begin(); it1 != r1.range.end(); ++it1)
 		{
-			int str = Evaluator::cardStrength(it1->first.getCard1(), it1->first.getCard2(), v);
-			hsr1[str] += it1->second;
+			if (Validator::softValidate(v, it1->first, own))
+			{
+				int str = Evaluator::cardStrength(it1->first.getCard1(), it1->first.getCard2(), v);
+				hsr1[str] += it1->second;
+			}
 		}
 		for (it2 = r2.range.begin(); it2 != r2.range.end(); ++it2)
 		{
-			int str = Evaluator::cardStrength(it2->first.getCard1(), it2->first.getCard2(), v);
-			hsr2[str] += it2->second;
+			if (Validator::softValidate(v, it2->first, own))
+			{
+				int str = Evaluator::cardStrength(it2->first.getCard1(), it2->first.getCard2(), v);
+				hsr2[str] += it2->second;
+			}
 		}
 
 		PlayerRange res;
@@ -417,6 +443,8 @@ public:
 					res.range.insert(make_pair(it1->first, akt));
 			}
 		}
+
+		//res = res.normalize();
 		return res;
 	}
 

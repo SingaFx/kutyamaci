@@ -1,11 +1,14 @@
 #include "botmanager.h"
 #include "abstractbotlogic.h"
 #include "plusEVBotLogic.h"
+#include "testBotLogic.h"
 
 BotManager* BotManager::botManager = 0;
 
 BotManager::BotManager()
 {
+	//ourSexyBotLogic = new PlusEVBotLogic();
+	ourSexyBotLogic = new TestBotLogic();
 }
 
 BotManager::~BotManager()
@@ -24,5 +27,5 @@ BotManager& BotManager::getBotManager()
 
 AbstractBotLogic* BotManager::getPluggableBot()
 {
-    return new PlusEVBotLogic();
+    return ourSexyBotLogic;
 }

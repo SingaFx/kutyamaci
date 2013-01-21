@@ -1,7 +1,9 @@
 #define WHUSER_EXPORTS 
 
+#include "windows.h"
+//#include "stdafx.h"
+
 #include "OH-DLL.h"
-#include <windows.h>
 #include "logger.h"
 #include <string>
 #include "currentGameInfo.h"
@@ -11,11 +13,138 @@
 #include "playerrangemanager.h"
 #include "plusEVBotLogic.h"
 #include "botmanager.h"
-#include "abstractbotlogic.h""
+#include "abstractbotlogic.h"
+
+#include <sstream>
+
 
 using namespace std;
+
+#define BBLIND (GameStateManager::getGameStateManager().getCurrentGameInfo()->getBblind())
+
+
+#define MYMENU_EXIT         (WM_APP + 101)
+#define MYMENU_MESSAGEBOX   (WM_APP + 102) 
+
+HINSTANCE  inj_hModule;          //Injected Modules Handle
+HWND       prnt_hWnd;            //Parent Window Handle
+HWND hwnd;
+
+vector<string> myOutput;
+
+void getCurrentBets(vector<double>& currentbets);
+
+void WriteToDebugWindow()
+{
+	Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);
+   
+	stringstream stream;
+
+	GameStateManager& gamestate = GameStateManager::getGameStateManager();
+	CurrentGameInfo* cgi = gamestate.getCurrentGameInfo();
+
+	if (cgi == NULL) 
+	{
+		myOutput.push_back("cgi == NULL");
+		RedrawWindow(hwnd , NULL , NULL , RDW_INVALIDATE);
+		return ;
+	}
+
+	//POT
+	/*
+	double totalpot = cgi->getTotalPot();
+	stream << totalpot;
+
+	myOutput.push_back("Totalpot = " + stream.str());
+	logger.logExp("Totalpot = " + stream.str(), DLL_INTERFACE_LOGGER);
+	*/
+
+	/*
+	double newHandNumber = cgi->getHandNumber();
+	double oldHandNumber = gamestate.getHandNumber();
+	stream.clear();
+	stream << "Hand numbers: " << newHandNumber << " " << oldHandNumber;
+	myOutput.push_back(stream.str());
+	*/
+
+	//USERS
+	/*
+	for (int i = 0; i < 6; ++i)
+	{
+		string s = gamestate.getPlayerNameByPos(i);
+		myOutput.push_back(s);
+	}
+
+	for (int i = 0; i < 6; ++i)
+	{
+		if (!gamestate.isCurrentPlayerInfoSet(i)) continue;
+		string s = gamestate.getCurrentPlayerInfo(i).getName();
+		myOutput.push_back(s);
+	}
+	*/
+
+
+	/*
+	stream.clear();
+	double betround1 = gamestate.getBettingRound();
+	double betround2 = cgi->getStreet();
+
+	stream << "Betround= " << betround1 << " " << betround2;
+	myOutput.push_back(stream.str());
+	*/
+
+	//CURRENTBETS
+	
+	stream.clear();
+
+	vector<double> currentBets(6);
+    getCurrentBets(currentBets);
+
+	for (int i = 0; i < currentBets.size(); ++i)
+	{
+		stream << currentBets[i] << " ";
+	}
+	stream << endl;
+	myOutput.push_back(stream.str());
+
+	//stream.clear();
+	
+
+	for (int idx = 0; idx < 6; ++idx)
+	{
+		if (gamestate.isCurrentPlayerInfoSet(idx))
+		{
+			ostringstream os;
+			string name = gamestate.getCurrentPlayerInfo(idx).getName();
+			double line = gamestate.getCurrentPlayerInfo(idx).getLine();
+			double betsize = gamestate.getCurrentPlayerInfo(idx).getBetsize();
+			double betsize2 = gamestate.getCurrentBetByPos(idx);
+			double bblind = cgi->getBblind();
+
+			os << name << " " << line << " " << betsize << " " << betsize2 << " " << bblind;
+			myOutput.push_back(os.str());
+		}
+	}
+
+	/*
+	stream.clear();
+	int random = rand() % 1000;
+	stream << random;
+	myOutput.push_back("random= " + stream.str());
+	*/
+
+	/*
+	stream.clear();
+	random = rand() % 1000;
+	stream << random;
+	myOutput.push_back("random= " + stream.str());
+	*/
+	//myOutput.clear();
+	RedrawWindow(hwnd , NULL , NULL , RDW_INVALIDATE);
+}
+
 ///////////////////////////////////// 
-//card macros 
+//card macros
 #define RANK(c)	         ((c>>4)&0x0f) 
 #define SUIT(c)          ((c>>0)&0x0f) 
 #define ISCARDBACK(c)	 (c==0xff) 
@@ -99,29 +228,39 @@ CurrentGameInfo* createCurrentGameInfo(bool& isValid)
 {
     isValid = true; // we are optimistic as always    
     Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);
-    logger.logExp("CurrentGameInfo : ");
+    logger.logExp("CurrentGameInfo : ", DLL_INTERFACE_LOGGER);
 
     CurrentGameInfo* currentGameInfo = new CurrentGameInfo();
+
+	double handNumber = gws("handsplayed");
+	logger.logExp("[-> hand number] : ", handNumber, DLL_INTERFACE_LOGGER);
+	currentGameInfo->setHandNumber(handNumber);
+
     // big blind
     double bblind = gws("bblind");
-    logger.logExp("[-> bblind] : ", bblind);
+    logger.logExp("[-> bblind] : ", bblind, DLL_INTERFACE_LOGGER);
     currentGameInfo->setBblind(bblind);
+
+	// betting round
+    double bettingRound = gws("br");
+    logger.logExp("-> betting round : ", bettingRound, DLL_INTERFACE_LOGGER);
+    currentGameInfo->setStreet(bettingRound-1);
 
     // hero cards
     double rank1 = gws("$$pr0");
-    logger.logExp("-> $$pr0 : ", rank1);
+    logger.logExp("-> $$pr0 : ", rank1, DLL_INTERFACE_LOGGER);
 
     isValid = isValid && (rank1 >= 2 && rank1 <= 14);
 
     char crank1 = convertRankToChar((int)rank1);
 
     double suit1 = gws("$$ps0");    
-    logger.logExp("-> $$ps0 : ", suit1);
+    logger.logExp("-> $$ps0 : ", suit1, DLL_INTERFACE_LOGGER);
 
     char csuit1 = convertSuitToChar((int)suit1);
         
-    logger.logExp("-> rank1 : ", crank1);
-    logger.logExp("-> suit1 : ", csuit1);
+    logger.logExp("-> rank1 : ", crank1, DLL_INTERFACE_LOGGER);
+    logger.logExp("-> suit1 : ", csuit1, DLL_INTERFACE_LOGGER);
 
     double rank2 = gws("$$pr1");
     isValid = isValid && (rank1 >= 2 && rank1 <= 14);
@@ -129,8 +268,8 @@ CurrentGameInfo* createCurrentGameInfo(bool& isValid)
     char crank2 = convertRankToChar((int)rank2);
     double suit2 = gws("$$ps1");
     char csuit2 = convertSuitToChar((int)suit2);
-    logger.logExp("-> rank2 : ", rank2);
-    logger.logExp("-> suit2 : ", suit2);
+    logger.logExp("-> rank2 : ", rank2, DLL_INTERFACE_LOGGER);
+    logger.logExp("-> suit2 : ", suit2, DLL_INTERFACE_LOGGER);
     
     Card hero1(crank1, csuit1);
     Card hero2(crank2, csuit2);
@@ -139,67 +278,70 @@ CurrentGameInfo* createCurrentGameInfo(bool& isValid)
 
     char buffer[100];
     sprintf(buffer,"-> hole cards : %c%c%c%c", crank1, csuit1, crank2, csuit2);
-    logger.logExp(buffer);
+    logger.logExp(buffer, DLL_INTERFACE_LOGGER);
     // common cards
     vector<Card> board;
     // flop
-    double flop1rank = gws("$$cr0");    
-    double flop1suit = gws("$$cs0");    
+	if (bettingRound > 1)
+	{
+		double flop1rank = gws("$$cr0");    
+		double flop1suit = gws("$$cs0");    
 
-    char f1rank = convertRankToChar((int)flop1rank);
-    char f1suit = convertSuitToChar((int)flop1suit);
-    Card flop1(f1rank, f1suit);
-    board.push_back(flop1);    
+		char f1rank = convertRankToChar((int)flop1rank);
+		char f1suit = convertSuitToChar((int)flop1suit);
+		Card flop1(f1rank, f1suit);
+		board.push_back(flop1);    
 
-    double flop2rank = gws("$$cr1");
-    double flop2suit = gws("$$cs1");
-    char f2rank = convertRankToChar((int)flop2rank);
-    char f2suit = convertSuitToChar((int)flop2suit);
-    Card flop2(f2rank, f2suit);
-    board.push_back(flop2);
+		double flop2rank = gws("$$cr1");
+		double flop2suit = gws("$$cs1");
+		char f2rank = convertRankToChar((int)flop2rank);
+		char f2suit = convertSuitToChar((int)flop2suit);
+		Card flop2(f2rank, f2suit);
+		board.push_back(flop2);
 
-    double flop3rank = gws("$$cr2");
-    double flop3suit = gws("$$cs2");
-    char f3rank = convertRankToChar((int)flop3rank);
-    char f3suit = convertSuitToChar((int)flop3suit);
-    Card flop3(f3rank, f3suit);
-    board.push_back(flop3);
+		double flop3rank = gws("$$cr2");
+		double flop3suit = gws("$$cs2");
+		char f3rank = convertRankToChar((int)flop3rank);
+		char f3suit = convertSuitToChar((int)flop3suit);
+		Card flop3(f3rank, f3suit);
+		board.push_back(flop3);
+	}
 
     // turn
-    double turnrank = gws("$$cr3");
-    double turnsuit = gws("$$cs3");
-    char trank = convertRankToChar((int)turnrank);
-    char tsuit = convertSuitToChar((int)turnsuit);
-    Card turn(trank, tsuit);
-    board.push_back(turn);
+	if (bettingRound > 2)
+	{
+		double turnrank = gws("$$cr3");
+		double turnsuit = gws("$$cs3");
+		char trank = convertRankToChar((int)turnrank);
+		char tsuit = convertSuitToChar((int)turnsuit);
+		Card turn(trank, tsuit);
+		board.push_back(turn);
+	}
 
-    // river
-    double riverrank = gws("$$cr4");    
-    double riversuit = gws("$$cs4");
-    char rrank = convertRankToChar((int)riverrank);
-    char rsuit = convertSuitToChar((int)riversuit);
-    Card river(rrank, rsuit);
-    board.push_back(river);
+	    // river
+	if (bettingRound > 3)
+	{
 
+		double riverrank = gws("$$cr4");    
+		double riversuit = gws("$$cs4");
+		char rrank = convertRankToChar((int)riverrank);
+		char rsuit = convertSuitToChar((int)riversuit);
+		Card river(rrank, rsuit);
+		board.push_back(river);
+	}
     currentGameInfo->setBoard(board);
 
-    // betting round
-    double bettingRound = gws("br");
-    logger.logExp("-> betting round : ", bettingRound);
-    currentGameInfo->setStreet(bettingRound-1);
-
     double amountToCall = gws("call");
-    logger.logExp("-> amount to call : ", amountToCall);
+    logger.logExp("-> amount to call : ", amountToCall, DLL_INTERFACE_LOGGER);
     currentGameInfo->setAmountToCall(amountToCall / bblind);
 
     double potCommon = gws("potcommon");
-    logger.logExp("-> pot common : ", potCommon / bblind);
-    currentGameInfo->setPotcommon(potCommon);
+    logger.logExp("-> pot common : ", potCommon / bblind, DLL_INTERFACE_LOGGER);
+    currentGameInfo->setPotcommon(potCommon / bblind);
     
-    double totalPot = gws("potplayer");
-    logger.logExp("-> total in pot : ", (potCommon + totalPot) / bblind);
-    currentGameInfo->setTotalPot(totalPot);
-
+    double totalPot = gws("pot");
+    logger.logExp("-> total in pot : ", (totalPot) / bblind, DLL_INTERFACE_LOGGER);
+    currentGameInfo->setTotalPot(totalPot / bblind);
 
     return currentGameInfo;
 }
@@ -237,15 +379,18 @@ double getBalanceByPos(int idx)
 
 void getCurrentBets(vector<double>& currentBets)
 {
+	Logger& logger = Logger::getLogger(LOGGER_TYPE::DLL_INTERFACE_LOGGER);
+	
     currentBets.clear();
 
     char buffer[100];
     for (int idx = 0; idx < 6; ++idx)
     {
         sprintf(buffer, "currentbet%d", idx);
+		logger.logExp("-> symbol : ", buffer, LOGGER_TYPE::DLL_INTERFACE_LOGGER);
         double currentBet = gws(buffer);
-
-        currentBets.push_back(currentBet);
+		logger.logExp("-> currentbet : ", currentBet, LOGGER_TYPE::DLL_INTERFACE_LOGGER);
+        currentBets.push_back(currentBet / BBLIND);
     }
 }
 
@@ -254,6 +399,7 @@ void refreshPlayersName(holdem_state* pstate)
     Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);
 
     GameStateManager& gameStateManager = GameStateManager::getGameStateManager();
+	PlayerRangeManager& playerRangeManager = PlayerRangeManager::getPlayerRangeManager();
 
     char buffer[100];
     for (int idx = 0; idx <= 5; ++idx)
@@ -263,9 +409,10 @@ void refreshPlayersName(holdem_state* pstate)
         if (hp.m_name_known & 0x01)
         {
             sprintf(buffer, "holdem_player[%d] -> player name : ", idx);
-            logger.logExp(buffer, hp.m_name);
+            logger.logExp(buffer, hp.m_name, DLL_INTERFACE_LOGGER);
 
             gameStateManager.setPlayer(string(hp.m_name), idx);
+			playerRangeManager.setPlayerName(idx, string(hp.m_name));
         }
     }
 }
@@ -273,16 +420,16 @@ void refreshPlayersName(holdem_state* pstate)
 void resetHand(holdem_state* pstate, Hand hand)
 {
     Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);
-    logger.logExp("[New hand] : resetting game state!");
+    logger.logExp("[New hand] : resetting game state!", DLL_INTERFACE_LOGGER);
 
     double dealerchair = gws("dealerchair");
-    logger.logExp("-> dealerchair : ", dealerchair);
+    logger.logExp("-> dealerchair : ", dealerchair, DLL_INTERFACE_LOGGER);
 
     GameStateManager& gameStateManager = GameStateManager::getGameStateManager();
     gameStateManager.resetState((int)dealerchair, hand);
 
     // setting up starting balances
-    for (int idx = 0; idx < 5; ++idx)
+    for (int idx = 0; idx <= 5; ++idx)
     {        
         gameStateManager.setInitialBalance(idx, getBalanceByPos(idx));
     }
@@ -293,7 +440,7 @@ void calculateRelativPositions(vector<int>& relativPositions, int dealerPosition
     int absolutePositionsMap[6];
         
     int pos = dealerPosition;
-    for (int idx = 0; idx = 5; ++idx)
+    for (int idx = 0; idx <= 5; ++idx)
     {
         absolutePositionsMap[pos] = idx;
         pos = nextPosition(pos);        
@@ -315,8 +462,13 @@ void calculateRelativPositions(vector<int>& relativPositions, int dealerPosition
     }
 }
 
-void detectMissedCallsAndUpdatePlayerRanges()
+void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
 {
+	if (old_cgi == NULL)
+	{
+		return ;
+	}
+
     GameStateManager& gamestateManager = GameStateManager::getGameStateManager();
 
     BotManager& botManager = BotManager::getBotManager();
@@ -331,14 +483,21 @@ void detectMissedCallsAndUpdatePlayerRanges()
     {        
         if (isBitSet((int)playersplayingbits, idx))
         {
+			if (!gamestateManager.isCurrentPlayerInfoSet(idx)) continue;
+
             CurrentPlayerInfo& currentPlayerInfo = gamestateManager.getCurrentPlayerInfo(idx);
+
             if (!isEqual(maxRaise, currentPlayerInfo.getBetsize()))
             {
-                currentPlayerInfo.setLine('c');
+                currentPlayerInfo.setLine(0);
+				currentPlayerInfo.setBetsize(maxRaise);
 
+				old_cgi->addCurrentPlayerInfo(gamestateManager.getCurrentPlayerInfo(idx));
+					
                 string playerName = currentPlayerInfo.getName();
-                PlayerRange& updatedRange = botLogic->calculateRange(playerName, *gamestateManager.getCurrentGameInfo(), playerRangeManager.getPlayerRange(idx));
+                PlayerRange& updatedRange = botLogic->calculateRange(playerName, *old_cgi, playerRangeManager.getPlayerRange(idx));
 
+				gamestateManager.setCache(false);
                 playerRangeManager.setPlayerRange(idx, updatedRange);
             }
         }
@@ -347,8 +506,12 @@ void detectMissedCallsAndUpdatePlayerRanges()
 
 double process_query(const char* pquery)
 {
-    Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);            
-    logger.logExp(string("[Processing query] : ").append(pquery).c_str());
+	Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER); 
+	logger.logExp(string("[Processing query] : ").append(pquery).c_str(), DLL_DECISION_LOGGER);
+
+	if (strcmp(pquery,"dll$swag") && strcmp(pquery,"dll$srai") && strcmp(pquery,"dll$call") && strcmp(pquery,"dll$prefold"))
+		return 0;          
+    
 
 	if(pquery == NULL)
     {
@@ -361,23 +524,87 @@ double process_query(const char* pquery)
     GameStateManager& gamestateManager = GameStateManager::getGameStateManager();
     PlayerRangeManager& playerRangeManager = PlayerRangeManager::getPlayerRangeManager();
 
+	if (!gamestateManager.getHand().valid())
+	{
+		logger.logExp("Hand validation failed. Returning.", DLL_DECISION_LOGGER);
+		return 0;
+	}
+
     vector<PlayerRange> ranges = playerRangeManager.getPlayerRanges();
-    Action action = botLogic->makeDecision(*gamestateManager.getCurrentGameInfo(), ranges);
+	Action action;
+	if (gamestateManager.isCacheAvalaible())
+	{
+		action = gamestateManager.getAction();
+	}
+	else
+	{
+		CurrentGameInfo* cgi = gamestateManager.getCurrentGameInfo();
+
+		double playersplayingbits = gws("playersplayingbits");
+
+		for (int idx = 0; idx <=5; ++idx)
+		{
+			if (isBitSet((int)playersplayingbits, idx) && gamestateManager.isCurrentPlayerInfoSet(idx))
+			{
+				cgi->addCurrentPlayerInfo(gamestateManager.getCurrentPlayerInfo(idx));
+			}
+		}
+
+		action = botLogic->makeDecision(*cgi, ranges);
+	} 
+
+	logger.logExp("Got action: " + action.toString(), DLL_DECISION_LOGGER);
 
     if(strcmp(pquery,"dll$swag") == 0)
-    {        
-		return action.getSize();
-    }
-    if(strcmp(pquery,"dll$srai")==0)
     {
+		double result = 0.0;
+		if (action.getType() == 'n')
+		{
+			result = -1;
+		}
+		else
+		{
+			result = action.getSize();
+		}
+
+		gamestateManager.setAction(action);
+		gamestateManager.setCache(true);
+		return result;
+    }
+
+    if(strcmp(pquery,"dll$srai") == 0)
+    {
+		if (action.getType() == 'n')
+		{
+			return -1;
+		}
+
+		gamestateManager.setAction(action);
+		gamestateManager.setCache(true);
         return action.getType() == 'r';
     }    
+
     if(strcmp(pquery,"dll$call")==0)
     {
+		if (action.getType() == 'n')
+		{
+			return -1;
+		}
+
+		gamestateManager.setAction(action);
+		gamestateManager.setCache(true);
 		return action.getType() == 'c';
     }
+
     if(strcmp(pquery,"dll$prefold")==0)
     {
+		if (action.getType() == 'n')
+		{
+			return -1;
+		}
+
+		gamestateManager.setAction(action);
+		gamestateManager.setCache(true);
 		return action.getType() == 'f';
     }
 
@@ -390,7 +617,7 @@ double process_state(holdem_state* pstate)
     ++scrape_cycle;
 
     Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);
-    logger.logExp("[Processing state] : ");
+    logger.logExp("[Processing state] : ", DLL_INTERFACE_LOGGER);
 
     BotManager& botManager = BotManager::getBotManager();
     AbstractBotLogic* botLogic = botManager.getPluggableBot();
@@ -401,95 +628,114 @@ double process_state(holdem_state* pstate)
     // first we should test if game state is valid
     bool isValid = true;
     CurrentGameInfo* cgi = createCurrentGameInfo(isValid);
-    if (!isValid)
+
+	if (!isValid)
     {
         delete cgi;
-        logger.logExp("[SKIPPING SCRAPPING CYCLE] : hero hole cards are not valid!");
+        logger.logExp("[SKIPPING SCRAPPING CYCLE] : hero hole cards are not valid!", DLL_INTERFACE_LOGGER);
         return 0;
     }
 
+	CurrentGameInfo* old_cgi = gamestateManager.getCurrentGameInfo();
     gamestateManager.setCurrentGameInfo(cgi);
 
-    // testing new hand    
-    if (gamestateManager.IsHandReset(cgi->getHand()))
+    // testing new hand   
+	
+
+	if (gamestateManager.IsHandReset(cgi->getHandNumber()))
     {
+		gamestateManager.setHandNumber(cgi->getHandNumber());
         resetHand(pstate, cgi->getHand());
-        playerRangeManager.resetRanges();
+
+		playerRangeManager.resetRanges(gamestateManager);
+		refreshPlayersName(pstate);
     }
+
+	refreshPlayersName(pstate);
 
     // testing if we advanced to the next betting round
     if (cgi->getStreet() > gamestateManager.getBettingRound())
     {
-        detectMissedCallsAndUpdatePlayerRanges();
+        detectMissedCallsAndUpdatePlayerRanges(old_cgi);
         gamestateManager.resetBettingRound();
     }
 
-
-    refreshPlayersName(pstate);
+	if (old_cgi)
+	{
+		delete old_cgi;
+	}
 
     vector<double> currentBets(6);
     getCurrentBets(currentBets);
 
+	//ITS DUMMY HERE
     vector<int> relativePositions;
     calculateRelativPositions(relativePositions, gamestateManager.getDealerPosition());
 
-    //if (cgi->getStreet() == 0) // preflop
-    //{
-     //   int smallblindPos = nextPosition(gamestateManager.getDealerPosition());
-     //   int bigBlindPos = nextPosition(smallblindPos);
-    //}
-
     double playersplayingbits = gws("playersplayingbits");
-    logger.logExp("-> playersplayingbits : ", playersplayingbits);
+    logger.logExp("-> playersplayingbits : ", playersplayingbits, DLL_INTERFACE_LOGGER);
     for (int idx = 1; idx < 6; ++idx) // hero always sits at 0!
     {
+		// skip this frame if someone's name is unknown - this way we can avoid a lot of crashes
+		if (gamestateManager.getPlayerNameByPos(idx) == "")
+			return 0;
+
         char buffer[100];            
         if (isBitSet((int)playersplayingbits, idx))
         {
             sprintf_s(buffer, "--> Player %d is playing!",idx);
-            logger.logExp(buffer);
+            logger.logExp(buffer, DLL_INTERFACE_LOGGER);
 
             double currentBet = currentBets[idx];
 
-            if (!isEqual(currentBet, gamestateManager.getCurrentBetByPos(idx)))
+			if (!isEqual(currentBet, gamestateManager.getCurrentBetByPos(idx)))
             {
                 if (gamestateManager.isCurrentPlayerInfoSet(idx))
                 {
                     CurrentPlayerInfo& currentPlayerInfo = gamestateManager.getCurrentPlayerInfo(idx);
 
-                    currentPlayerInfo.setActualStacksize(getBalanceByPos(idx));
+					double bblind = cgi->getBblind();
+
+                    currentPlayerInfo.setActualStacksize(getBalanceByPos(idx) / bblind);
                     currentPlayerInfo.setBetsize(currentBet);
 
                     double maxRaise = gamestateManager.getMaxRaise();
                     if (isEqual(currentBet, maxRaise))
                     {
-                        currentPlayerInfo.setLine('c');
+                        currentPlayerInfo.setLine(0);
                     }
                     else if (currentBet > maxRaise)
                     {
-                        currentPlayerInfo.setLine('r');
+                        currentPlayerInfo.setLine(1);
                         gamestateManager.setMaxRaise(currentBet);
                     }
                     else
                     {
                         // this is impossible - something went wrong :(
-                        logger.logExp("[ERROR at setting last line !]");
+                        logger.logExp("[ERROR at setting last line !]", DLL_INTERFACE_LOGGER);
                     }
 
                     // this player did something so we update his/her range
                     string playerName = currentPlayerInfo.getName();
                     PlayerRange playerRange = playerRangeManager.getPlayerRange(idx);
+
+					// needed by botlogic
+					cgi->addCurrentPlayerInfo(currentPlayerInfo);
+					
                     //playerRange.set
                     PlayerRange& updatedRange = botLogic->calculateRange(playerName, *cgi, playerRange);
 
-                    playerRangeManager.setPlayerRange(idx, updatedRange);
+					gamestateManager.setCache(false);
+                    playerRangeManager.setPlayerRange(idx, updatedRange);		
                 }
                 else
                 {
+					double bblind = cgi->getBblind();
+
                     CurrentPlayerInfo currentPlayerInfo;
                         
-                    currentPlayerInfo.setStacksize(gamestateManager.getInitialBalanceByPos(idx));
-                    currentPlayerInfo.setActualStacksize(getBalanceByPos(idx));
+                    currentPlayerInfo.setStacksize(gamestateManager.getInitialBalanceByPos(idx) / bblind);
+                    currentPlayerInfo.setActualStacksize(getBalanceByPos(idx) / bblind);
                     currentPlayerInfo.setBetsize(currentBet);
                     currentPlayerInfo.setName(gamestateManager.getPlayerNameByPos(idx));
                     currentPlayerInfo.setPoz(relativePositions[idx]);
@@ -497,25 +743,30 @@ double process_state(holdem_state* pstate)
                     double maxRaise = gamestateManager.getMaxRaise();
                     if (isEqual(currentBet, maxRaise))
                     {
-                        currentPlayerInfo.setLine('c');
+                        currentPlayerInfo.setLine(0);
                     }
                     else if (currentBet > maxRaise)
                     {
-                        currentPlayerInfo.setLine('r');
+                        currentPlayerInfo.setLine(1);
                         gamestateManager.setMaxRaise(currentBet);
                     }
                     else
                     {
                         // this is impossible - something went wrong :(
-                        logger.logExp("[ERROR at setting last line !]");
+                        logger.logExp("[ERROR at setting last line !]", DLL_INTERFACE_LOGGER);
                     }
 
                     gamestateManager.setCurrentPlayerInfo(idx, currentPlayerInfo);
 
+					cgi->addCurrentPlayerInfo(currentPlayerInfo);
+					
                     // let's update
                     string playerName = currentPlayerInfo.getName();
-                    PlayerRange& updatedRange = botLogic->calculateRange(playerName, *cgi, playerRangeManager.getPlayerRange(idx));
+					PlayerRange pr = playerRangeManager.getPlayerRange(idx);
+					pr.setName(playerName);
+                    PlayerRange& updatedRange = botLogic->calculateRange(playerName, *cgi, pr);
 
+					gamestateManager.setCache(false);
                     playerRangeManager.setPlayerRange(idx, updatedRange);
                 }
             }
@@ -523,15 +774,14 @@ double process_state(holdem_state* pstate)
         else
         {
             sprintf_s(buffer, "--> Player %d has already folded!",idx);
-            logger.logExp(buffer);
+            logger.logExp(buffer, DLL_INTERFACE_LOGGER);
         }
     }
-               
-           
-    delete cgi;
+	//SET HERO's things
+
+	WriteToDebugWindow();
 
 	return 0;
-
 }
 ///////////////////////////////////////////////////// 
 //WINHOLDEM RUNTIME ENTRY POINT 
@@ -573,16 +823,126 @@ WHUSER_API double process_message(const char* pmessage, const void* param){
 	return 0;
 
 }
+
+
+
+//WndProc for the new window
+LRESULT CALLBACK DLLWindowProc (HWND, UINT, WPARAM, LPARAM);
+
+//Register our windows Class
+BOOL RegisterDLLWindowClass(wchar_t szClassName[])
+{
+    WNDCLASSEXW wc;
+    wc.hInstance =  inj_hModule;
+	wc.lpszClassName = (LPCWSTR)L"InjectedDLLWindowClass";
+    wc.lpszClassName = (LPCWSTR)szClassName;
+    wc.lpfnWndProc = DLLWindowProc;
+    wc.style = CS_DBLCLKS;
+    wc.cbSize = sizeof (WNDCLASSEX);
+    wc.hIcon = LoadIcon (NULL, IDI_APPLICATION);
+    wc.hIconSm = LoadIcon (NULL, IDI_APPLICATION);
+    wc.hCursor = LoadCursor (NULL, IDC_ARROW);
+    wc.lpszMenuName = NULL;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
+    wc.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
+    if (!RegisterClassExW (&wc))
+		return 0;
+}
+//Creating our windows Menu
+HMENU CreateDLLWindowMenu()
+{
+	HMENU hMenu;
+	hMenu = CreateMenu();
+	HMENU hMenuPopup;
+    if(hMenu==NULL)
+        return FALSE;
+    hMenuPopup = CreatePopupMenu();
+	AppendMenu (hMenuPopup, MF_STRING, MYMENU_EXIT, TEXT("Exit"));
+    AppendMenu (hMenu, MF_POPUP, (UINT_PTR) hMenuPopup, TEXT("File")); 
+
+	hMenuPopup = CreatePopupMenu();
+    AppendMenu (hMenuPopup, MF_STRING,MYMENU_MESSAGEBOX, TEXT("MessageBox")); 
+    AppendMenu (hMenu, MF_POPUP, (UINT_PTR) hMenuPopup, TEXT("Test")); 
+	return hMenu;
+}
+
+//The new thread
+DWORD WINAPI ThreadProc( LPVOID lpParam )
+{
+    MSG messages;
+	wchar_t *pString = reinterpret_cast<wchar_t * > (lpParam);
+	HMENU hMenu = CreateDLLWindowMenu();
+	RegisterDLLWindowClass(L"InjectedDLLWindowClass");
+	prnt_hWnd = FindWindowW(L"Window Injected Into ClassName", L"Window Injected Into Caption");
+	hwnd = CreateWindowExW (0, L"InjectedDLLWindowClass", pString, WS_EX_PALETTEWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 400, 300, prnt_hWnd, hMenu,inj_hModule, NULL );
+	ShowWindow (hwnd, SW_SHOWNORMAL);
+    while (GetMessageW (&messages, NULL, 0, 0))
+    {
+		TranslateMessage(&messages);
+        DispatchMessage(&messages);
+    }
+    return 1;
+}
+//Our new windows proc
+LRESULT CALLBACK DLLWindowProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    switch (message)
+    {
+		case WM_COMMAND:
+               switch(wParam)
+               {
+                    case MYMENU_EXIT:
+						SendMessage(hwnd, WM_CLOSE, 0, 0);
+                        break;
+                    case MYMENU_MESSAGEBOX:
+						MessageBoxW(hwnd, L"Test", L"MessageBox",MB_OK);
+                        break;
+               }
+               break;
+		case WM_PAINT: 
+			{
+				PAINTSTRUCT ps;
+				HDC hDC = BeginPaint (hwnd, &ps);
+
+				HBRUSH background = CreateSolidBrush(RGB(0,155,0));
+				FillRect(hDC, &ps.rcPaint, background);
+
+				int iY = 5;
+				for (int i = 0; i < myOutput.size(); ++i, iY += 20)
+				{
+					TextOut (hDC, 5, iY, myOutput[i].c_str(), myOutput[i].size());
+				}
+				EndPaint (hwnd, &ps);
+
+				myOutput.clear();
+			}
+			break;
+		case WM_DESTROY:
+			PostQuitMessage (0);
+			break;
+		default:
+			return DefWindowProc (hwnd, message, wParam, lParam);
+    }
+    return 0;
+}
+
+
+
 ///////////////////////////////// 
 //DLLMAIN 
 ///////////////////////////////// 
-BOOL APIENTRY DllMain( HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved){
+BOOL APIENTRY DllMain( HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved){
 
 	switch(ul_reason_for_call)
     {
 		case DLL_PROCESS_ATTACH:
+			inj_hModule = hModule;
+			CreateThread(0, NULL, ThreadProc, (LPVOID)L"Window Title", NULL, NULL);
 			break; 
 		case DLL_THREAD_ATTACH:
+			//inj_hModule = hModule;
+			//CreateThread(0, NULL, ThreadProc, (LPVOID)L"Window Title", NULL, NULL);
 			break; 
 		case DLL_THREAD_DETACH:
 			break; 

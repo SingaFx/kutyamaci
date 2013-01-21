@@ -1,5 +1,7 @@
 #include "bayesDecision.h"
 #include "eqcalculator.h"
+#include "logger.h"
+#include <sstream>
 
 PlayerRange& BayesDecision::getCallRaiseRange(double betsize, PlayerRange& range, CurrentGameInfo& game, BayesUserPreflop& preflop, BayesUserFlop& flop, BayesUserTurn& turn, BayesUserRiver& river)
 {
@@ -32,20 +34,25 @@ PlayerRange& BayesDecision::getCallRaiseRange(double betsize, PlayerRange& range
 	}
 
 	if (totalRange.range.size() == 0) return res;
-	totalRange = RangeUtils::mergeRange(range, totalRange, game.getBoard());
+	totalRange = RangeUtils::mergeRange(range, totalRange, game.getBoard(), game.getHand());
 
 	return res;
 }
 
 double BayesDecision::calculateEQ(vector<PlayerRange>& ranges, vector<Card>& board, Hand& hand)
 {
+	vector<PlayerRange> result;
 	EqCalculator calc;
-
 	PlayerRange myRange;
 	myRange.range.insert(make_pair(hand, 1));
-	ranges.push_back(myRange);
 
-	return calc.calculate(ranges, board, 25000);
+	result.push_back(myRange);
+
+	for (int i = 0; i < ranges.size(); ++i)
+	{
+		result.push_back(ranges[i]);
+	}
+	return calc.calculate(result, board, 25000);
 }
 
 char BayesDecision::calculateDecision(CurrentGameInfo& game, vector<PlayerRange>& ranges, BayesUserPreflop& preflop, BayesUserFlop& flop, BayesUserTurn& turn, BayesUserRiver& river)
@@ -57,6 +64,10 @@ char BayesDecision::calculateDecision(CurrentGameInfo& game, vector<PlayerRange>
 
 Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& rangesFirst, BayesUserPreflop& preflop, BayesUserFlop& flop, BayesUserTurn& turn, BayesUserRiver& river)
 {
+	Logger& logger = Logger::getLogger(LOGGER_TYPE::BOT_LOGIC);
+
+	logger.logExp("Hand: " + game.getHand().toString(), LOGGER_TYPE::BOT_LOGIC);
+
 	vector<PlayerRange> ranges;
 
 	for (int i = 0; i < rangesFirst.size(); ++i)
@@ -67,9 +78,19 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 		}
 	}
 
+	if (ranges.size() == 0)
+	{
+		logger.logExp("Cannot decide action", LOGGER_TYPE::BOT_LOGIC);
+		return Action('n', 0);
+	}
+
 	for (int i = 0; i < ranges.size(); ++i)
 	{
-		if (ranges[i].getValid()) return Action('n', 0);
+		if (!ranges[i].getValid())
+		{
+			logger.logExp("Cannot decide action", LOGGER_TYPE::BOT_LOGIC);
+			return Action('n', 0);
+		}
 	}
 
 	Action res;
@@ -90,8 +111,11 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 
 	if (game.getStreet() == 0)
 	{
+		logger.logExp("PREFLOP CALCULATION STARTED", LOGGER_TYPE::BOT_LOGIC);
 		for (int i = normalizeBetSize(1, game.getBiggestBet() * game.getBblind(), game.getPotcommon() * game.getBblind(), game.getBblind()) + 1; i < preflop.PREFLOP_PLAYER_BET_SIZE_NUM; ++i)
 		{
+			logger.logExp("actualBetSize: " + i, LOGGER_TYPE::BOT_LOGIC);
+
 			vector<PlayerRange> aktRanges;
 			for (int j = 0; j < ranges.size(); ++j)
 			{
@@ -107,6 +131,12 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 
 			double evraise = fe * game.getTotalPot() + (1 - fe) * (eq * (game.getTotalPot() + (ranges.size() + 1) * getBetsize(1, i, game.getPotcommon()) - (1 - eq) * (getBetsize(1, i, game.getPotcommon()))));
 
+			stringstream stream;
+			stream << "EQ= " << eq << endl;
+			stream << "EVRAISE= " << evraise << endl;
+
+			logger.logExp(stream.str(), LOGGER_TYPE::BOT_LOGIC);
+
 			if (evraise > EVRAISE)
 			{
 				EVRAISE = evraise;
@@ -118,12 +148,21 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 
 		double eq = calculateEQ(ranges, game.getBoard(), game.getHand());
 		EVCALL = eq * (game.getTotalPot() + game.getAmountToCall()) - (1 - eq) * (game.getAmountToCall());
+
+		stringstream stream;
+		stream << "EQ= " << eq << endl;
+		stream << "EVCALL= " << EVCALL << endl;
+
+		logger.logExp(stream.str(), LOGGER_TYPE::BOT_LOGIC);
+
 	}
 	
 	if (game.getStreet() == 1)
 	{
+		logger.logExp("FLOP CALCULATION STARTED", LOGGER_TYPE::BOT_LOGIC);
 		for (int i = normalizeBetSize(game.getStreet() + 1, game.getBiggestBet() * game.getBblind(), game.getPotcommon() * game.getBblind(), game.getBblind()) + 1; i < flop.PLAYER_BET_SIZE_NUM; ++i)
 		{
+			logger.logExp("actualBetSize: " + i, LOGGER_TYPE::BOT_LOGIC);
 			vector<PlayerRange> aktRanges;
 			for (int j = 0; j < ranges.size(); ++j)
 			{
@@ -143,12 +182,22 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 				double akt = flop.getProbabilityFE(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * game.getBblind(), 
 					player.getLine(), player.getBetsize() * game.getBblind(), game.getBblind(), game.getPotcommon() * game.getBblind(), patternsNeeded);
 
-				if (akt < 0) return Action('n', 0);
+				if (akt < 0) 
+				{
+					fe = 0;
+				}
 
 				fe *= akt;
 			}
 
 			double evraise = fe * game.getTotalPot() + (1 - fe) * (eq * (game.getTotalPot() + (ranges.size() + 1) * getBetsize(game.getStreet() + 1, i, game.getPotcommon()) - (1 - eq) * (getBetsize(game.getStreet() + 1, i, game.getPotcommon()))));
+
+			stringstream stream;
+			stream << "FE= " << fe << endl;
+			stream << "EQ= " << eq << endl;
+			stream << "EVRAISE= " << evraise << endl;
+
+			logger.logExp(stream.str(), LOGGER_TYPE::BOT_LOGIC);
 
 			if (evraise > EVRAISE)
 			{
@@ -161,12 +210,20 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 
 		double eq = calculateEQ(ranges, game.getBoard(), game.getHand());
 		EVCALL = eq * (game.getTotalPot() + game.getAmountToCall()) - (1 - eq) * (game.getAmountToCall());
+
+		stringstream stream;
+		stream << "EQ= " << eq << endl;
+		stream << "EVCALL= " << EVCALL << endl;
+
+		logger.logExp(stream.str(), LOGGER_TYPE::BOT_LOGIC);
 	}
 
 	if (game.getStreet() == 2)
 	{
+		logger.logExp("TURN CALCULATION STARTED", LOGGER_TYPE::BOT_LOGIC);
 		for (int i = normalizeBetSize(game.getStreet() + 1, game.getBiggestBet() * game.getBblind(), game.getPotcommon() * game.getBblind(), game.getBblind()) + 1; i < turn.PLAYER_BET_SIZE_NUM; ++i)
 		{
+			logger.logExp("actualBetSize: " + i, LOGGER_TYPE::BOT_LOGIC);
 			vector<PlayerRange> aktRanges;
 			for (int j = 0; j < ranges.size(); ++j)
 			{
@@ -186,12 +243,22 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 				double akt = turn.getProbabilityFE(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * game.getBblind(), 
 					player.getLine(), player.getBetsize() * game.getBblind(), game.getBblind(), game.getPotcommon() * game.getBblind(), patternsNeeded);
 
-				if (akt < 0) return Action('n', 0);
+				if (akt < 0) 
+				{
+					fe = 0;
+				}
 
 				fe *= akt;
 			}
 
 			double evraise = fe * game.getTotalPot() + (1 - fe) * (eq * (game.getTotalPot() + (ranges.size() + 1) * getBetsize(game.getStreet() + 1, i, game.getPotcommon()) - (1 - eq) * (getBetsize(game.getStreet() + 1, i, game.getPotcommon()))));
+
+			stringstream stream;
+			stream << "FE= " << fe << endl;
+			stream << "EQ= " << eq << endl;
+			stream << "EVRAISE= " << evraise << endl;
+
+			logger.logExp(stream.str(), LOGGER_TYPE::BOT_LOGIC);
 
 			if (evraise > EVRAISE)
 			{
@@ -204,12 +271,20 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 
 		double eq = calculateEQ(ranges, game.getBoard(), game.getHand());
 		EVCALL = eq * (game.getTotalPot() + game.getAmountToCall()) - (1 - eq) * (game.getAmountToCall());
+
+		stringstream stream;
+		stream << "EQ= " << eq << endl;
+		stream << "EVCALL= " << EVCALL << endl;
+
+		logger.logExp(stream.str(), LOGGER_TYPE::BOT_LOGIC);
 	}
 
 	if (game.getStreet() == 3)
 	{
+		logger.logExp("RIVER CALCULATION STARTED", LOGGER_TYPE::BOT_LOGIC);
 		for (int i = normalizeBetSize(game.getStreet() + 1, game.getBiggestBet() * game.getBblind(), game.getPotcommon() * game.getBblind(), game.getBblind()) + 1; i < river.PLAYER_BET_SIZE_NUM; ++i)
 		{
+			logger.logExp("actualBetSize: " + i, LOGGER_TYPE::BOT_LOGIC);
 			vector<PlayerRange> aktRanges;
 			for (int j = 0; j < ranges.size(); ++j)
 			{
@@ -229,12 +304,22 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 				double akt = river.getProbabilityFE(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * game.getBblind(), 
 					player.getLine(), player.getBetsize() * game.getBblind(), game.getBblind(), game.getPotcommon() * game.getBblind(), patternsNeeded);
 
-				if (akt < 0) return Action('n', 0);
+				if (akt < 0) 
+				{
+					fe = 0;
+				}
 
 				fe *= akt;
 			}
 
 			double evraise = fe * game.getTotalPot() + (1 - fe) * (eq * (game.getTotalPot() + (ranges.size() + 1) * getBetsize(game.getStreet() + 1, i, game.getPotcommon()) - (1 - eq) * (getBetsize(game.getStreet() + 1, i, game.getPotcommon()))));
+
+			stringstream stream;
+			stream << "FE= " << fe << endl;
+			stream << "EQ= " << eq << endl;
+			stream << "EVRAISE= " << evraise << endl;
+
+			logger.logExp(stream.str(), LOGGER_TYPE::BOT_LOGIC);
 
 			if (evraise > EVRAISE)
 			{
@@ -247,6 +332,12 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 
 		double eq = calculateEQ(ranges, game.getBoard(), game.getHand());
 		EVCALL = eq * (game.getTotalPot() + game.getAmountToCall()) - (1 - eq) * (game.getAmountToCall());
+
+		stringstream stream;
+		stream << "EQ= " << eq << endl;
+		stream << "EVCALL= " << EVCALL << endl;
+
+		logger.logExp(stream.str(), LOGGER_TYPE::BOT_LOGIC);
 	}
 
 	if (EVRAISE > 0 || EVCALL > 0)

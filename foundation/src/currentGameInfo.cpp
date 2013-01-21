@@ -61,6 +61,11 @@ vector<CurrentPlayerInfo>& CurrentGameInfo::getOpponentsInfo()
 	return opponentsInfo;
 }
 
+void CurrentGameInfo::addCurrentPlayerInfo(CurrentPlayerInfo& cpi)
+{
+	opponentsInfo.push_back(cpi);
+}
+
 void CurrentGameInfo::setHero(CurrentPlayerInfo& hero)
 {
 	this->hero = hero;
@@ -123,4 +128,13 @@ CurrentPlayerInfo& CurrentGameInfo::getPlayerbyPosition(int position)
 		if (opponentsInfo[i].getPoz() == position)
 			return opponentsInfo[i];
 	}
+}
+
+void CurrentGameInfo::setHandNumber(double handNumber)
+{
+	this->handNumber = handNumber;
+}
+double CurrentGameInfo::getHandNumber()
+{
+	return handNumber;
 }
