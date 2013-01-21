@@ -129,3 +129,12 @@ CurrentPlayerInfo& CurrentGameInfo::getPlayerbyPosition(int position)
 			return opponentsInfo[i];
 	}
 }
+
+void CurrentGameInfo::setHandNumber(double handNumber)
+{
+	this->handNumber = handNumber;
+}
+double CurrentGameInfo::getHandNumber()
+{
+	return handNumber;
+}

@@ -13,6 +13,8 @@ class GameStateManager
 {
 private:
 
+	double handNumber;
+
     int dealerPosition;
     int bettingRound;
     Hand lastHand;
@@ -25,9 +27,7 @@ private:
     vector<bool> isCurrentPlayerInfosSet;
 
     vector<double> balance;
-
     double maxRaiseSize;
-
     CurrentGameInfo* currentGameInfo;
 
 	Action actionCache;
@@ -45,6 +45,7 @@ public:
     static GameStateManager& getGameStateManager();
 
     bool IsHandReset(Hand hand);
+	bool IsHandReset(double handNumber);
 
     void resetCurrentBets();
 
@@ -84,4 +85,7 @@ public:
 
 	void setCache(bool);
 	bool isCacheAvalaible();
+
+	void setHandNumber(double);
+	double getHandNumber();
 };

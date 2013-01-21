@@ -12,6 +12,7 @@ GameStateManager::GameStateManager()
     , players(6)
     , maxRaiseSize(0.0)
 	, currentGameInfo(0)
+	, handNumber(-1)
 {
 }
 
@@ -45,6 +46,11 @@ bool GameStateManager::IsHandReset(Hand hand)
     return lastHand != hand;    
 }
 
+bool GameStateManager::IsHandReset(double handNumber)
+{
+	return this->handNumber != handNumber;
+}
+
 void GameStateManager::resetState(int dealerPos, Hand hand)
 {
     // reset players
@@ -64,6 +70,7 @@ void GameStateManager::resetState(int dealerPos, Hand hand)
 
     resetCurrentBets();
 
+	//HARD CODE!!!
     getCurrentPlayerInfo(smallBlindPosition).setBetsize(0.02);       
     getCurrentPlayerInfo(bigBlindPosition).setBetsize(0.04);    
     
@@ -207,4 +214,13 @@ bool GameStateManager::isCacheAvalaible()
 void GameStateManager::setCache(bool cache)
 {
 	cacheAvalaible = cache;
+}
+
+void GameStateManager::setHandNumber(double)
+{
+	this->handNumber = handNumber;
+}
+double GameStateManager::getHandNumber()
+{
+	return handNumber;
 }

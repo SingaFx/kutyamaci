@@ -102,6 +102,11 @@ CurrentGameInfo* createCurrentGameInfo(bool& isValid)
     logger.logExp("CurrentGameInfo : ", DLL_INTERFACE_LOGGER);
 
     CurrentGameInfo* currentGameInfo = new CurrentGameInfo();
+
+	double handNumber = gws("handsplayed");
+	logger.logExp("[-> hand number] : ", handNumber, DLL_INTERFACE_LOGGER);
+	currentGameInfo->setHandNumber(handNumber);
+
     // big blind
     double bblind = gws("bblind");
     logger.logExp("[-> bblind] : ", bblind, DLL_INTERFACE_LOGGER);
@@ -496,10 +501,10 @@ double process_state(holdem_state* pstate)
     gamestateManager.setCurrentGameInfo(cgi);
 
     // testing new hand    
-    if (gamestateManager.IsHandReset(cgi->getHand()))
+	if (gamestateManager.IsHandReset(cgi->getHandNumber()))
     {
+		gamestateManager.setHandNumber(cgi->getHandNumber());
         resetHand(pstate, cgi->getHand());
-		refreshPlayersName(pstate);
 
 		playerRangeManager.resetRanges(gamestateManager);
     }
@@ -516,6 +521,7 @@ double process_state(holdem_state* pstate)
 		delete old_cgi;
 	}
 
+	refreshPlayersName(pstate);
     
     vector<double> currentBets(6);
     getCurrentBets(currentBets);
@@ -676,6 +682,91 @@ WHUSER_API double process_message(const char* pmessage, const void* param){
 	return 0;
 
 }
+
+HINSTANCE  inj_hModule;          //Injected Modules Handle
+HWND       prnt_hWnd;            //Parent Window Handle
+#define MYMENU_EXIT         (WM_APP + 101)
+#define MYMENU_MESSAGEBOX   (WM_APP + 102)
+
+LRESULT CALLBACK DLLWindowProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    switch (message)
+    {
+		case WM_COMMAND:
+               switch(wParam)
+               {
+                    case MYMENU_EXIT:
+						SendMessage(hwnd, WM_CLOSE, 0, 0);
+                        break;
+                    case MYMENU_MESSAGEBOX:
+						MessageBox(hwnd, (LPCSTR)"Test", (LPCSTR)"MessageBox",MB_OK);
+                        break;
+               }
+               break;
+		case WM_DESTROY:
+			PostQuitMessage (0);
+			break;
+		default:
+			return DefWindowProc (hwnd, message, wParam, lParam);
+    }
+    return 0;
+}
+
+HMENU CreateDLLWindowMenu()
+{
+	HMENU hMenu;
+	hMenu = CreateMenu();
+	HMENU hMenuPopup;
+	if(hMenu==NULL)
+           return FALSE;
+	hMenuPopup = CreatePopupMenu();
+	AppendMenu (hMenuPopup, MF_STRING, MYMENU_EXIT, TEXT("Exit"));
+	AppendMenu (hMenu, MF_POPUP, (UINT_PTR) hMenuPopup, TEXT("File")); 
+
+	hMenuPopup = CreatePopupMenu();
+	AppendMenu (hMenuPopup, MF_STRING,MYMENU_MESSAGEBOX, TEXT("MessageBox")); 
+	AppendMenu (hMenu, MF_POPUP, (UINT_PTR) hMenuPopup, TEXT("Test")); 
+	return hMenu;
+}
+
+BOOL RegisterDLLWindowClass(wchar_t szClassName[])
+{
+    WNDCLASSEX wc;
+    wc.hInstance =  inj_hModule;
+    wc.lpszClassName = (LPCSTR)L"InjectedDLLWindowClass";
+    wc.lpfnWndProc = DLLWindowProc;
+    wc.style = CS_DBLCLKS;
+    wc.cbSize = sizeof (WNDCLASSEX);
+    wc.hIcon = LoadIcon (NULL, IDI_APPLICATION);
+    wc.hIconSm = LoadIcon (NULL, IDI_APPLICATION);
+    wc.hCursor = LoadCursor (NULL, IDC_ARROW);
+    wc.lpszMenuName = NULL;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
+    wc.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
+    if (!RegisterClassEx (&wc))
+		return 0;
+}
+
+DWORD WINAPI ThreadProc( LPVOID lpParam )
+{
+	MSG messages;
+	wchar_t *pString = reinterpret_cast<wchar_t * > (lpParam);
+	HMENU hMenu = CreateDLLWindowMenu();
+	RegisterDLLWindowClass(L"InjectedDLLWindowClass");
+	prnt_hWnd = FindWindow((LPCSTR)"Window Injected Into ClassName", (LPCSTR)"Window Injected Into Caption");
+	HWND hwnd = CreateWindowEx (0, (LPCSTR)"InjectedDLLWindowClass", (LPCSTR)pString, WS_EX_PALETTEWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 400, 300, prnt_hWnd, hMenu,inj_hModule, NULL );
+	ShowWindow (hwnd, SW_SHOWNORMAL);
+	while (GetMessage (&messages, NULL, 0, 0))
+	{
+		TranslateMessage(&messages);
+        	DispatchMessage(&messages);
+	}
+	return 1;
+}
+
+
+
 ///////////////////////////////// 
 //DLLMAIN 
 ///////////////////////////////// 
@@ -684,8 +775,12 @@ BOOL APIENTRY DllMain( HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 	switch(ul_reason_for_call)
     {
 		case DLL_PROCESS_ATTACH:
+			//inj_hModule = hModule;
+			//CreateThread(0, NULL, ThreadProc, (LPVOID)L"Window Title", NULL, NULL);
 			break; 
 		case DLL_THREAD_ATTACH:
+			//inj_hModule = (HINSTANCE) hModule;
+			//CreateThread(0, NULL, ThreadProc, (LPVOID)L"Window Title", NULL, NULL);
 			break; 
 		case DLL_THREAD_DETACH:
 			break; 
