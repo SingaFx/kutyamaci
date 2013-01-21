@@ -17,7 +17,11 @@ PlusEVBotLogic::~PlusEVBotLogic()
 
 PlayerRange PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameInfo, PlayerRange& oldPlayerRange)
 {
+	//validation
+
 	extendGameInfo(gameInfo);
+
+	Logger& logger = Logger::getLogger(BOT_LOGIC);
 
 	PlayerRange res;
 	double bblind = gameInfo.getBblind();
@@ -30,6 +34,8 @@ PlayerRange PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameInf
 
 		vector<Card> cards;
 		res = RangeUtils::mergeRange(oldPlayerRange, actual, cards, gameInfo.getHand());
+
+		//logger.logExp("Input: VPIP: %lf, PFR: %lf, StackSize: %lf, poz: %d, line: %d, betsize: %lf, bblind: %lf, 
 	}
 
 	if (gameInfo.getStreet() == 1)
@@ -76,6 +82,9 @@ PlayerRange PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameInf
 
 Action PlusEVBotLogic::makeDecision(CurrentGameInfo& gameInfo, vector<PlayerRange>& ranges)
 {
+	return Action('n', 0);
+
+
 	Action res;
 
 	extendGameInfo(gameInfo);

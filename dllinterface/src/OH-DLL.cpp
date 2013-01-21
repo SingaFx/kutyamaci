@@ -95,6 +95,11 @@ void WriteToDebugWindow()
 
 	//CURRENTBETS
 	
+	ostringstream os;
+
+	os << gamestate.getMaxRaise();
+	myOutput.push_back(os.str());
+
 	stream.clear();
 
 	vector<double> currentBets(6);
@@ -124,6 +129,14 @@ void WriteToDebugWindow()
 			os << name << " " << line << " " << betsize << " " << betsize2 << " " << bblind;
 			myOutput.push_back(os.str());
 		}
+	}
+
+	for (int idx = 0; idx < 6; ++idx)
+	{
+		PlayerRange range = PlayerRangeManager::getPlayerRangeManager().getPlayerRange(idx);
+		ostringstream os;
+		os << range.getName() << " " << range.totalPercentage();
+		myOutput.push_back(os.str());
 	}
 
 	/*
@@ -365,7 +378,7 @@ bool isBitSet(int toTest, int bitNumber)
 
 bool isEqual(double d1, double d2)
 {
-    double eps = 0.001;
+    double eps = 0.1;
     return ( d1 - eps < d2 ) && ( d2 - eps < d1);
 }
 
