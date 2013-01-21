@@ -90,6 +90,7 @@ public:
 		map<string, int>* aggrM = new map<string, int>();
 		map<string, int>* passM = new map<string, int>();
 		map<string, int>* handnr = new map<string, int>();
+
         for (int i = 0; i < history.size(); ++i)
 		{
 			if (database->isHand(history[i].getId()))
@@ -98,7 +99,7 @@ public:
                 continue;
             }
 
-            logger.logExp("The following hand does not exist in the database: ", history[i].getId().c_str(), LOGGER_TYPE::HAND_HISTORY_PARSER);
+            logger.logExp("The following hand will be INSERTED in the database: ", history[i].getId().c_str(), LOGGER_TYPE::HAND_HISTORY_PARSER);
 
             database->insertHand(history[i].getId());
 
@@ -138,16 +139,19 @@ public:
 
 				int aggr = 0;
 				int pass = 0;
+
 				for (int k = 0; k < player.getFlopAction().size(); ++k)
 				{
 					if (player.getFlopAction()[k].getType() == 'c') pass++;
 					if (player.getFlopAction()[k].getType() == 'r') aggr++;
 				}
+
 				for (int k = 0; k < player.getTurnAction().size(); ++k)
 				{
 					if (player.getFlopAction()[k].getType() == 'c') pass++;
 					if (player.getFlopAction()[k].getType() == 'r') aggr++;
 				}
+
 				for (int k = 0; k < player.getRiverAction().size(); ++k)
 				{
 					if (player.getFlopAction()[k].getType() == 'c') pass++;
@@ -164,11 +168,12 @@ public:
 		{
 			if (!database->isUser(*it))
 			{
-				logger.logExp("The following user does not exist in the database: ", (*it).c_str(), LOGGER_TYPE::HAND_HISTORY_PARSER);
+				logger.logExp("The following user will be INSERTED in the database: ", (*it).c_str(), LOGGER_TYPE::HAND_HISTORY_PARSER);
                 database->insertUser(*it);
 			} else {
                 logger.logExp("The following user does EXIST in the database: ", (*it).c_str(), LOGGER_TYPE::HAND_HISTORY_PARSER);
             }
+
 			database->setAGGR((*aggrM)[*it], *it);
 			database->setPASS((*passM)[*it], *it);
 			database->setPFR((*PFR)[*it], (*handnr)[*it], *it);
@@ -183,6 +188,6 @@ public:
 		delete PFR;
 		delete handnr;
 
-        cout << "Databases has been updated!" << endl;
+        logger.logExp("The updater has UPDATED the database.", LOGGER_TYPE::HAND_HISTORY_PARSER);
 	}
 };

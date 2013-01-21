@@ -7,6 +7,10 @@
 
 class BwinPartyParser : public HandHistoryParser
 {
+private:
+    void pushActualHandToParseResult(vector<HandHistory>& result, HandHistory& actualhand, int& buttonSeat);
+    void clearActualHandInfo(HandHistory& actualhand, int& round);
+
 public:
 
     BwinPartyParser();
