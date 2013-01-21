@@ -10,7 +10,8 @@ enum LOGGER_TYPE
 {
     DLL_INTERFACE_LOGGER = 0,
     HAND_HISTORY_PARSER  = 1,
-    BOT_LOGIC            = 2
+    BOT_LOGIC            = 2,
+	DLL_DECISION_LOGGER  = 3
 } ;
 
 class Logger
@@ -66,6 +67,7 @@ public:
     static const string DLL_INTERFACE_OUTPUT_FILENAME;
     static const string HAND_HISTORY_PARSER_OUTPUT_FILENAME;
     static const string BOT_LOGIC_OUTPUT_FILENAME;
+	static const string DLL_DECISION_OUTPUT_FILENAME;
 
 private:
 
@@ -77,6 +79,7 @@ private:
 	static ofstream* dllInterfaceLogger_;
     static ofstream* handHistoryParserLogger_;
 	static ofstream* botLogicLogger_;
+	static ofstream* dllDecisionLogger_;
     static ofstream* outfile_;
 };
 

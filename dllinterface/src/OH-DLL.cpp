@@ -326,7 +326,7 @@ void calculateRelativPositions(vector<int>& relativPositions, int dealerPosition
     }
 }
 
-void detectMissedCallsAndUpdatePlayerRanges()
+void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
 {
     GameStateManager& gamestateManager = GameStateManager::getGameStateManager();
 
@@ -346,18 +346,12 @@ void detectMissedCallsAndUpdatePlayerRanges()
             if (!isEqual(maxRaise, currentPlayerInfo.getBetsize()))
             {
                 currentPlayerInfo.setLine(0);
+				currentPlayerInfo.setBetsize(maxRaise);
 
-				for (int idx = 0; idx <=5; ++idx)
-				{
-					if (isBitSet((int)playersplayingbits, idx) && gamestateManager.isCurrentPlayerInfoSet(idx))
-					{
-						CurrentGameInfo* cgi = gamestateManager.getCurrentGameInfo();
-						cgi->addCurrentPlayerInfo(gamestateManager.getCurrentPlayerInfo(idx));
-					}
-				}
-
+				old_cgi->addCurrentPlayerInfo(gamestateManager.getCurrentPlayerInfo(idx));
+					
                 string playerName = currentPlayerInfo.getName();
-                PlayerRange& updatedRange = botLogic->calculateRange(playerName, *gamestateManager.getCurrentGameInfo(), playerRangeManager.getPlayerRange(idx));
+                PlayerRange& updatedRange = botLogic->calculateRange(playerName, *old_cgi, playerRangeManager.getPlayerRange(idx));
 
 				gamestateManager.setCache(false);
                 playerRangeManager.setPlayerRange(idx, updatedRange);
@@ -369,7 +363,7 @@ void detectMissedCallsAndUpdatePlayerRanges()
 double process_query(const char* pquery)
 {
 	Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER); 
-	logger.logExp(string("[Processing query] : ").append(pquery).c_str(), DLL_INTERFACE_LOGGER);
+	logger.logExp(string("[Processing query] : ").append(pquery).c_str(), DLL_DECISION_LOGGER);
 
 	if (strcmp(pquery,"dll$swag") && strcmp(pquery,"dll$srai") && strcmp(pquery,"dll$call") && strcmp(pquery,"dll$prefold"))
 		return 0;          
@@ -388,7 +382,7 @@ double process_query(const char* pquery)
 
 	if (!gamestateManager.getHand().valid())
 	{
-		logger.logExp("Hand validation failed. Returning.", DLL_INTERFACE_LOGGER);
+		logger.logExp("Hand validation failed. Returning.", DLL_DECISION_LOGGER);
 		return 0;
 	}
 
@@ -415,7 +409,7 @@ double process_query(const char* pquery)
 		action = botLogic->makeDecision(*cgi, ranges);
 	} 
 
-	logger.logExp("Got action: " + action.toString(), DLL_INTERFACE_LOGGER);
+	logger.logExp("Got action: " + action.toString(), DLL_DECISION_LOGGER);
 
     if(strcmp(pquery,"dll$swag") == 0)
     {
@@ -498,10 +492,6 @@ double process_state(holdem_state* pstate)
     }
 
 	CurrentGameInfo* old_cgi = gamestateManager.getCurrentGameInfo();
-	if (old_cgi)
-	{
-		delete old_cgi;
-	}
 	
     gamestateManager.setCurrentGameInfo(cgi);
 
@@ -509,26 +499,32 @@ double process_state(holdem_state* pstate)
     if (gamestateManager.IsHandReset(cgi->getHand()))
     {
         resetHand(pstate, cgi->getHand());
-        playerRangeManager.resetRanges();
+		refreshPlayersName(pstate);
+
+		playerRangeManager.resetRanges(gamestateManager);
     }
 
     // testing if we advanced to the next betting round
     if (cgi->getStreet() > gamestateManager.getBettingRound())
     {
-        detectMissedCallsAndUpdatePlayerRanges();
+        detectMissedCallsAndUpdatePlayerRanges(old_cgi);
         gamestateManager.resetBettingRound();
     }
 
+	if (old_cgi)
+	{
+		delete old_cgi;
+	}
 
-    refreshPlayersName(pstate);
-
+    
     vector<double> currentBets(6);
     getCurrentBets(currentBets);
 
+
+	//ITS DUMMY HERE
     vector<int> relativePositions;
     calculateRelativPositions(relativePositions, gamestateManager.getDealerPosition());
 
-	logger.logExp("here!!!", DLL_INTERFACE_LOGGER);
     //if (cgi->getStreet() == 0) // preflop
     //{
      //   int smallblindPos = nextPosition(gamestateManager.getDealerPosition());
@@ -635,9 +631,10 @@ double process_state(holdem_state* pstate)
             logger.logExp(buffer, DLL_INTERFACE_LOGGER);
         }
     }
+	//SET HERO's things
+
 
 	return 0;
-
 }
 ///////////////////////////////////////////////////// 
 //WINHOLDEM RUNTIME ENTRY POINT 

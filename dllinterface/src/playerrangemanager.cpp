@@ -23,7 +23,7 @@ PlayerRangeManager& PlayerRangeManager::getPlayerRangeManager()
     return *playerRangeManager;
 }
 
-void PlayerRangeManager::resetRanges()
+void PlayerRangeManager::resetRanges(GameStateManager& gameState)
 {
 	Logger& logger = Logger::getLogger(LOGGER_TYPE::DLL_INTERFACE_LOGGER);
 	logger.logExp("[Resetting player ranges]", LOGGER_TYPE::DLL_INTERFACE_LOGGER);
@@ -34,6 +34,7 @@ void PlayerRangeManager::resetRanges()
 	pr.create100();
     for (int idx = 0; idx < 6; ++idx)
     {
+		pr.setName(gameState.getPlayerNameByPos(idx));
         playerRanges.push_back(pr);
     }
 

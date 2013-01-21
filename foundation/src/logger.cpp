@@ -4,10 +4,12 @@
 const string Logger::DLL_INTERFACE_OUTPUT_FILENAME = "dllinterface.log";
 const string Logger::HAND_HISTORY_PARSER_OUTPUT_FILENAME = "handhistoryparser.log";
 const string Logger::BOT_LOGIC_OUTPUT_FILENAME = "botlogic.log";
+const string Logger::DLL_DECISION_OUTPUT_FILENAME = "dlldecision.log";
 
 ofstream* Logger::dllInterfaceLogger_ = 0;
 ofstream* Logger::handHistoryParserLogger_ = 0;
 ofstream* Logger::botLogicLogger_ = 0;
+ofstream* Logger::dllDecisionLogger_ = 0;
 ofstream* Logger::outfile_ = 0;
 
 Logger* Logger::logger_ = 0;
@@ -22,6 +24,9 @@ Logger::Logger()
 
 	botLogicLogger_ = new ofstream();
 	botLogicLogger_->open(BOT_LOGIC_OUTPUT_FILENAME.c_str());
+
+	dllDecisionLogger_ = new ofstream();
+	dllDecisionLogger_->open(DLL_DECISION_OUTPUT_FILENAME.c_str());
 }
 
 // --------------------------------------------------
@@ -29,12 +34,16 @@ Logger::~Logger()
 {
     dllInterfaceLogger_->close();
     handHistoryParserLogger_->close();
+	dllDecisionLogger_->close();
 
     delete dllInterfaceLogger_;
     dllInterfaceLogger_ = 0;
 
     delete handHistoryParserLogger_;
     handHistoryParserLogger_= 0;
+
+	delete dllDecisionLogger_;
+	dllDecisionLogger_ = 0;
 }
 
 // --------------------------------------------------
@@ -68,7 +77,11 @@ ofstream* Logger::getStream(LOGGER_TYPE lt)
 			currentStream = botLogicLogger_;
 		}
 		break;
-
+	case DLL_DECISION_LOGGER:
+		{
+			currentStream = dllDecisionLogger_;
+		}
+		break;
 	}
 
 	return currentStream;
