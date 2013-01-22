@@ -593,9 +593,11 @@ public:
 		v[6] = normalizePFR(PFR);
 		v[7] = normalizeAF(AF);
 
+		if (line == 5)
+			return getProbabilityFE2(v, x);
+
 		return getProbabilityFE(v, x);
 	}
-
 
 	PlayerRange getRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x)
 	{
@@ -668,7 +670,6 @@ public:
 		}
 
 		callingRange = RangeUtils::addRange(raiseRangeTotal, callingRange);
-
 		callingRange = callingRange.normalize();
 
 		return callingRange;
@@ -870,6 +871,10 @@ public:
 		v[5] = normalizeVPIP(VPIP);
 		v[6] = normalizePFR(PFR);
 		v[7] = normalizeAF(AF);
+
+
+		if (line == 5)
+			return getProbabilityFE2(v, x);
 
 		return getProbabilityFE(v, x);
 	}
@@ -1094,6 +1099,9 @@ public:
 		v[5] = normalizeVPIP(VPIP);
 		v[6] = normalizePFR(PFR);
 		v[7] = normalizeAF(AF);
+
+		if (line == 5)
+			return getProbabilityFE2(v, x);
 
 		return getProbabilityFE(v, x);
 	}

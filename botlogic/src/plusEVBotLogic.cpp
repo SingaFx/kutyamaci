@@ -109,8 +109,8 @@ PlayerRange PlusEVBotLogic::calculateRange(int id, CurrentGameInfo& gameInfo, Pl
 
 Action PlusEVBotLogic::makeDecision(CurrentGameInfo& gameInfo, vector<PlayerRange>& ranges)
 {
-	return Action('n', 0);
-
+	if (gameInfo.getStreet() == 0)
+		return Action('n', 0);
 
 	Action res;
 

@@ -307,12 +307,48 @@ static int normalizeStackSize(double stacksize, double bblind)
 	return 4;
 }
 
-
-static double getBetsize(int street, int betsize, double potcommon)
+static double getBetsize(int street, int betsize, double potcommon, double bblind)
 {
 	if (street == 1)
 	{
+		if (betsize == 0)
+		{
+			return bblind;
+		}
+		if (betsize == 1)
+		{
+			return 4 * bblind;
+		}
+		if (betsize == 2)
+		{
+			return 7 * bblind;
+		}
+		else if (betsize == 3)
+		{
+			return 13 * bblind;
+		}
+		else if (betsize == 4)
+		{
+			return 24 * bblind;
+		}
+		else if (betsize == 5)
+		{
+			return 35 * bblind;
+		}
+		else if (betsize == 6)
+		{
+			return 50 * bblind;
+		}
+		else if (betsize == 7)
+		{
+			return 110 * bblind;
+		}
+		else if (betsize == 200 * bblind)
+		{
+			return 200 * bblind;
+		}
 
+		return 300 * bblind;
 	}
 	else
 	{

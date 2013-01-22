@@ -445,6 +445,7 @@ public:
 		}
 
 		res = res.normalize();
+
 		return res;
 	}
 

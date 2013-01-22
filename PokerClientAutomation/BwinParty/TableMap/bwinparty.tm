@@ -2,7 +2,7 @@
 
 // OpenScrape 2.0.0
 
-// 2013-01-22 01:31:06
+// 2013-01-22 15:04:01
 // 32 bits per pixel
 
 //
@@ -17,7 +17,7 @@ z$clientsize       480  323
 
 s$activemethod              2
 s$buttonclickmethod         Single
-s$handresetmethod           2
+s$handresetmethod           7
 s$nchairs                   6
 s$network                   bwinparty
 s$potmethod                 2

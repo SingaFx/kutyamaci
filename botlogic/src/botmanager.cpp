@@ -7,8 +7,8 @@ BotManager* BotManager::botManager = 0;
 
 BotManager::BotManager()
 {
-	//ourSexyBotLogic = new PlusEVBotLogic();
-	ourSexyBotLogic = new TestBotLogic();
+	ourSexyBotLogic = new PlusEVBotLogic();
+	//ourSexyBotLogic = new TestBotLogic();
 }
 
 BotManager::~BotManager()
