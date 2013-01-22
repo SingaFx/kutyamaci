@@ -29,12 +29,17 @@ public:
 		database = new Database("127.0.0.1", "root", "root", "kutya");
 		memset(totalPreflop, 0, sizeof(totalPreflop));
 		memset(probabilityPreflop, 0, sizeof(probabilityPreflop));
+
+		memset(totalFE, 0, sizeof(totalFE));
+		memset(probabilityFE, 0, sizeof(probabilityFE));
 	}
 
 	void read(string filename)
 	{
 		FILE* f = fopen(filename.c_str(), "r");
 		back(f, false, 1);
+		backFE(f, false, 1);
+		fclose(f);
 	}
 
 	void write(string filename)
@@ -42,6 +47,7 @@ public:
 		printf("Writing bayes network\n");
 		FILE* f = fopen(filename.c_str(), "w");
 		back(f, true, 1);
+		backFE(f, true, 1);
 		fclose(f);
 	}
 
@@ -53,20 +59,8 @@ public:
 			return ;
 		}
 
-		int mSize = 0;
-		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
-		{
-			PlayerHistory player = handhistory.getPlayerHistories()[i];
-			for (int j = 0; j < player.getPreflopAction().size(); ++j)
-				{
-					Action action = player.getPreflopAction()[j];
-					int size = normalizeBetSize(1, action.getSize(), 0, 0.04);
-					if (action.getType() == 'c')
-					{
-						if (size > mSize) mSize = size;
-					}
-				}
-		}
+		//koronkent maximum
+		int mSize = maxBetSize(handhistory);
 
 		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
 		{
@@ -94,7 +88,20 @@ public:
 			int nVPIP = normalizeVPIP(VPIP);
 			int nPFR = normalizePFR(PFR);
 			int nStackSize = normalizeStackSize(player.getBalance(), 0.04);
-			int nLine = 0; // <- create functions for this
+			int nLine = 0;
+
+			if (player.getPreflopAction().size() > 0) //flopra jutott de meg nem csinalt semmit, de volt floppon emeles!
+			{
+				if (player.getFlopAction()[0].getType() == 'c')
+				{
+					++totalFE[nStackSize][4][2][nVPIP][nPFR][poz];
+				}
+				if (player.getFlopAction()[0].getType() == 'r' && normalizeBetSize(1, player.getFlopAction()[0].getSize(), 0, 0.04) > 1)
+				{
+					++totalFE[nStackSize][4][2][nVPIP][nPFR][poz];
+				}
+			}
+			
 
 			if (player.isHandKnown())
 			{
@@ -121,12 +128,14 @@ public:
 			else
 			{
 				bool folded = false;
+				bool FE = false;
 				for (int j = 0; j < player.getPreflopAction().size(); ++j)
 				{
 					Action action = player.getPreflopAction()[j];
 					if (action.getType() == 'f')
 					{
 						folded = true;
+						FE = true;
 						break;
 					}
 				}
@@ -175,6 +184,34 @@ public:
 							++totalPreflop[nStackSize][normalizeBetSize(1, action.getSize(), 0, 0.04)][1][nVPIP][nPFR][poz];
 						}
 					}
+
+
+					if (FE)
+					{
+						if (player.getPreflopAction().size() == 1)
+						{
+							++probabilityFE[nStackSize][4][2][nVPIP][nPFR][poz];
+						}
+						else
+						{
+							Action action = player.getFlopAction()[player.getFlopAction().size() - 2];
+							int size = normalizeBetSize(1, action.getSize(), 0, 0.04);
+							if (action.getType() == 'c')
+							{
+								++probabilityFE[nStackSize][size][2][nVPIP][nPFR][poz];
+							}
+
+							if (action.getType() == 'r')
+							{
+								++probabilityFE[nStackSize][size][1][nVPIP][nPFR][poz];
+							}
+
+							if (action.getType() == 'x')
+							{
+								++probabilityFE[nStackSize][0][2][nVPIP][nPFR][poz];
+							}
+						}
+					}
 				}
 			}
 		}
@@ -184,7 +221,6 @@ public:
 	{
 		return (double)probabilityPreflop[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]] / (double)totalPreflop[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]];
 	}
-
 	double getNormProbability(int v[])
 	{
 		//normalize!!
@@ -221,6 +257,60 @@ private:
 			v[k] = i;
 			back(f, b, k + 1);
 		}
+	}
+	void backFE(FILE* f, bool b, int k)
+	{
+		if (k == preflop_node_number)
+		{
+			if (b)
+			{
+				//fprintf(f, "Situation %d %d %d %d %d %d\n", v[1], v[2], v[3], v[4], v[5], v[6]);
+				fprintf(f,"%d ", totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
+				for (int i = 0; i < PREFLOP_HAND_STRENGTH_NUM; ++i)
+				{
+					fprintf(f,"%d ", probabilityFE[i][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
+					//printf("Value: %d\n", probabilityPreflop[i][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
+				}
+			}
+			else
+			{
+				fscanf(f,"%d ", &totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
+				for (int i = 0; i < PREFLOP_HAND_STRENGTH_NUM; ++i)
+					fscanf(f,"%d ", &probabilityFE[i][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
+			}
+
+			return ;
+		}
+
+		for (int i = 0; i < preflop_nums[k]; ++i)
+		{
+			v[k] = i;
+			back(f, b, k + 1);
+		}
+	}
+
+	int maxBetSize(HandHistory& handhistory)
+	{
+		int lastActionRound = 0;
+		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
+		{
+			PlayerHistory player = handhistory.getPlayerHistories()[i];
+			lastActionRound = max(lastActionRound, player.getPreflopAction().size());
+		}
+
+		//lastActionRound
+		int mSize = 0;
+		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
+		{
+			PlayerHistory player = handhistory.getPlayerHistories()[i];
+			if (player.getPreflopAction().size() == lastActionRound || player.getPreflopAction().size() == lastActionRound - 1)
+			{
+				int size = normalizeBetSize(1, player.getBalance(), 0, 0.04);
+				if (size > mSize) mSize = size;
+			}
+		}
+
+		return mSize;
 	}
 };
 class BayesLearnFlop : public BayesFlop
@@ -273,20 +363,7 @@ public:
 			return ;
 		}
 
-		int mSize = 0;
-		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
-		{
-			PlayerHistory player = handhistory.getPlayerHistories()[i];
-			for (int j = 0; j < player.getFlopAction().size(); ++j)
-				{
-					Action action = player.getFlopAction()[j];
-					int size = normalizeBetSize(2, action.getSize(), 0, 0.04);
-					if (action.getType() == 'c')
-					{
-						if (size > mSize) mSize = size;
-					}
-				}
-		}
+		int mSize = maxBetSize(handhistory);
 
 		double totalpot = 1.5 * 0.04;
 		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
@@ -331,7 +408,8 @@ public:
 			int nStackSize = normalizeStackSize(player.getBalance(), 0.04);
 			int nLine = 0;
 
-			if (player.getFlopAction().size() > 0) //flopra jutott de meg nem csinalt semmit, de volt floppon emeles!
+			//FE
+			if (player.getFlopAction().size() > 0) //flopra jutott, meg nem csinalt semmit, de volt floppon emeles!
 			{
 				if (player.getFlopAction()[0].getType() == 'c')
 				{
@@ -548,6 +626,30 @@ private:
 			backFE(f, b, k + 1);
 		}
 	}
+
+	int maxBetSize(HandHistory& handhistory)
+	{
+		int lastActionRound = 0;
+		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
+		{
+			PlayerHistory player = handhistory.getPlayerHistories()[i];
+			lastActionRound = max(lastActionRound, player.getFlopAction().size());
+		}
+
+		//lastActionRound
+		int mSize = 0;
+		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
+		{
+			PlayerHistory player = handhistory.getPlayerHistories()[i];
+			if (player.getFlopAction().size() == lastActionRound || player.getFlopAction().size() == lastActionRound - 1)
+			{
+				int size = normalizeBetSize(2, player.getBalance(), 0, 0.04);
+				if (size > mSize) mSize = size;
+			}
+		}
+
+		return mSize;
+	}
 };
 class BayesLearnTurn : public BayesTurn
 {
@@ -599,20 +701,7 @@ public:
 			return ;
 		}
 
-		int mSize = 0;
-		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
-		{
-			PlayerHistory player = handhistory.getPlayerHistories()[i];
-			for (int j = 0; j < player.getTurnAction().size(); ++j)
-				{
-					Action action = player.getTurnAction()[j];
-					int size = normalizeBetSize(2, action.getSize(), 0, 0.04);
-					if (action.getType() == 'c')
-					{
-						if (size > mSize) mSize = size;
-					}
-				}
-		}
+		int mSize = maxBetSize(handhistory);
 
 		double totalpot = 1.5 * 0.04;
 		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
@@ -879,6 +968,31 @@ private:
 			backFE(f, b, k + 1);
 		}
 	}
+
+	int maxBetSize(HandHistory& handhistory)
+	{
+		int lastActionRound = 0;
+		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
+		{
+			PlayerHistory player = handhistory.getPlayerHistories()[i];
+			lastActionRound = max(lastActionRound, player.getTurnAction().size());
+		}
+
+		//lastActionRound
+		int mSize = 0;
+		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
+		{
+			PlayerHistory player = handhistory.getPlayerHistories()[i];
+			if (player.getTurnAction().size() == lastActionRound || player.getTurnAction().size() == lastActionRound - 1)
+			{
+				int size = normalizeBetSize(2, player.getBalance(), 0, 0.04);
+				if (size > mSize) mSize = size;
+			}
+		}
+
+		return mSize;
+	}
+
 };
 class BayesLearnRiver : public BayesRiver
 {
@@ -930,20 +1044,7 @@ public:
 			return ;
 		}
 
-		int mSize = 0;
-		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
-		{
-			PlayerHistory player = handhistory.getPlayerHistories()[i];
-			for (int j = 0; j < player.getRiverAction().size(); ++j)
-				{
-					Action action = player.getRiverAction()[j];
-					int size = normalizeBetSize(2, action.getSize(), 0, 0.04);
-					if (action.getType() == 'c')
-					{
-						if (size > mSize) mSize = size;
-					}
-				}
-		}
+		int mSize = maxBetSize(handhistory);
 
 		double totalpot = 1.5 * 0.04;
 		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
@@ -1213,5 +1314,29 @@ private:
 			v[k] = i;
 			backFE(f, b, k + 1);
 		}
+	}
+
+	int maxBetSize(HandHistory& handhistory)
+	{
+		int lastActionRound = 0;
+		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
+		{
+			PlayerHistory player = handhistory.getPlayerHistories()[i];
+			lastActionRound = max(lastActionRound, player.getRiverAction().size());
+		}
+
+		//lastActionRound
+		int mSize = 0;
+		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
+		{
+			PlayerHistory player = handhistory.getPlayerHistories()[i];
+			if (player.getRiverAction().size() == lastActionRound || player.getRiverAction().size() == lastActionRound - 1)
+			{
+				int size = normalizeBetSize(2, player.getBalance(), 0, 0.04);
+				if (size > mSize) mSize = size;
+			}
+		}
+
+		return mSize;
 	}
 };

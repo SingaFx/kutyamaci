@@ -23,6 +23,8 @@ public:
 
 		memset(totalPreflop, 0, sizeof(totalPreflop));
 		memset(probabilityPreflop, 0, sizeof(probabilityPreflop));
+		memset(totalFE, 0, sizeof(totalFE));
+		memset(probabilityFE, 0, sizeof(probabilityFE));
 		totalSituation = 0;
 		totalLittle = 0;
 	}
@@ -52,15 +54,6 @@ public:
 		}
 		return (double)probabilityPreflop[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]] / (double)totalPreflop[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]];
 	}
-
-	/*
-	ha < x minta!
-	altalanositani: 
-		-poz szerint 6
-		-stacksize szerint 1
-		-pfr szerint 5
-		-vpip szerint 4
-	*/
 	double getProbability(int v[], int x)
 	{
 		int res = 0;
@@ -89,7 +82,41 @@ public:
 
 		return -2.0;
 	}
+	double getProbabilityFE(int v[], int x)
+	{
+		int res = 0;
+		int total = 0;
 
+		total += totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]];
+		res += probabilityFE[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]];
+		
+		if (x <= total) return (double) res / (double) total;
+		//poz szerint
+		for (int i = 0; i < PREFLOP_PLAYER_POZ_NUM; ++i)
+		{
+			if (i == v[6]) continue;
+			total += totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][i];
+			res += probabilityFE[v[1]][v[2]][v[3]][v[4]][v[5]][i];
+		}
+		if (x <= total) return (double) res / (double) total;
+		//stacksize szerint
+		for (int i = 0; i < PREFLOP_PLAYER_STACK_SIZE_NUM; ++i)
+		{
+			if (i == v[1]) continue;
+			total += totalFE[i][v[2]][v[3]][v[4]][v[1]][v[6]];
+			res += probabilityFE[i][v[2]][v[3]][v[4]][i][v[6]];
+		}
+		if (x <= total) return (double) res / (double) total;
+
+		return -2.0;
+	}
+	double getProbabilityFE2(int v[], int x)
+	{
+		v[2] = 4;
+		v[3] = 2;
+
+		return getProbabilityFE(v, x);
+	}
 	int preflopHandType(Hand hand)
 	{
 		int rank1 = convertRankToNumbers(hand.getCard1());
@@ -427,6 +454,36 @@ private:
 			back(f, b, k + 1);
 		}
 	}
+	void backFE(FILE* f, bool b, int k)
+	{
+		if (k == preflop_node_number)
+		{
+			if (b)
+			{
+				//fprintf(f, "Situation %d %d %d %d %d %d\n", v[1], v[2], v[3], v[4], v[5], v[6]);
+				fprintf(f,"%d ", totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
+				for (int i = 0; i < PREFLOP_HAND_STRENGTH_NUM; ++i)
+				{
+					fprintf(f,"%d ", probabilityFE[i][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
+					//printf("Value: %d\n", probabilityPreflop[i][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
+				}
+			}
+			else
+			{
+				fscanf(f,"%d ", &totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
+				for (int i = 0; i < PREFLOP_HAND_STRENGTH_NUM; ++i)
+					fscanf(f,"%d ", &probabilityFE[i][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
+			}
+
+			return ;
+		}
+
+		for (int i = 0; i < preflop_nums[k]; ++i)
+		{
+			v[k] = i;
+			back(f, b, k + 1);
+		}
+	}
 };
 class BayesUserFlop : public BayesFlop
 {
@@ -469,23 +526,13 @@ public:
 		fclose(f);
 	}
 
-		/*
-	ha < x minta!
-	altalanositani: 
-		-af szerint 8
-		-stacksize szerint 3
-		-pfr szerint 7
-		-vpip szerint 6
-	*/
 	double getProbabilityHS(int v[], int x)
 	{
 		int res = 0;
 		int total = 0;
-		//(double)probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]] / (double)totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
 
 		total += totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
 		res += probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
-		
 		if (x <= total) return (double) res / (double) total;
 
 		for (int i = 0; i < PLAYER_STACK_SIZE_NUM; ++i)
@@ -510,16 +557,6 @@ public:
 		res += probabilityFE[0][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
 
 		if (x <= total) return (double) res / (double) total;
-		//af szerint
-		for (int i = 0; i < PLAYER_AF_NUM; ++i)
-		{
-			if (i == v[7]) continue;
-			total += totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][i];
-			res += probabilityFE[0][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][i];
-		}
-
-		if (x <= total) return (double) res / (double) total;
-		//stacksize szerint
 		for (int i = 0; i < PLAYER_STACK_SIZE_NUM; ++i)
 		{
 			if (i == v[1]) continue;
@@ -530,6 +567,13 @@ public:
 
 
 		return -2.0;
+	}
+	double getProbabilityFE2(int v[], int x)
+	{
+		v[3] = 4;
+		v[4] = 2;
+
+		return getProbabilityFE(v, x);
 	}
 
 	double getProbabilityFE(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, int x)
@@ -758,7 +802,6 @@ public:
 	{
 		int res = 0;
 		int total = 0;
-		//(double)probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]] / (double)totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
 
 		total += totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
 		res += probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
@@ -792,15 +835,6 @@ public:
 		res += probabilityFE[0][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
 
 		if (x <= total) return (double) res / (double) total;
-		//af szerint
-		for (int i = 0; i < PLAYER_AF_NUM; ++i)
-		{
-			if (i == v[7]) continue;
-			total += totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][i];
-			res += probabilityFE[0][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][i];
-		}
-		if (x <= total) return (double) res / (double) total;
-		//stacksize szerint
 		for (int i = 0; i < PLAYER_STACK_SIZE_NUM; ++i)
 		{
 			if (i == v[1]) continue;
@@ -811,6 +845,13 @@ public:
 
 
 		return -2.0;
+	}
+	double getProbabilityFE2(int v[], int x)
+	{
+		v[3] = 4;
+		v[4] = 2;
+
+		return getProbabilityFE(v, x);
 	}
 
 	double getProbabilityFE(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, int x)
@@ -1015,19 +1056,10 @@ public:
 		fclose(f);
 	}
 
-		/*
-	ha < x minta!
-	altalanositani: 
-		-af szerint 8
-		-stacksize szerint 3
-		-pfr szerint 7
-		-vpip szerint 6
-	*/
 	double getProbabilityHS(int v[], int x)
 	{
 		int res = 0;
 		int total = 0;
-		//(double)probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]] / (double)totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
 
 		total += totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
 		res += probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
@@ -1086,7 +1118,7 @@ public:
 		return res;
 	}
 
-		PlayerRange getRange(int v[], vector<Card>& cards, Hand own, int x)
+	PlayerRange getRange(int v[], vector<Card>& cards, Hand own, int x)
 	{
 		PlayerRange res;
 
@@ -1151,15 +1183,6 @@ public:
 		res += probabilityFE[0][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
 
 		if (x <= total) return (double) res / (double) total;
-		//af szerint
-		for (int i = 0; i < PLAYER_AF_NUM; ++i)
-		{
-			if (i == v[7]) continue;
-			total += totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][i];
-			res += probabilityFE[0][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][i];
-		}
-		if (x <= total) return (double) res / (double) total;
-		//stacksize szerint
 		for (int i = 0; i < PLAYER_STACK_SIZE_NUM; ++i)
 		{
 			if (i == v[1]) continue;
@@ -1170,6 +1193,13 @@ public:
 
 
 		return -2.0;
+	}
+	double getProbabilityFE2(int v[], int x)
+	{
+		v[3] = 4;
+		v[4] = 2;
+
+		return getProbabilityFE(v, x);
 	}
 
 	double getNormProbabilityHS(int v[])

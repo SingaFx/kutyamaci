@@ -307,6 +307,7 @@ static int normalizeStackSize(double stacksize, double bblind)
 	return 4;
 }
 
+
 static double getBetsize(int street, int betsize, double potcommon)
 {
 	if (street == 1)
