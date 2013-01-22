@@ -88,7 +88,7 @@ public:
 		int total = 0;
 
 		total += totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]];
-		res += probabilityFE[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]];
+		res += probabilityFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]];
 		
 		if (x <= total) return (double) res / (double) total;
 		//poz szerint
@@ -471,19 +471,13 @@ private:
 		{
 			if (b)
 			{
-				//fprintf(f, "Situation %d %d %d %d %d %d\n", v[1], v[2], v[3], v[4], v[5], v[6]);
 				fprintf(f,"%d ", totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
-				for (int i = 0; i < PREFLOP_HAND_STRENGTH_NUM; ++i)
-				{
-					fprintf(f,"%d ", probabilityFE[i][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
-					//printf("Value: %d\n", probabilityPreflop[i][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
-				}
+				fprintf(f,"%d ", probabilityFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
 			}
 			else
 			{
 				fscanf(f,"%d ", &totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
-				for (int i = 0; i < PREFLOP_HAND_STRENGTH_NUM; ++i)
-					fscanf(f,"%d ", &probabilityFE[i][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
+				fscanf(f,"%d ", &probabilityFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
 			}
 
 			return ;
