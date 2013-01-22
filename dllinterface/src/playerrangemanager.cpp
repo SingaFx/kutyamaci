@@ -31,7 +31,7 @@ void PlayerRangeManager::resetRanges(GameStateManager& gameState)
     playerRanges.clear();
 
     PlayerRange pr;
-	pr.create100();
+	pr = pr.create100();
     for (int idx = 0; idx < 6; ++idx)
     {
 		pr.setId(idx);

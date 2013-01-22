@@ -249,6 +249,13 @@ int main()
 		range = RangeUtils::addRange(range, myrange);
 		range.printRange();
 
+		printf("100 Range\n");
+		range = range.create100();
+		range.printRange();
+
+		printf("100 Range2\n");
+		cout << range.toString();
+
 		//double EQ = calc.calculate(ranges, cards, 25000);
 		//printf("%.2lf\n", EQ);
 

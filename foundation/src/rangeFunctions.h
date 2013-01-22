@@ -5,6 +5,9 @@
 #include "bayesUtils.h"
 #include <set>
 #include <vector>
+#include <sstream>
+
+using namespace std;
 
 class PlayerRange
 {
@@ -30,8 +33,24 @@ public:
 		}
 		printf("Total = %lf\n", total);
 	}
-	void create100()
+	string toString()
 	{
+		stringstream os;
+
+		std::set<pair<Hand, double> >::iterator it;
+		double total = 0;
+		for (it = range.begin(); it != range.end(); ++it)
+		{
+			os << it->first.getCard1().getRank() << it->first.getCard1().getSuit() << it->first.getCard2().getRank() << it->first.getCard2().getSuit() << " " <<  it->second << endl;
+			total += it->second;
+		}
+		os << total << endl;
+
+		return os.str();
+	}
+	PlayerRange create100()
+	{
+		PlayerRange res;
 		valid = true;
 		char map[4];
 		map[0] = 's';
@@ -63,7 +82,7 @@ public:
 						hand.getCard1().setSuit(map[i1]);
 						hand.getCard2().setSuit(map[i2]);
 
-						range.insert(make_pair(hand, 1.0/1326));
+						res.range.insert(make_pair(hand, 1.0/1326));
 						
 					}
 
@@ -77,13 +96,15 @@ public:
 						hand.getCard1().setSuit(map[i1]);
 						hand.getCard2().setSuit(map[i2]);
 
-						range.insert(make_pair(hand, 1.0/1326));
+						res.range.insert(make_pair(hand, 1.0/1326));
 					}
 				}
 			}
 		}
 
-		normalize();
+		res = res.normalize();
+
+		return res;
 	}
 	double totalPercentage()
 	{

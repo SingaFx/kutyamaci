@@ -727,7 +727,7 @@ double process_query(const char* pquery)
 	Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER); 
 	logger.logExp(string("[Processing query] : ").append(pquery).c_str(), DLL_DECISION_LOGGER);
 
-	//process_state(NULL);
+	while (process_state(NULL) == -1);
 
 	if (strcmp(pquery,"dll$swag") && strcmp(pquery,"dll$srai") && strcmp(pquery,"dll$call") && strcmp(pquery,"dll$prefold"))
 		return 0;
@@ -916,7 +916,7 @@ double process_state(holdem_state* pstate)
     {
         delete cgi;
         logger.logExp("[SKIPPING SCRAPPING CYCLE] : hero hole cards are not valid!", DLL_INTERFACE_LOGGER);
-        return 0;
+        return -1;
     }
 
 	vector<double> currentBets(6);
@@ -926,7 +926,7 @@ double process_state(holdem_state* pstate)
 	{
 		delete cgi;
         logger.logExp("[SKIPPING SCRAPPING CYCLE] : Not valid commmon pot!", DLL_INTERFACE_LOGGER);
-		return 0;
+		return -1;
 	}
 
 	CurrentGameInfo* old_cgi = gamestateManager.getCurrentGameInfo();

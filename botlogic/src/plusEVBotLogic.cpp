@@ -32,11 +32,16 @@ PlayerRange PlusEVBotLogic::calculateRange(int id, CurrentGameInfo& gameInfo, Pl
 		
 		res = preflop.getRange(player.getVPIP(), player.getPFR(), player.getStacksize() * bblind, player.getPoz(), player.getLine(), player.getBetsize() * bblind, gameInfo.getBblind(), 0, patternsNeeded);
 
+		
 		ostringstream os;
 		os << "Preflop range query; Input : VPIP : " << player.getVPIP() << " PFR : " << player.getPFR() << " StackSize : " << player.getStacksize() << " poz: " << player.getPoz() << " line : " << player.getLine() << " betsize : " <<
 			player.getBetsize() * bblind << " bblind : " << gameInfo.getBblind() << endl;
 
+		/*
 		os << "Old range : " << oldPlayerRange.totalPercentage() << "; New range : " << res.totalPercentage();
+		os << endl << endl << "------------------------------- OLD RANGE ---------------------------------" << oldPlayerRange.toString() << "--------------------------------------------------------------------" << endl << endl;
+		os << endl << endl << "------------------------------- NEW RANGE ---------------------------------" << res.toString() << "--------------------------------------------------------------------" << endl << endl;
+		*/
 
 		logger.logExp(os.str(), BOT_LOGIC);
 	}
@@ -54,7 +59,9 @@ PlayerRange PlusEVBotLogic::calculateRange(int id, CurrentGameInfo& gameInfo, Pl
 		os << "Flop range query; Input : VPIP : " << player.getVPIP() << " PFR : " << player.getPFR() << "AF : " << player.getAF() << " StackSize : " << player.getStacksize() << " line : " << player.getLine() << " betsize : " <<
 			player.getBetsize() << " bblind : " << gameInfo.getBblind() << " Potcommon : " << gameInfo.getPotcommon() << endl;
 
-		os << "Old range : " << oldPlayerRange.totalPercentage() << "; New range : " << actual.totalPercentage() << "; Merged range : " << res.totalPercentage();
+		os << "Old range : " << oldPlayerRange.totalPercentage() << "; New range : " << res.totalPercentage();
+		os << endl << endl << "------------------------------- OLD RANGE ---------------------------------" << endl << oldPlayerRange.toString() << "--------------------------------------------------------------------" << endl << endl;
+		os << endl << endl << "------------------------------- NEW RANGE ---------------------------------" << endl << res.toString() << "--------------------------------------------------------------------" << endl << endl;
 
 		logger.logExp(os.str(), BOT_LOGIC);
 	}
@@ -109,6 +116,8 @@ PlayerRange PlusEVBotLogic::calculateRange(int id, CurrentGameInfo& gameInfo, Pl
 
 Action PlusEVBotLogic::makeDecision(CurrentGameInfo& gameInfo, vector<PlayerRange>& ranges)
 {
+	return Action('n', 0);
+
 	Logger& logger = logger.getLogger(BOT_LOGIC);
 	logger.logExp("game street: ", gameInfo.getStreet(), LOGGER_TYPE::BOT_LOGIC);
 	if (gameInfo.getStreet() == 0)
