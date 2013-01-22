@@ -60,6 +60,7 @@ public:
 	CurrentPlayerInfo& getPlayerByName(string name);
 	double getBiggestBet();
 	CurrentPlayerInfo& getPlayerbyPosition(int position);
+	CurrentPlayerInfo& getPlayerbyId(int id);
 
 	void setHandNumber(double);
 	double getHandNumber();

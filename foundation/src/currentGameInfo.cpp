@@ -130,6 +130,15 @@ CurrentPlayerInfo& CurrentGameInfo::getPlayerbyPosition(int position)
 	}
 }
 
+CurrentPlayerInfo& CurrentGameInfo::getPlayerbyId(int id)
+{
+	for (int i = 0; i < opponentsInfo.size(); ++i)
+	{
+		if (opponentsInfo[i].getId() == id)
+			return opponentsInfo[i];
+	}
+}
+
 void CurrentGameInfo::setHandNumber(double handNumber)
 {
 	this->handNumber = handNumber;

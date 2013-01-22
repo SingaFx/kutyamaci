@@ -1,6 +1,6 @@
 #include "testBotLogic.h"
 
-PlayerRange TestBotLogic::calculateRange(string name, CurrentGameInfo& game, PlayerRange& player)
+PlayerRange TestBotLogic::calculateRange(int id, CurrentGameInfo& game, PlayerRange& player)
 {
 	return player;
 }

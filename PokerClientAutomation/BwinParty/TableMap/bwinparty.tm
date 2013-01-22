@@ -2,7 +2,7 @@
 
 // OpenScrape 2.0.0
 
-// 2013-01-21 16:25:48
+// 2013-01-22 01:31:06
 // 32 bits per pixel
 
 //
@@ -62,7 +62,7 @@ r$i861button         172 176 204 185        0    0 N
 r$i861state          168 176 202 186   767676    1 C
 r$p0active             0   0   0   0   494949    0 C
 r$p0balance          261 225 314 231   ffffff    0 T1
-r$p0bet              270 173 310 181   ffffff    0 T2
+r$p0bet              269 173 310 181   ffffff    0 T2
 r$p0cardface0        275 183 285 212        0    0 H1
 r$p0cardface1        288 183 298 212        0    0 H1
 r$p0dealer           256 174 258 176        0    0 I
@@ -70,14 +70,14 @@ r$p0name             262 215 319 223   ffffff    0 T0
 r$p0seated           321 215 321 217   7d7d7d    1 C
 r$p1active             0   0   0   0   494949    0 C
 r$p1balance          158 225 211 231   ffffff    0 T1
-r$p1bet              154 174 196 181   ffffff    0 T2
+r$p1bet              153 174 196 181   ffffff    0 T2
 r$p1cardback         202 193 209 200        0    0 H3
 r$p1dealer           210 174 212 176        0    0 I
 r$p1name             147 215 228 223   ffffff    0 T0
 r$p1seated             0   0   0   0   494949    0 C
 r$p2active             0   0   0   0   494949    0 C
 r$p2balance            3 134  62 141   ffffff    0 T1
-r$p2bet               69 128 114 136   ffffff    0 T2
+r$p2bet               76 128 114 136   ffffff    0 T2
 r$p2cardback          54 102  61 109        0    0 H3
 r$p2dealer            75 100  77 102        0    0 I
 r$p2name               0 124  71 132   ffffff    0 T0
@@ -172,7 +172,6 @@ t0$o e 11 11 11 e
 t0$d e 11 11 7f
 t0$c e 11 11 a
 t0$e e 15 15 c
-t1$$ 11 29 7f 25 22
 t1$6 1e 29 49 49 6
 t1$2 21 43 45 49 31
 t1$1 21 7f 1
@@ -184,13 +183,11 @@ t1$0 3e 41 41 41 3e
 t1$7 40 40 47 58 60
 t1$5 72 51 51 51 4e
 t1$4 c 14 24 7f 4
-t2$$ 10 12 7f 2c 4
 t2$1 11 1f 3f 1
 t2$1 11 3f 3f 1
 t2$2 1 21 21 19 1
 t2$8 12 1a 21 1e 10
 t2$9 1c 3d 25 3f 1e
-t2$$ 1d 1f 15 17
 t2$0 1e 3f 21 3f 1e
 t2$6 1e 3f 29 2f e
 t2$8 1e 3f 2d 3f 36
@@ -206,7 +203,6 @@ t2$. 3
 t2$2 31 23 25 3d 19
 t2$. 3 3
 t2$3 33 29 29 3f 36
-t2$$ 36 3a 7f 2e 2c
 t2$5 38 39 29 26 24
 t2$5 3b 39 29 2f 26
 t2$4 6 a 12 3f 3f 2

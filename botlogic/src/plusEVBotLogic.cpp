@@ -15,7 +15,7 @@ PlusEVBotLogic::~PlusEVBotLogic()
 
 }
 
-PlayerRange PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameInfo, PlayerRange& oldPlayerRange)
+PlayerRange PlusEVBotLogic::calculateRange(int id, CurrentGameInfo& gameInfo, PlayerRange& oldPlayerRange)
 {
 	//validation
 
@@ -28,7 +28,7 @@ PlayerRange PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameInf
 
 	if (gameInfo.getStreet() == 0)
 	{
-		CurrentPlayerInfo player = gameInfo.getPlayerByName(name);
+		CurrentPlayerInfo player = gameInfo.getPlayerbyId(id);
 		
 		res = preflop.getRange(player.getVPIP(), player.getPFR(), player.getStacksize() * bblind, player.getPoz(), player.getLine(), player.getBetsize() * bblind, gameInfo.getBblind(), 0, patternsNeeded);
 
@@ -43,7 +43,7 @@ PlayerRange PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameInf
 
 	if (gameInfo.getStreet() == 1)
 	{
-		CurrentPlayerInfo player = gameInfo.getPlayerByName(name);
+		CurrentPlayerInfo player = gameInfo.getPlayerbyId(id);
 		
 		PlayerRange actual = flop.getRange(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * bblind, player.getLine(), player.getBetsize() * bblind, gameInfo.getBblind(), 
 			gameInfo.getPotcommon() * bblind, gameInfo.getBoard(), gameInfo.getHand(), patternsNeeded);
@@ -61,7 +61,7 @@ PlayerRange PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameInf
 
 	if (gameInfo.getStreet() == 2)
 	{
-		CurrentPlayerInfo player = gameInfo.getPlayerByName(name);
+		CurrentPlayerInfo player = gameInfo.getPlayerbyId(id);
 		
 		PlayerRange actual = turn.getRange(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * bblind, player.getLine(), player.getBetsize() * bblind, gameInfo.getBblind(), 
 											gameInfo.getPotcommon() * bblind, gameInfo.getBoard(), gameInfo.getHand(), patternsNeeded);
@@ -79,7 +79,7 @@ PlayerRange PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameInf
 
 	if (gameInfo.getStreet() == 3)
 	{
-		CurrentPlayerInfo player = gameInfo.getPlayerByName(name);
+		CurrentPlayerInfo player = gameInfo.getPlayerbyId(id);
 		
 		PlayerRange actual = river.getRange(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize(), player.getLine(), player.getBetsize(), gameInfo.getBblind(), 
 											gameInfo.getPotcommon(), gameInfo.getBoard(), gameInfo.getHand(), patternsNeeded);
