@@ -639,7 +639,7 @@ void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
     }
 }
 
-void detectChecksAndUpdateRanges()
+void detectChecksAndUpdateRanges(int relativTo)
 {
     Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER); 
     logger.logExp("[Processing in detectChecksAndUpdateRanges]", DLL_INTERFACE_LOGGER);
@@ -670,7 +670,7 @@ void detectChecksAndUpdateRanges()
                 continue;
             }
 
-            if (isEqual(currentBets[idx], 0.0) && (relativePositions[idx] < relativePositions[0] ) )
+            if (isEqual(currentBets[idx], 0.0) && (relativePositions[idx] < relativePositions[relativTo] ) )
             {
                 CurrentPlayerInfo& currentPlayerInfo = gamestateManager.getCurrentPlayerInfo(idx);
 				
@@ -752,7 +752,7 @@ double process_query(const char* pquery)
 
 	double playersplayingbits = gws("playersplayingbits");
 
-    detectChecksAndUpdateRanges();
+    detectChecksAndUpdateRanges(0); // here we can just detect whom are  already made a check
     //
 	vector<PlayerRange> allRanges = playerRangeManager.getPlayerRanges();
     vector<PlayerRange> ranges;
@@ -949,7 +949,7 @@ double process_state(holdem_state* pstate)
     {
         detectMissedCallsAndUpdatePlayerRanges(old_cgi);
 		detectMissedChecksAndUpdatePlayerRanges(old_cgi);
-        gamestateManager.resetBettingRound();        
+        gamestateManager.resetBettingRound();
     }
 
 	/*
@@ -1022,6 +1022,11 @@ double process_state(holdem_state* pstate)
                     
 					if (idx > 0)
 					{
+                        if (cgi->getStreet() > 0)
+                        {
+                            detectChecksAndUpdateRanges(idx);
+                        }
+
 						PlayerRange& updatedRange = botLogic->calculateRange(idx, *cgi, playerRange);
 						updatedRange.setId(idx);
 
@@ -1066,6 +1071,11 @@ double process_state(holdem_state* pstate)
 
 					if (idx > 0)
 					{
+                        if (cgi->getStreet() > 0)
+                        {
+                            detectChecksAndUpdateRanges(idx);
+                        }
+
 						PlayerRange pr = playerRangeManager.getPlayerRange(idx);
 						pr.setId(idx);
 						PlayerRange& updatedRange = botLogic->calculateRange(idx, *cgi, pr);
