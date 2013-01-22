@@ -509,29 +509,60 @@ void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
     PlayerRangeManager& playerRangeManager = PlayerRangeManager::getPlayerRangeManager();
 
     double maxRaise = gamestateManager.getMaxRaise();
+	double bblind = gamestateManager.getCurrentGameInfo()->getBblind();
+
+	vector<int> relativePositions;
+    calculateRelativPositions(relativePositions, gamestateManager.getDealerPosition());
 
     double playersplayingbits = gws("playersplayingbits");
     for (int idx = 1; idx < 6; ++idx)
     {        
         if (isBitSet((int)playersplayingbits, idx))
         {
-			if (!gamestateManager.isCurrentPlayerInfoSet(idx)) continue;
+			// If this player's info is not set, we should set it here
+			if (!gamestateManager.isCurrentPlayerInfoSet(idx))
+			{
+				CurrentPlayerInfo currentPlayerInfo;
+                        
+				currentPlayerInfo.setStacksize(gamestateManager.getInitialBalanceByPos(idx) / bblind);
+				currentPlayerInfo.setActualStacksize(getBalanceByPos(idx) / bblind);
+				currentPlayerInfo.setLine((isEqual(maxRaise,1.0) && relativePositions[idx] == 2) ? 2 : 0);
+				currentPlayerInfo.setBetsize((isEqual(maxRaise,1.0) && relativePositions[idx] == 2) ? 0 : maxRaise);
+				currentPlayerInfo.setName(gamestateManager.getPlayerNameByPos(idx));
+				currentPlayerInfo.setPoz(relativePositions[idx]);
+				currentPlayerInfo.setId(idx);
 
-            CurrentPlayerInfo& currentPlayerInfo = gamestateManager.getCurrentPlayerInfo(idx);
+				gamestateManager.setCurrentPlayerInfo(idx, currentPlayerInfo);
 
-            if (!isEqual(maxRaise, currentPlayerInfo.getBetsize()))
-            {
-                currentPlayerInfo.setLine(0);
-				currentPlayerInfo.setBetsize(maxRaise);
-
-				old_cgi->addCurrentPlayerInfo(gamestateManager.getCurrentPlayerInfo(idx));
+				old_cgi->addCurrentPlayerInfo(currentPlayerInfo);
 					
-                string playerName = currentPlayerInfo.getName();
-                PlayerRange& updatedRange = botLogic->calculateRange(idx, *old_cgi, playerRangeManager.getPlayerRange(idx));
+                // let's update
+				PlayerRange pr = playerRangeManager.getPlayerRange(idx);
+				pr.setId(idx);
+				PlayerRange& updatedRange = botLogic->calculateRange(idx, *old_cgi, pr);
+				updatedRange.setId(idx);
 
 				gamestateManager.setCache(false);
-                playerRangeManager.setPlayerRange(idx, updatedRange);
-            }
+				playerRangeManager.setPlayerRange(idx, updatedRange);
+			}
+			else
+			{
+				CurrentPlayerInfo& currentPlayerInfo = gamestateManager.getCurrentPlayerInfo(idx);
+
+				if (!isEqual(maxRaise, currentPlayerInfo.getBetsize()))
+				{
+					currentPlayerInfo.setLine(0);
+					currentPlayerInfo.setBetsize(maxRaise);
+
+					old_cgi->addCurrentPlayerInfo(gamestateManager.getCurrentPlayerInfo(idx));
+					
+					PlayerRange& updatedRange = botLogic->calculateRange(idx, *old_cgi, playerRangeManager.getPlayerRange(idx));
+					updatedRange.setId(idx);
+
+					gamestateManager.setCache(false);
+					playerRangeManager.setPlayerRange(idx, updatedRange);
+				}
+			}
         }
     }
 }
@@ -594,14 +625,12 @@ void detectChecksAndUpdateRanges()
 
 double process_query(const char* pquery)
 {
-    return -1;
 	Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER); 
 	logger.logExp(string("[Processing query] : ").append(pquery).c_str(), DLL_DECISION_LOGGER);
 
 	if (strcmp(pquery,"dll$swag") && strcmp(pquery,"dll$srai") && strcmp(pquery,"dll$call") && strcmp(pquery,"dll$prefold"))
 		return 0;          
     
-
 	if(pquery == NULL)
     {
 		return 0;
@@ -638,6 +667,7 @@ double process_query(const char* pquery)
 	if (gamestateManager.isCacheAvalaible())
 	{
 		action = gamestateManager.getAction();
+		logger.logExp("Action is cached: " + action.toString(), DLL_DECISION_LOGGER);
 	}
 	else
 	{

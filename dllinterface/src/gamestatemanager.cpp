@@ -13,6 +13,7 @@ GameStateManager::GameStateManager()
     , maxRaiseSize(0.0)
 	, currentGameInfo(0)
 	, handNumber(-1)
+	, cacheAvalaible(false)
 {
 }
 
@@ -93,7 +94,8 @@ void GameStateManager::resetCurrentBets()
     for (int idx = 0; idx < 6; ++idx)
     {
         CurrentPlayerInfo& cgi = getCurrentPlayerInfo(idx);
-        cgi.setBetsize(0.0);          
+        cgi.setBetsize(0.0);
+		cgi.setLine(0);
     }
 }
 
