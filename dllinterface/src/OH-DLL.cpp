@@ -456,7 +456,7 @@ void resetHand(holdem_state* pstate, Hand hand)
     }
 }
 
-void calculateRelativPositions(vector<int>& relativPositions, int dealerPosition)
+void calculateRelativPositions(vector<int>& relativPositions, int dealerPosition, bool usePostFlopRelatives = false)
 {    
     int absolutePositionsMap[6];
         
@@ -468,12 +468,24 @@ void calculateRelativPositions(vector<int>& relativPositions, int dealerPosition
     }
 
     int relposMap[6];
-    relposMap[0] = 0;
-    relposMap[1] = 1;
-    relposMap[2] = 2;
-    relposMap[3] = -3;
-    relposMap[4] = -2;
-    relposMap[5] = -1;
+    if (!usePostFlopRelatives)
+    {
+        relposMap[0] = 0;
+        relposMap[1] = 1;
+        relposMap[2] = 2;
+        relposMap[3] = -3;
+        relposMap[4] = -2;
+        relposMap[5] = -1;
+    }
+    else
+    {
+        relposMap[0] = 0; // bu
+        relposMap[1] = -5; // sb
+        relposMap[2] = -4; // bb
+        relposMap[3] = -3; // utg
+        relposMap[4] = -2; // mp
+        relposMap[5] = -1; // guess what : co
+    }
 
     relativPositions.clear();
     for (int idx = 0; idx < 6; ++idx)
@@ -525,8 +537,65 @@ void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
     }
 }
 
+void detectChecksAndUpdateRanges()
+{
+    Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER); 
+    logger.logExp("[Processing in detectChecksAndUpdateRanges]", DLL_INTERFACE_LOGGER);
+
+    GameStateManager& gamestateManager = GameStateManager::getGameStateManager();
+
+    BotManager& botManager = BotManager::getBotManager();
+    AbstractBotLogic* botLogic = botManager.getPluggableBot();
+
+    PlayerRangeManager& playerRangeManager = PlayerRangeManager::getPlayerRangeManager();
+
+    vector<int> relativePositions;
+    calculateRelativPositions(relativePositions, gamestateManager.getDealerPosition(), true);
+
+    vector<double> currentBets(6);
+    getCurrentBets(currentBets);
+
+    double playersplayingbits = gws("playersplayingbits");
+    for (int idx = 1; idx < 6; ++idx)
+    {        
+        if (isBitSet((int)playersplayingbits, idx))
+        {
+			if (!gamestateManager.isCurrentPlayerInfoSet(idx)) 
+            {
+                logger.logExp("--> ERROR : CurrentPlayerInfo is not set!", DLL_INTERFACE_LOGGER);
+                continue;
+            }
+
+            if (isEqual(currentBets[idx], 0.0) && (relativePositions[idx] < relativePositions[0] ) )
+            {
+                CurrentPlayerInfo& currentPlayerInfo = gamestateManager.getCurrentPlayerInfo(idx);
+            
+                currentPlayerInfo.setLine(2);
+			    currentPlayerInfo.setBetsize(0);
+
+                CurrentGameInfo* cgi = gamestateManager.getCurrentGameInfo();
+                if (!cgi)
+                {
+			        cgi->addCurrentPlayerInfo(currentPlayerInfo);
+                }
+                else
+                {
+                    logger.logExp("--> ERROR : CurrentGameInfo is null!", DLL_INTERFACE_LOGGER);
+                }
+					
+                string playerName = currentPlayerInfo.getName();
+                PlayerRange& updatedRange = botLogic->calculateRange(playerName, *cgi, playerRangeManager.getPlayerRange(idx));
+
+			    gamestateManager.setCache(false);
+                playerRangeManager.setPlayerRange(idx, updatedRange);
+            }
+        }
+    }
+}
+
 double process_query(const char* pquery)
 {
+    return -1;
 	Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER); 
 	logger.logExp(string("[Processing query] : ").append(pquery).c_str(), DLL_DECISION_LOGGER);
 
@@ -551,6 +620,8 @@ double process_query(const char* pquery)
 		return 0;
 	}
 
+    detectChecksAndUpdateRanges();
+    //
     vector<PlayerRange> ranges = playerRangeManager.getPlayerRanges();
 	Action action;
 	if (gamestateManager.isCacheAvalaible())
@@ -590,6 +661,14 @@ double process_query(const char* pquery)
 
 		gamestateManager.setAction(action);
 		gamestateManager.setCache(true);
+
+        // taking into account hero's bet
+        double maxraise = gamestateManager.getMaxRaise();
+        if (action.getSize() > maxraise)
+        {
+            gamestateManager.setMaxRaise(maxraise);
+        }
+
 		return result;
     }
 
@@ -678,7 +757,7 @@ double process_state(holdem_state* pstate)
     if (cgi->getStreet() > gamestateManager.getBettingRound())
     {
         detectMissedCallsAndUpdatePlayerRanges(old_cgi);
-        gamestateManager.resetBettingRound();
+        gamestateManager.resetBettingRound();        
     }
 
 	if (old_cgi)
