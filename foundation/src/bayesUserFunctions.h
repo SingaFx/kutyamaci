@@ -285,6 +285,8 @@ public:
 				}										
 			}
 
+		result = result.normalize();
+
 		return result;
 	}
 
@@ -336,6 +338,8 @@ public:
 	void printRange(int v[])
 	{
 		//suited
+		double total = 0;
+
 		int count = 0;
 		for (int i = 2; i < 15; ++i)
 			for (int j = i + 1; j < 15; ++j)
@@ -344,7 +348,10 @@ public:
 				v[0] = count;
 				double res;
 				if ((res = getProbability(v)) > 0)
+				{
+					total += res;
 					cout << numberToCard(i) << numberToCard(j) << "s = " << res << endl;
+				}
 			}
 		
 
@@ -356,8 +363,12 @@ public:
 				v[0] = count;
 				double res;
 				if ((res = getProbability(v)) > 0)
+				{
+					total += res;
 					cout << numberToCard(i) << numberToCard(j) << "o = " << res << endl;
+				}
 			}
+		printf("Total preflop %lf = ", total);
 	}
 
 	//TODO:save range to gnuplot

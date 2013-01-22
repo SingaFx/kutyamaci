@@ -355,7 +355,7 @@ private:
 			}
 		}
 
-		//res = res.normalize();
+		res = res.normalize();
 		return res;
 	}
 
@@ -444,7 +444,7 @@ public:
 			}
 		}
 
-		//res = res.normalize();
+		res = res.normalize();
 		return res;
 	}
 

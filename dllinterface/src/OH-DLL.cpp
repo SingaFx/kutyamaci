@@ -94,11 +94,19 @@ void WriteToDebugWindow()
 	*/
 
 	//CURRENTBETS
-	
-	ostringstream os;
+	{
+		ostringstream os;
 
-	os << gamestate.getMaxRaise();
-	myOutput.push_back(os.str());
+		os << gamestate.getMaxRaise();
+		myOutput.push_back(os.str());
+	}
+
+	{
+		ostringstream os;
+
+		os << gamestate.getCurrentGameInfo()->getPotcommon();
+		myOutput.push_back(os.str());
+	}
 
 	stream.clear();
 
