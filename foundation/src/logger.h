@@ -35,6 +35,7 @@ public:
 	void logExp(const char* description, double expression, LOGGER_TYPE lt)
 	{
 		outfile_ = getStream(lt);
+
         (*outfile_) << description << expression << std::endl;
     }
 

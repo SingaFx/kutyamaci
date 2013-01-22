@@ -34,7 +34,7 @@ void PlayerRangeManager::resetRanges(GameStateManager& gameState)
 	pr.create100();
     for (int idx = 0; idx < 6; ++idx)
     {
-		pr.setName(gameState.getPlayerNameByPos(idx));
+		pr.setId(idx);
         playerRanges.push_back(pr);
     }
 
@@ -50,12 +50,17 @@ void PlayerRangeManager::setPlayerRange(int pos, PlayerRange& pr)
     playerRanges[pos] = pr;
 }
 
-void PlayerRangeManager::setPlayerName(int pos, string name)
-{
-	playerRanges[pos].setName(name);
-}
-
 vector<PlayerRange> PlayerRangeManager::getPlayerRanges()
 {
     return playerRanges;
+}
+
+vector<PlayerRange> PlayerRangeManager::getOpponentRanges()
+{
+	vector<PlayerRange> res;
+	for (int idx = 1; idx < 6; ++idx)
+	{
+		res.push_back(playerRanges[idx]);
+	}
+	return res;
 }

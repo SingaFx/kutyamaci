@@ -67,7 +67,7 @@ public:
     string getPlayerNameByPos(int idx);
 
     CurrentPlayerInfo& getCurrentPlayerInfo(int pos);
-    void setCurrentPlayerInfo(int pos, CurrentPlayerInfo& currentPlayerInfo);
+    void setCurrentPlayerInfo(int pos, CurrentPlayerInfo currentPlayerInfo);
     bool isCurrentPlayerInfoSet(int pos);
 
     void setInitialBalance(int pos, double balance);

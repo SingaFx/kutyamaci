@@ -8,7 +8,7 @@ PlayerRange& BayesDecision::getCallRaiseRange(double betsize, PlayerRange& range
 	PlayerRange res;
 	PlayerRange totalRange;
 
-	CurrentPlayerInfo player = game.getPlayerByName(range.getName());
+	CurrentPlayerInfo player = game.getPlayerbyId(range.getId());
 
 	if (game.getStreet() == 0)
 	{
@@ -178,7 +178,7 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 
 			for (int j = 0; j < ranges.size(); ++j)
 			{
-				CurrentPlayerInfo player = game.getPlayerByName(ranges[i].getName());
+				CurrentPlayerInfo player = game.getPlayerbyId(ranges[i].getId());
 				double akt = flop.getProbabilityFE(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * game.getBblind(), 
 					player.getLine(), player.getBetsize() * game.getBblind(), game.getBblind(), game.getPotcommon() * game.getBblind(), patternsNeeded);
 
@@ -239,7 +239,7 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 
 			for (int j = 0; j < ranges.size(); ++j)
 			{
-				CurrentPlayerInfo player = game.getPlayerByName(ranges[i].getName());
+				CurrentPlayerInfo player = game.getPlayerbyId(ranges[i].getId());
 				double akt = turn.getProbabilityFE(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * game.getBblind(), 
 					player.getLine(), player.getBetsize() * game.getBblind(), game.getBblind(), game.getPotcommon() * game.getBblind(), patternsNeeded);
 
@@ -300,7 +300,7 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 
 			for (int j = 0; j < ranges.size(); ++j)
 			{
-				CurrentPlayerInfo player = game.getPlayerByName(ranges[i].getName());
+				CurrentPlayerInfo player = game.getPlayerbyId(ranges[i].getId());
 				double akt = river.getProbabilityFE(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * game.getBblind(), 
 					player.getLine(), player.getBetsize() * game.getBblind(), game.getBblind(), game.getPotcommon() * game.getBblind(), patternsNeeded);
 

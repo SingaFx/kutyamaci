@@ -85,5 +85,5 @@ string Card::toString()
 
 bool Card::valid()
 {
-	return (suit == 's' || suit == 'h' || suit == 'd' || suit == 'c') && ((rank <= '2' && rank <= '9') || (rank == 'T' || rank == 'J' || rank == 'Q' || rank == 'K' || rank == 'A'));
+	return (suit == 's' || suit == 'h' || suit == 'd' || suit == 'c') && ((rank >= '2' && rank <= '9') || (rank == 'T' || rank == 'J' || rank == 'Q' || rank == 'K' || rank == 'A'));
 }

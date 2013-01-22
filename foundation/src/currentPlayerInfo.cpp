@@ -103,3 +103,12 @@ int CurrentPlayerInfo::getHandnr()
 {
 	return handnr;
 }
+
+void CurrentPlayerInfo::setId(int id)
+{
+	this->id = id;
+}
+int CurrentPlayerInfo::getId()
+{
+	return id;
+}

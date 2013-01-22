@@ -15,51 +15,84 @@ PlusEVBotLogic::~PlusEVBotLogic()
 
 }
 
-PlayerRange& PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameInfo, PlayerRange& oldPlayerRange)
+PlayerRange PlusEVBotLogic::calculateRange(int id, CurrentGameInfo& gameInfo, PlayerRange& oldPlayerRange)
 {
+	//validation
+
 	extendGameInfo(gameInfo);
+
+	Logger& logger = Logger::getLogger(BOT_LOGIC);
 
 	PlayerRange res;
 	double bblind = gameInfo.getBblind();
 
 	if (gameInfo.getStreet() == 0)
 	{
-		CurrentPlayerInfo player = gameInfo.getPlayerByName(name);
+		CurrentPlayerInfo player = gameInfo.getPlayerbyId(id);
 		
-		PlayerRange actual = preflop.getRange(player.getVPIP(), player.getPFR(), player.getStacksize() * bblind, player.getPoz(), player.getLine(), player.getBetsize() * bblind, gameInfo.getBblind(), 0, patternsNeeded);
+		res = preflop.getRange(player.getVPIP(), player.getPFR(), player.getStacksize() * bblind, player.getPoz(), player.getLine(), player.getBetsize() * bblind, gameInfo.getBblind(), 0, patternsNeeded);
 
-		vector<Card> cards;
-		res = RangeUtils::mergeRange(oldPlayerRange, actual, cards, gameInfo.getHand());
+		ostringstream os;
+		os << "Preflop range query; Input : VPIP : " << player.getVPIP() << " PFR : " << player.getPFR() << " StackSize : " << player.getStacksize() << " poz: " << player.getPoz() << " line : " << player.getLine() << " betsize : " <<
+			player.getBetsize() * bblind << " bblind : " << gameInfo.getBblind() << endl;
+
+		os << "Old range : " << oldPlayerRange.totalPercentage() << "; New range : " << res.totalPercentage();
+
+		logger.logExp(os.str(), BOT_LOGIC);
 	}
 
 	if (gameInfo.getStreet() == 1)
 	{
-		CurrentPlayerInfo player = gameInfo.getPlayerByName(name);
+		CurrentPlayerInfo player = gameInfo.getPlayerbyId(id);
 		
 		PlayerRange actual = flop.getRange(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * bblind, player.getLine(), player.getBetsize() * bblind, gameInfo.getBblind(), 
 			gameInfo.getPotcommon() * bblind, gameInfo.getBoard(), gameInfo.getHand(), patternsNeeded);
 
 		res = RangeUtils::mergeRange(oldPlayerRange, actual, gameInfo.getBoard(), gameInfo.getHand());
+
+		ostringstream os;
+		os << "Flop range query; Input : VPIP : " << player.getVPIP() << " PFR : " << player.getPFR() << "AF : " << player.getAF() << " StackSize : " << player.getStacksize() << " line : " << player.getLine() << " betsize : " <<
+			player.getBetsize() << " bblind : " << gameInfo.getBblind() << " Potcommon : " << gameInfo.getPotcommon() << endl;
+
+		os << "Old range : " << oldPlayerRange.totalPercentage() << "; New range : " << actual.totalPercentage() << "; Merged range : " << res.totalPercentage();
+
+		logger.logExp(os.str(), BOT_LOGIC);
 	}
 
 	if (gameInfo.getStreet() == 2)
 	{
-		CurrentPlayerInfo player = gameInfo.getPlayerByName(name);
+		CurrentPlayerInfo player = gameInfo.getPlayerbyId(id);
 		
 		PlayerRange actual = turn.getRange(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * bblind, player.getLine(), player.getBetsize() * bblind, gameInfo.getBblind(), 
 											gameInfo.getPotcommon() * bblind, gameInfo.getBoard(), gameInfo.getHand(), patternsNeeded);
 
 		res = RangeUtils::mergeRange(oldPlayerRange, actual, gameInfo.getBoard(), gameInfo.getHand());
+
+		ostringstream os;
+		os << "Turn range query; Input : VPIP : " << player.getVPIP() << " PFR : " << player.getPFR() << "AF : " << player.getAF() << " StackSize : " << player.getStacksize() << " line : " << player.getLine() << " betsize : " <<
+			player.getBetsize() << " bblind : " << gameInfo.getBblind() << " Potcommon : " << gameInfo.getPotcommon() << endl;
+
+		os << "Old range : " << oldPlayerRange.totalPercentage() << "; New range : " << actual.totalPercentage() << "; Merged range : " << res.totalPercentage();
+
+		logger.logExp(os.str(), BOT_LOGIC);
 	}
 
 	if (gameInfo.getStreet() == 3)
 	{
-		CurrentPlayerInfo player = gameInfo.getPlayerByName(name);
+		CurrentPlayerInfo player = gameInfo.getPlayerbyId(id);
 		
 		PlayerRange actual = river.getRange(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize(), player.getLine(), player.getBetsize(), gameInfo.getBblind(), 
 											gameInfo.getPotcommon(), gameInfo.getBoard(), gameInfo.getHand(), patternsNeeded);
 
 		res = RangeUtils::mergeRange(oldPlayerRange, actual, gameInfo.getBoard(), gameInfo.getHand());
+
+		ostringstream os;
+		os << "River range query; Input : VPIP : " << player.getVPIP() << " PFR : " << player.getPFR() << "AF : " << player.getAF() << " StackSize : " << player.getStacksize() << " line : " << player.getLine() << " betsize : " <<
+			player.getBetsize() << " bblind : " << gameInfo.getBblind() << " Potcommon : " << gameInfo.getPotcommon() << endl;
+
+		os << "Old range : " << oldPlayerRange.totalPercentage() << "; New range : " << actual.totalPercentage() << "; Merged range : " << res.totalPercentage();
+
+		logger.logExp(os.str(), BOT_LOGIC);
 	}
 
 	res.setPreflopNotPlaying(false);
@@ -76,6 +109,9 @@ PlayerRange& PlusEVBotLogic::calculateRange(string name, CurrentGameInfo& gameIn
 
 Action PlusEVBotLogic::makeDecision(CurrentGameInfo& gameInfo, vector<PlayerRange>& ranges)
 {
+	return Action('n', 0);
+
+
 	Action res;
 
 	extendGameInfo(gameInfo);

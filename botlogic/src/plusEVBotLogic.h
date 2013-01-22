@@ -23,6 +23,6 @@ public:
 	PlusEVBotLogic();
 	virtual ~PlusEVBotLogic();
 
-    virtual PlayerRange& calculateRange(string name, CurrentGameInfo&, PlayerRange&);
+    virtual PlayerRange calculateRange(int id, CurrentGameInfo&, PlayerRange&);
     virtual Action makeDecision(CurrentGameInfo&, vector<PlayerRange>&);
 };

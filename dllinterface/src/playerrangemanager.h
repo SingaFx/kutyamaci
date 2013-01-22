@@ -23,7 +23,7 @@ public:
 
     PlayerRange getPlayerRange(int);
     void setPlayerRange(int pos, PlayerRange&);
-	void setPlayerName(int pos, string name);
 
     vector<PlayerRange> getPlayerRanges();
+	vector<PlayerRange> getOpponentRanges();
 };

@@ -8,7 +8,7 @@
 
 class PlayerRange
 {
-	string name;
+	int id;
 	bool valid;
 	bool preflopNotPlaying;
 public:
@@ -111,13 +111,13 @@ public:
 		return res;
 	}
 
-	void setName(string& name)
+	void setId(int id)
 	{
-		this->name = name;
-	};
-	string& getName()
+		this->id = id;
+	}
+	int getId()
 	{
-		return name;
+		return id;
 	}
 	void setValid(bool valid)
 	{
@@ -355,7 +355,7 @@ private:
 			}
 		}
 
-		//res = res.normalize();
+		res = res.normalize();
 		return res;
 	}
 
@@ -444,7 +444,7 @@ public:
 			}
 		}
 
-		//res = res.normalize();
+		res = res.normalize();
 		return res;
 	}
 

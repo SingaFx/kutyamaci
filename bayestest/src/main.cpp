@@ -1,4 +1,4 @@
-#include "plusEVBotLogic.h"
+//#include "plusEVBotLogic.h"
 #include <iostream>
 #include <vector>
 #include "bayesUserFunctions.h"
@@ -161,8 +161,8 @@ int main()
     try
     {
 		EqCalculator calc;
-		PlusEVBotLogic botlogic;
-		BayesDecision decision;
+		//PlusEVBotLogic botlogic;
+		//BayesDecision decision;
 
 		preflop.read("preflopBayes");
 		flop.read("flopBayes");
@@ -178,11 +178,11 @@ int main()
 
 		int v[8];
 
-		nStackSize = 2; //150
-		nBetSize = 1;  //betsize 0 - limp, 1 - emeles, 2 - 3bet
+		nStackSize = normalizeStackSize(182.75 * 0.04, 0.04); //150
+		nBetSize = normalizeBetSize(1, 0.12, 0, 0.04);  //betsize 0 - limp, 1 - emeles, 2 - 3bet
 		nLine = 1;
-		nVPIP = 1;
-		nPFR = 1;
+		nVPIP = normalizeVPIP(20);
+		nPFR = normalizePFR(15);
 		poz = 0;
 
 		v[1] = nStackSize;
@@ -192,8 +192,9 @@ int main()
 		v[5] = nPFR;
 		v[6] = poz;
 
-		//preflop.printRange(v);
-		PlayerRange preflopRange = preflop.getRange(v, 100);
+		preflop.printRange(v);
+		PlayerRange preflopRange = preflop.getRange(20, 15, 182.75*0.04, -3, 1, 0.12, 0.04, 0, 10);
+		//PlayerRange preflopRange = preflop.getRange(v, 10);
 
 		printf("PREFLOP\n");
 		preflopRange.printRange();
@@ -238,11 +239,15 @@ int main()
 		printf("FLOP MERGED\n");
 		range.printRange();
 
-		double EQ = calc.calculate(ranges, cards, 25000);
-		printf("%.2lf\n", EQ);
+		//double EQ = calc.calculate(ranges, cards, 25000);
+		//printf("%.2lf\n", EQ);
+
+		
+		printf("total = %lf\n", range.totalPercentage());
 
 		printf("BOTLOGIC TESTS\n");
 
+		/*
 		CurrentPlayerInfo info;
 		CurrentGameInfo gameInfo;
 
@@ -252,6 +257,7 @@ int main()
 
 		gameInfo.setPotcommon(100);
 		range = decision.getCallRaiseRange(10, range, gameInfo, preflop, flop, turn, river);
+		*/
     }
     catch (std::exception& e)
     {

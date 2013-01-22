@@ -10,6 +10,7 @@ private:
 	double actualStacksize;
 	double betsize; //currentbet(amennyi elotte van most)
 	string name;
+	int id;
 	int poz; //-3..2
 	int line; //last move 0, 1, 2 (c, r, x)
 
@@ -52,4 +53,7 @@ public:
 
 	void setHandnr(int);
 	int getHandnr();
+
+	void setId(int);
+	int getId();
 };
