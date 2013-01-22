@@ -93,18 +93,25 @@ void WriteToDebugWindow()
 	myOutput.push_back(stream.str());
 	*/
 
-	//CURRENTBETS
+	//BETROUND
 	{
 		ostringstream os;
 
-		os << gamestate.getMaxRaise();
+		os << "BETROUND: " << gamestate.getBettingRound();
 		myOutput.push_back(os.str());
 	}
 
 	{
 		ostringstream os;
 
-		os << gamestate.getCurrentGameInfo()->getPotcommon();
+		os << "MaxRaise: " << gamestate.getMaxRaise();
+		myOutput.push_back(os.str());
+	}
+
+	{
+		ostringstream os;
+
+		os << "PotCommon: " << gamestate.getCurrentGameInfo()->getPotcommon();
 		myOutput.push_back(os.str());
 	}
 
@@ -133,8 +140,9 @@ void WriteToDebugWindow()
 			double betsize = gamestate.getCurrentPlayerInfo(idx).getBetsize();
 			double betsize2 = gamestate.getCurrentBetByPos(idx);
 			double bblind = cgi->getBblind();
+			double stacksize = gamestate.getCurrentPlayerInfo(idx).getStacksize();
 
-			os << name << " " << line << " " << betsize << " " << betsize2 << " " << bblind;
+			os << name << " " << line << " " << betsize << " " << betsize2 << " " << bblind << " " << stacksize;
 			myOutput.push_back(os.str());
 		}
 	}
@@ -142,6 +150,7 @@ void WriteToDebugWindow()
 	for (int idx = 0; idx < 6; ++idx)
 	{
 		PlayerRange range = PlayerRangeManager::getPlayerRangeManager().getPlayerRange(idx);
+
 		ostringstream os;
 		os << gamestate.getPlayerNameByPos(range.getId()) << " " << range.totalPercentage();
 		myOutput.push_back(os.str());
@@ -417,6 +426,9 @@ void getCurrentBets(vector<double>& currentBets, double bblind)
 
 void refreshPlayersName(holdem_state* pstate)
 {
+
+	if (pstate == NULL) return ;
+
     Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);
 
     GameStateManager& gameStateManager = GameStateManager::getGameStateManager();
@@ -494,8 +506,64 @@ void calculateRelativPositions(vector<int>& relativPositions, int dealerPosition
     }
 }
 
+void detectMissedChecksAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
+{
+	if (old_cgi == NULL)
+	{
+		return ;
+	}
+
+	GameStateManager& gamestateManager = GameStateManager::getGameStateManager();
+	Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);
+
+    BotManager& botManager = BotManager::getBotManager();
+    AbstractBotLogic* botLogic = botManager.getPluggableBot();
+
+    PlayerRangeManager& playerRangeManager = PlayerRangeManager::getPlayerRangeManager();
+
+    double maxRaise = gamestateManager.getMaxRaise();
+	double bblind = gamestateManager.getCurrentGameInfo()->getBblind();
+
+	vector<int> relativePositions;
+    calculateRelativPositions(relativePositions, gamestateManager.getDealerPosition(), true);
+
+	if (isEqual(maxRaise,0))
+	{
+		double playersplayingbits = gws("playersplayingbits");
+
+		for (int idx = 1; idx < 6; ++idx)
+		{
+			if (isBitSet((int)playersplayingbits, idx) && (relativePositions[0] < relativePositions[idx]))
+			{
+				if (gamestateManager.isCurrentPlayerInfoSet(idx))
+				{	
+					CurrentPlayerInfo& currentPlayerInfo = gamestateManager.getCurrentPlayerInfo(idx);
+					logger.logExp("DETECTED : Check " + currentPlayerInfo.getName(), DLL_INTERFACE_LOGGER);
+					
+					currentPlayerInfo.setLine(2);
+					currentPlayerInfo.setBetsize(0);
+
+					old_cgi->addCurrentPlayerInfo(gamestateManager.getCurrentPlayerInfo(idx));
+					
+					PlayerRange& updatedRange = botLogic->calculateRange(idx, *old_cgi, playerRangeManager.getPlayerRange(idx));
+					updatedRange.setId(idx);
+
+					gamestateManager.setCache(false);
+					playerRangeManager.setPlayerRange(idx, updatedRange);
+				}
+				else
+				{
+					logger.logExp("ERROR : Existing active player with no info set.",DLL_INTERFACE_LOGGER);
+				}
+			}
+		}
+	}
+}
+
 void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
 {
+	Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);
+
 	if (old_cgi == NULL)
 	{
 		return ;
@@ -522,6 +590,7 @@ void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
 			// If this player's info is not set, we should set it here
 			if (!gamestateManager.isCurrentPlayerInfoSet(idx))
 			{
+				
 				CurrentPlayerInfo currentPlayerInfo;
                         
 				currentPlayerInfo.setStacksize(gamestateManager.getInitialBalanceByPos(idx) / bblind);
@@ -531,6 +600,8 @@ void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
 				currentPlayerInfo.setName(gamestateManager.getPlayerNameByPos(idx));
 				currentPlayerInfo.setPoz(relativePositions[idx]);
 				currentPlayerInfo.setId(idx);
+
+				logger.logExp("DETECTED : Call, currentplayer info not set " + currentPlayerInfo.getName(), DLL_INTERFACE_LOGGER);
 
 				gamestateManager.setCurrentPlayerInfo(idx, currentPlayerInfo);
 
@@ -551,6 +622,7 @@ void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
 
 				if (!isEqual(maxRaise, currentPlayerInfo.getBetsize()))
 				{
+					logger.logExp("DETECTED : Call, currentplayer info set " + currentPlayerInfo.getName(), DLL_INTERFACE_LOGGER);
 					currentPlayerInfo.setLine(0);
 					currentPlayerInfo.setBetsize(maxRaise);
 
@@ -585,6 +657,8 @@ void detectChecksAndUpdateRanges()
     vector<double> currentBets(6);
     getCurrentBets(currentBets, BBLIND);
 
+	logger.logExp("DETECTING : Check ", DLL_INTERFACE_LOGGER);
+
     double playersplayingbits = gws("playersplayingbits");
     for (int idx = 1; idx < 6; ++idx)
     {        
@@ -599,12 +673,13 @@ void detectChecksAndUpdateRanges()
             if (isEqual(currentBets[idx], 0.0) && (relativePositions[idx] < relativePositions[0] ) )
             {
                 CurrentPlayerInfo& currentPlayerInfo = gamestateManager.getCurrentPlayerInfo(idx);
-            
+				
+				logger.logExp("DETECTED : Check Boldifele " + currentPlayerInfo.getName(), DLL_INTERFACE_LOGGER);
                 currentPlayerInfo.setLine(2);
 			    currentPlayerInfo.setBetsize(0);
 
                 CurrentGameInfo* cgi = gamestateManager.getCurrentGameInfo();
-                if (!cgi)
+                if (cgi != NULL)
                 {
 			        cgi->addCurrentPlayerInfo(currentPlayerInfo);
                 }
@@ -613,8 +688,8 @@ void detectChecksAndUpdateRanges()
                     logger.logExp("--> ERROR : CurrentGameInfo is null!", DLL_INTERFACE_LOGGER);
                 }
 					
-                string playerName = currentPlayerInfo.getName();
                 PlayerRange& updatedRange = botLogic->calculateRange(idx, *cgi, playerRangeManager.getPlayerRange(idx));
+				updatedRange.setId(idx);
 
 			    gamestateManager.setCache(false);
                 playerRangeManager.setPlayerRange(idx, updatedRange);
@@ -623,14 +698,41 @@ void detectChecksAndUpdateRanges()
     }
 }
 
+void refreshStackSizes(vector<double>& currentBets)
+{
+	GameStateManager& gameStateManager = GameStateManager::getGameStateManager();
+
+    for (int idx = 0; idx <= 5; ++idx)
+    {   
+		double stacksize = getBalanceByPos(idx) + currentBets[idx];
+		double oldStacksize = gameStateManager.getInitialBalanceByPos(idx);
+
+		if (oldStacksize < stacksize)
+		{
+			gameStateManager.setInitialBalance(idx, stacksize);
+			if (gameStateManager.isCurrentPlayerInfoSet(idx))
+			{
+				CurrentPlayerInfo& player = gameStateManager.getCurrentPlayerInfo(idx);
+				player.setStacksize(stacksize / gameStateManager.getCurrentGameInfo()->getBblind());
+			}
+		}
+    }
+}
+
+
+double process_state(holdem_state* pstate);
+
 double process_query(const char* pquery)
 {
 	Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER); 
 	logger.logExp(string("[Processing query] : ").append(pquery).c_str(), DLL_DECISION_LOGGER);
 
+	//process_state(NULL);
+
 	if (strcmp(pquery,"dll$swag") && strcmp(pquery,"dll$srai") && strcmp(pquery,"dll$call") && strcmp(pquery,"dll$prefold"))
-		return 0;          
+		return 0;
     
+
 	if(pquery == NULL)
     {
 		return 0;
@@ -683,6 +785,9 @@ double process_query(const char* pquery)
 
 		action = botLogic->makeDecision(*cgi, ranges);
 	} 
+
+
+	WriteToDebugWindow();
 
 	logger.logExp("Got action: " + action.toString(), DLL_DECISION_LOGGER);
 
@@ -762,10 +867,14 @@ bool validState(CurrentGameInfo* cgi, vector<double>& currentBets)
 
 	GameStateManager& gamestateManager = GameStateManager::getGameStateManager();
 	
-	if (isEqual(cgi->getStreet(),gamestateManager.getBettingRound()) && !gamestateManager.IsHandReset(cgi->getHandNumber()))
+	if (cgi->getPotcommon() < 0) return false;
+
+	if (isEqual(cgi->getStreet(), gamestateManager.getBettingRound()) && !gamestateManager.IsHandReset(cgi->getHandNumber()))
 	{
 		for (int i = 0; i < currentBets.size(); ++i)
 		{
+			if (currentBets[i] < 0) return false;
+
 			if (gamestateManager.isCurrentPlayerInfoSet(i))
 				if (currentBets[i] < gamestateManager.getCurrentBetByPos(i)-0.01) return false;
 		}
@@ -783,6 +892,8 @@ bool validState(CurrentGameInfo* cgi, vector<double>& currentBets)
 
 	return true;
 }
+
+
 
 double process_state(holdem_state* pstate)
 {
@@ -837,8 +948,16 @@ double process_state(holdem_state* pstate)
     if (cgi->getStreet() > gamestateManager.getBettingRound())
     {
         detectMissedCallsAndUpdatePlayerRanges(old_cgi);
+		detectMissedChecksAndUpdatePlayerRanges(old_cgi);
         gamestateManager.resetBettingRound();        
     }
+
+	/*
+	if (cgi->getStreet() == 0)
+	{
+		refreshStackSizes(currentBets);
+	}
+	*/
 
 	if (old_cgi)
 	{
@@ -947,7 +1066,6 @@ double process_state(holdem_state* pstate)
 
 					if (idx > 0)
 					{
-						string playerName = currentPlayerInfo.getName();
 						PlayerRange pr = playerRangeManager.getPlayerRange(idx);
 						pr.setId(idx);
 						PlayerRange& updatedRange = botLogic->calculateRange(idx, *cgi, pr);

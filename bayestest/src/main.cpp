@@ -200,13 +200,13 @@ int main()
 		preflopRange.printRange();
 
 		//FLOP
-		nPotSize = 1;
-		nStackSize = 2;
-		nBetSize = 1;
-		nLine = 1;
-		nVPIP = 1;
-		nPFR = 1;
-		nAF = 1;
+		nPotSize = normalizePotSize(2, 0.08, 0.04);
+		nStackSize = normalizeStackSize(185 * 0.04, 0.04);
+		nBetSize = normalizeBetSize(2, 0.08, 0.08, 0.04);
+		nLine = 0;
+		nVPIP = normalizeVPIP(20);
+		nPFR = normalizePFR(15);
+		nAF = normalizeAF(3.5);
 
 		v[1] = nPotSize;
 		v[2] = nStackSize;
@@ -220,13 +220,19 @@ int main()
 		flop.printRange(v, 100);
 
 		vector<Card> cards;
-		cards.push_back(Card('A','c'));
-		cards.push_back(Card('T','d'));
-		cards.push_back(Card('3','s'));
-		Hand own(Card('A','s'), Card('Q','d'));
+		cards.push_back(Card('5','h'));
+		cards.push_back(Card('6','s'));
+		cards.push_back(Card('K','d'));
+		Hand own(Card('5','s'), Card('6','c'));
 		PlayerRange range = flop.getRange(v, cards, own, 50);
 		printf("FLOP\n");
 		range.printRange();
+
+		printf("CALL RAISE RANGE\n");
+
+		PlayerRange callRange = flop.getCallRaiseRange(20, 15, 3.5, 185 * 0.04, 0, 0.08, 0.04, 0.08, cards, own, 10);
+		callRange.printRange();
+
 
 		range = RangeUtils::mergeRange(preflopRange, range, cards, own);
 
@@ -237,6 +243,10 @@ int main()
 		ranges.push_back(range);
 
 		printf("FLOP MERGED\n");
+		range.printRange();
+
+		printf("ADDED range\n");
+		range = RangeUtils::addRange(range, myrange);
 		range.printRange();
 
 		//double EQ = calc.calculate(ranges, cards, 25000);

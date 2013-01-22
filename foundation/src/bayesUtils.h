@@ -313,42 +313,42 @@ static double getBetsize(int street, int betsize, double potcommon, double bblin
 	{
 		if (betsize == 0)
 		{
-			return bblind;
+			return 1 * bblind;
 		}
 		if (betsize == 1)
 		{
-			return 4 * bblind;
+			return 4 * bblind;;
 		}
 		if (betsize == 2)
 		{
-			return 7 * bblind;
+			return 7 * bblind;;
 		}
 		else if (betsize == 3)
 		{
-			return 13 * bblind;
+			return 13 * bblind;;
 		}
 		else if (betsize == 4)
 		{
-			return 24 * bblind;
+			return 24 * bblind;;
 		}
 		else if (betsize == 5)
 		{
-			return 35 * bblind;
+			return 35 * bblind;;
 		}
 		else if (betsize == 6)
 		{
-			return 50 * bblind;
+			return 50 * bblind;;
 		}
 		else if (betsize == 7)
 		{
-			return 110 * bblind;
+			return 110 * bblind;;
 		}
-		else if (betsize == 200 * bblind)
+		else if (betsize == 8)
 		{
-			return 200 * bblind;
+			return 200 * bblind;;
 		}
 
-		return 300 * bblind;
+		return 300 * bblind;;
 	}
 	else
 	{

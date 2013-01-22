@@ -330,7 +330,7 @@ public:
 		return getRange(v, x);
 	}
 
-	PlayerRange& getCallRaiseRange(double VPIP, double PFR, double stackSize, int poz, int line, double betsize, double bblind, double potcommon, int x)
+	PlayerRange getCallRaiseRange(double VPIP, double PFR, double stackSize, int poz, int line, double betsize, double bblind, double potcommon, int x)
 	{
 		PlayerRange res;
 
@@ -641,7 +641,7 @@ public:
 
 		return res;
 	}
-	PlayerRange& getCallRaiseRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x)
+	PlayerRange getCallRaiseRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x)
 	{
 		PlayerRange res;
 
@@ -664,7 +664,7 @@ public:
 
 		for (int i = nBetSize + 1; i < PLAYER_BET_SIZE_NUM; ++i)
 		{
-			v[2] = i;
+			v[3] = i;
 			PlayerRange raiseRange = getRange(v, cards, own, x);
 			raiseRangeTotal = RangeUtils::addRange(raiseRangeTotal, raiseRange);
 		}
@@ -920,7 +920,7 @@ public:
 
 		return res;
 	}
-	PlayerRange& getCallRaiseRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x)
+	PlayerRange getCallRaiseRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x)
 	{
 		PlayerRange res;
 
@@ -942,13 +942,12 @@ public:
 
 		for (int i = nBetSize + 1; i < PLAYER_BET_SIZE_NUM; ++i)
 		{
-			v[2] = i;
+			v[3] = i;
 			PlayerRange raiseRange = getRange(v, cards, own, x);
 			raiseRangeTotal = RangeUtils::addRange(raiseRangeTotal, raiseRange);
 		}
 
 		callingRange = RangeUtils::addRange(raiseRangeTotal, callingRange);
-
 		callingRange = callingRange.normalize();
 
 		return callingRange;
@@ -1147,7 +1146,7 @@ public:
 
 		return res;
 	}
-	PlayerRange& getCallRaiseRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x)
+	PlayerRange getCallRaiseRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x)
 	{
 		PlayerRange res;
 
@@ -1169,7 +1168,7 @@ public:
 
 		for (int i = nBetSize + 1; i < PLAYER_BET_SIZE_NUM; ++i)
 		{
-			v[2] = i;
+			v[3] = i;
 			PlayerRange raiseRange = getRange(v, cards, own, x);
 			raiseRangeTotal = RangeUtils::addRange(raiseRangeTotal, raiseRange);
 		}

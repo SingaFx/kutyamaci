@@ -482,6 +482,7 @@ public:
 			}
 		}
 
+		res = res.normalize();
 		return res;
 	}
 	//FE randomizalas a FOLD szerint

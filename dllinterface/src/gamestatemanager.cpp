@@ -94,8 +94,8 @@ void GameStateManager::resetCurrentBets()
     for (int idx = 0; idx < 6; ++idx)
     {
         CurrentPlayerInfo& cgi = getCurrentPlayerInfo(idx);
-        cgi.setBetsize(0.0);
-		cgi.setLine(0);
+        cgi.setBetsize(0);
+		cgi.setLine(5);
     }
 }
 

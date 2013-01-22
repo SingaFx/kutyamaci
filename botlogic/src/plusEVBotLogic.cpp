@@ -109,8 +109,13 @@ PlayerRange PlusEVBotLogic::calculateRange(int id, CurrentGameInfo& gameInfo, Pl
 
 Action PlusEVBotLogic::makeDecision(CurrentGameInfo& gameInfo, vector<PlayerRange>& ranges)
 {
+	Logger& logger = logger.getLogger(BOT_LOGIC);
+	logger.logExp("game street: ", gameInfo.getStreet(), LOGGER_TYPE::BOT_LOGIC);
 	if (gameInfo.getStreet() == 0)
+	{
+		logger.logExp("PREFLOP game street: ", gameInfo.getStreet(), LOGGER_TYPE::BOT_LOGIC);
 		return Action('n', 0);
+	}
 
 	Action res;
 
