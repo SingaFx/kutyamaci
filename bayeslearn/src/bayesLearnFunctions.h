@@ -248,7 +248,7 @@ private:
 		for (int i = 0; i < preflop_nums[k]; ++i)
 		{
 			v[k] = i;
-			back(f, b, k + 1);
+			backFE(f, b, k + 1);
 		}
 	}
 

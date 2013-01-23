@@ -118,6 +118,23 @@ public:
 
 		return getProbabilityFE(v, x);
 	}
+
+	double getProbabilityFE(double VPIP, double PFR, double stacksize, int poz, int line, double betsize, double bblind, double potcommon, int x)
+	{
+		int v[7];
+		v[1] = normalizeStackSize(stacksize, bblind);
+		v[2] = normalizeBetSize(1, betsize, potcommon, bblind);
+		v[3] = line;
+		v[4] = normalizeVPIP(VPIP);
+		v[5] = normalizePFR(PFR);
+		v[6] = poz + 3;
+
+		if (line == 5)
+			return getProbabilityFE2(v, x);
+
+		return getProbabilityFE(v, x);
+	}
+
 	int preflopHandType(Hand hand)
 	{
 		int rank1 = convertRankToNumbers(hand.getCard1());
@@ -487,7 +504,7 @@ private:
 		for (int i = 0; i < preflop_nums[k]; ++i)
 		{
 			v[k] = i;
-			back(f, b, k + 1);
+			backFE(f, b, k + 1);
 		}
 	}
 };

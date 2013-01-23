@@ -178,12 +178,12 @@ int main()
 
 		int v[8];
 
-		nStackSize = normalizeStackSize(182.75 * 0.04, 0.04); //150
+		nStackSize = normalizeStackSize(110.75*0.04, 0.04); //150
 		nBetSize = normalizeBetSize(1, 0.12, 0, 0.04);  //betsize 0 - limp, 1 - emeles, 2 - 3bet
 		nLine = 1;
 		nVPIP = normalizeVPIP(20);
 		nPFR = normalizePFR(15);
-		poz = 0;
+		poz = 3;
 
 		v[1] = nStackSize;
 		v[2] = nBetSize;
@@ -193,11 +193,29 @@ int main()
 		v[6] = poz;
 
 		preflop.printRange(v);
-		PlayerRange preflopRange = preflop.getRange(20, 15, 110.75*0.04, -3, 1, 0.56, 0.04, 0, 10);
-		//PlayerRange preflopRange = preflop.getRange(v, 10);
+		//PlayerRange preflopRange = preflop.getRange(15, 10, 110.75*0.04, 0, 1, 0.56, 0.04, 0, 0);
+		PlayerRange preflopRange = preflop.getRange(v, 10);
 
 		printf("PREFLOP\n");
 		preflopRange.printRange();
+
+		vector<Card> cards;
+		/*cards.push_back(Card('J','d'));
+		cards.push_back(Card('5','h'));
+		cards.push_back(Card('Q','d'));*/
+		Hand own(Card('A','d'), Card('Q','s'));
+
+		vector<PlayerRange> ranges;
+		PlayerRange myrange;
+		myrange.range.insert(make_pair(own, 1));
+		ranges.push_back(myrange);
+		ranges.push_back(preflopRange);
+
+		double EQ = calc.calculate(ranges, cards, 25000);
+		printf("\n\nAQ's equity against preflopRange --------------------------------------------------------------------------------- \n%.2lf\n\n\n", EQ);
+
+		double FE = preflop.getProbabilityFE(15, 10, 110.75*0.04, 0, 1, 0.12, 0.04, 0, 0);
+		printf("FE = %lf\n", FE);
 
 		//FLOP
 		nPotSize = normalizePotSize(2, 0.37, 0.04);
@@ -216,16 +234,11 @@ int main()
 		v[6] = nPFR;
 		v[7] = nAF;
 
-		cout << "FE = " << flop.getProbabilityFE(v, 100) << endl;
+		cout << "FE = " << flop.getProbabilityFE(v, 10) << endl;
 		flop.printRange(v, 100);
 
 		cout << "FE2 = " << flop.getProbabilityFE2(v, 100) << endl;
 
-		vector<Card> cards;
-		cards.push_back(Card('J','d'));
-		cards.push_back(Card('5','h'));
-		cards.push_back(Card('Q','d'));
-		Hand own(Card('K','d'), Card('Q','s'));
 		PlayerRange range = flop.getRange(v, cards, own, 50);
 		printf("FLOP\n");
 		range.printRange();
@@ -237,12 +250,6 @@ int main()
 
 
 		range = RangeUtils::mergeRange(preflopRange, range, cards, own);
-
-		vector<PlayerRange> ranges;
-		PlayerRange myrange;
-		myrange.range.insert(make_pair(own, 1));
-		ranges.push_back(myrange);
-		ranges.push_back(range);
 
 		printf("FLOP MERGED\n");
 		range.printRange();
@@ -257,10 +264,6 @@ int main()
 
 		printf("100 Range2\n");
 		cout << range.toString();
-
-		//double EQ = calc.calculate(ranges, cards, 25000);
-		//printf("%.2lf\n", EQ);
-
 		
 		printf("total = %lf\n", range.totalPercentage());
 
