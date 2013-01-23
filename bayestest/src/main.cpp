@@ -214,7 +214,7 @@ int main()
 		double EQ = calc.calculate(ranges, cards, 25000);
 		printf("\n\nAQ's equity against preflopRange --------------------------------------------------------------------------------- \n%.2lf\n\n\n", EQ);
 
-		double FE = preflop.getProbabilityFE(15, 10, 110.75*0.04, 0, 1, 0.12, 0.04, 0, 0);
+		double FE = preflop.getProbabilityFE(21, 15, 5.61, -1, 1, 0.12, 0.04, 0, 0);
 		printf("FE = %lf\n", FE);
 
 		//FLOP

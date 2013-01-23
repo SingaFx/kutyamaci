@@ -164,7 +164,7 @@ public:
 						}
 						else
 						{
-							Action action = player.getPreflopAction()[player.getFlopAction().size() - 2];
+							Action action = player.getPreflopAction()[player.getPreflopAction().size() - 2];
 							int size = normalizeBetSize(1, action.getSize(), 0, 0.04);
 							if (action.getType() == 'c')
 							{
@@ -173,6 +173,7 @@ public:
 
 							if (action.getType() == 'r')
 							{
+								if (size > mSize) size = mSize;
 								++probabilityFE[nStackSize][size][1][nVPIP][nPFR][poz];
 							}
 
@@ -498,6 +499,7 @@ public:
 
 							if (action.getType() == 'r')
 							{
+								if (size > mSize) size = mSize;
 								++probabilityFE[0][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
 							}
 
@@ -847,6 +849,7 @@ public:
 
 							if (action.getType() == 'r')
 							{
+								if (size > mSize) size = mSize;
 								++probabilityFE[0][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
 							}
 
@@ -1220,6 +1223,7 @@ public:
 
 							if (action.getType() == 'r')
 							{
+								if (size > mSize) size = mSize;
 								++probabilityFE[0][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
 							}
 

@@ -83,7 +83,7 @@ void parseHands(string filename)
 			river->updateProbabilities(history[i]);
 		}
 
-		if (total > 1000000) return ;
+		//if (total > 100000) return ;
 	}
 }
 int main(int argc, char* argv[])
