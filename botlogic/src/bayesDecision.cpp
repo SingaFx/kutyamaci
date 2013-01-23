@@ -60,8 +60,11 @@ PlayerRange BayesDecision::getCallRaiseRange(double betsize, PlayerRange& range,
 		logger.logExp("Call raise range is 0", LOGGER_TYPE::BOT_LOGIC);
 		return totalRange;
 	}
-	totalRange = RangeUtils::mergeRange(range, totalRange, game.getBoard(), game.getHand());
 
+	if (game.getStreet() != 0)
+		totalRange = RangeUtils::mergeRange(range, totalRange, game.getBoard(), game.getHand());
+
+	totalRange.setId(range.getId());
 	if (totalRange.range.size() == 0) 
 	{
 		logger.logExp("Merged range is 0", LOGGER_TYPE::BOT_LOGIC);
@@ -89,7 +92,7 @@ double BayesDecision::calculateEQ(vector<PlayerRange>& ranges, vector<Card>& boa
 	}
 
 
-	return calc.calculate(result, board, 10000) / 100;
+	return calc.calculate(result, board, 15000) / 100;
 }
 char BayesDecision::calculateDecision(CurrentGameInfo& game, vector<PlayerRange>& ranges, BayesUserPreflop& preflop, BayesUserFlop& flop, BayesUserTurn& turn, BayesUserRiver& river)
 {
@@ -119,12 +122,12 @@ double BayesDecision::modifyFEbyBetSize(int street, CurrentPlayerInfo& player, d
 
 			if (ratio < 2.5)
 			{
-				FE = modifyValue(FE, -0.1);
+				FE = modifyValue(FE, -0.05);
 			}
 			
 			if (ratio > 5)
 			{
-				FE = modifyValue(FE, 0.1);
+				FE = modifyValue(FE, 0.00);
 			}
 		}
 	}
@@ -135,30 +138,30 @@ double BayesDecision::modifyFEbyBetSize(int street, CurrentPlayerInfo& player, d
 			double ratio = betsize / currentbet;
 			if (ratio < 2.5)
 			{
-				FE = modifyValue(FE, -0.15);
+				FE = modifyValue(FE, -0.05);
 			}
 			else if (ratio < 3.5)
 			{
 			}
 			else if (ratio < 5)
 			{
-				FE = modifyValue(FE, 0.1);
+				FE = modifyValue(FE, 0.00);
 			}
 			else
 			{
-				FE = modifyValue(FE, 0.15);
+				FE = modifyValue(FE, 0.00);
 			}
 		}
 		else
 		{
 			if (nBetsize == 0)
 			{
-				FE = modifyValue(FE, -0.2);
+				FE = modifyValue(FE, -0.10);
 			}
 
 			if (nBetsize == 1)
 			{
-				FE = modifyValue(FE, -0.1);
+				FE = modifyValue(FE, -0.05);
 			}
 
 			if (nBetsize == 2)
@@ -167,17 +170,17 @@ double BayesDecision::modifyFEbyBetSize(int street, CurrentPlayerInfo& player, d
 
 			if (nBetsize == 3)
 			{
-				FE = modifyValue(FE, 0.1);
+				FE = modifyValue(FE, 0.00);
 			}
 
 			if (nBetsize == 4)
 			{
-				FE = modifyValue(FE, 0.15);
+				FE = modifyValue(FE, 0.00);
 			}
 
 			if (nBetsize > 4)
 			{
-				FE = modifyValue(FE, 0.2);
+				FE = modifyValue(FE, 0.00);
 			}
 
 		}
@@ -185,19 +188,126 @@ double BayesDecision::modifyFEbyBetSize(int street, CurrentPlayerInfo& player, d
 
 	return FE;
 }
+double getMaxRaise(CurrentGameInfo& gameInfo)
+{
+	double betsize = 0;
+	for (int i = 0; i < gameInfo.getOpponentsInfo().size(); ++i)
+	{
+		CurrentPlayerInfo& player = gameInfo.getOpponentsInfo()[i];
+		if (player.getBetsize() > betsize)
+			betsize = player.getBetsize();
+	}
+
+	return betsize;
+}
+double BayesDecision::modifyFEbyPlayersInPlay(int number, double FE)
+{
+	if (number == 2)
+	{
+		FE = modifyValue(FE, 0.05);
+	}
+	else if (number > 2)
+	{
+		FE = modifyValue(FE, 0.1);
+	}
+	return FE;
+}
+bool inPosition(int poz1, int poz2)
+{
+	if (poz1 == 1) poz1 = -4;
+	if (poz1 == 2) poz1 = -5;
+	if (poz2 == 1) poz2 = -4;
+	if (poz2 == 2) poz2 = -5;
+
+	return poz1 > poz2;
+}
+double BayesDecision::modifyFEbyRelativePosition(CurrentGameInfo& gameInfo, double FE)
+{
+	int myPoz = gameInfo.getHero().getPoz();
+	bool inPoz = true;
+	for (int i = 0; i < gameInfo.getOpponentsInfo().size(); ++i)
+	{
+		int poz = gameInfo.getOpponentsInfo()[i].getPoz();
+		if (!inPosition(myPoz, poz))
+		{
+			inPoz = false;
+		}
+	}
+
+	Logger& logger = logger.getLogger(BOT_LOGIC);
+
+	if (inPoz)
+	{
+		logger.logExp("In position\n", BOT_LOGIC);
+		FE = modifyValue(FE, 0.1);
+	}
+	else
+	{
+		logger.logExp("Not in position\n", BOT_LOGIC);
+		FE = modifyValue(FE, -0.1);
+	}
+
+	return FE;
+}
+double BayesDecision::modifyEQbyRelativePosition(CurrentGameInfo& gameInfo, double EQ)
+{
+	Logger& logger = logger.getLogger(BOT_LOGIC);
+	logger.logExp("Started modifyEQbyRelativePosition\n");
+	
+	int myPoz = gameInfo.getHero().getPoz();
+	logger.logExp("My position is: ", myPoz, BOT_LOGIC);
+
+	bool inPoz = true;
+	for (int i = 0; i < gameInfo.getOpponentsInfo().size(); ++i)
+	{
+		int poz = gameInfo.getOpponentsInfo()[i].getPoz();
+		if (!inPosition(myPoz, poz))
+		{
+			inPoz = false;
+		}
+	}
+
+	if (inPoz)
+	{
+		logger.logExp("In position\n", BOT_LOGIC);
+		if (gameInfo.getStreet() == 0)
+		{
+			EQ = modifyValue(EQ, 0.05);
+		}
+	}
+	else
+	{
+		logger.logExp("Not in position\n", BOT_LOGIC);
+		if (gameInfo.getStreet() == 0)
+		{
+			EQ = modifyValue(EQ, -0.1);
+		}
+		if (gameInfo.getStreet() == 1)
+		{
+			EQ = modifyValue(EQ, -0.06);
+		}
+		if (gameInfo.getStreet() == 2)
+		{
+			EQ = modifyValue(EQ, -0.03);
+		}
+	}
+
+	return EQ;
+}
 
 Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& ranges, BayesUserPreflop& preflop, BayesUserFlop& flop, BayesUserTurn& turn, BayesUserRiver& river)
 {
 	Logger& logger = Logger::getLogger(LOGGER_TYPE::BOT_LOGIC);
 
 	logger.logExp("Hand: " + game.getHand().toString(), LOGGER_TYPE::BOT_LOGIC);
-
+	logger.logExp("Opponent number: ", (int)ranges.size(), BOT_LOGIC);
 	if (ranges.size() == 0)
 	{
 		logger.logExp("Cannot decide action 1", LOGGER_TYPE::BOT_LOGIC);
 		return Action('n', 0);
 	}
 
+	//TODO: CORRECT SOME PROBLEM WITH RANGE VALIDITY
 	for (int i = 0; i < ranges.size(); ++i)
 	{
 		if (!ranges[i].getValid())
@@ -219,170 +329,38 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 		logger.logExp("PREFLOP CALCULATION STARTED", LOGGER_TYPE::BOT_LOGIC);
 		for (int i = normalizeBetSize(1, game.getBiggestBet() * game.getBblind(), game.getPotcommon() * game.getBblind(), game.getBblind()) + 1; i < preflop.PREFLOP_PLAYER_BET_SIZE_NUM; ++i)
 		{
-			logger.logExp("actualBetSize: ", i, LOGGER_TYPE::BOT_LOGIC);
-
-			vector<PlayerRange> aktRanges;
-			for (int j = 0; j < ranges.size(); ++j)
-			{
-				PlayerRange akt = getCallRaiseRange(getBetsize(1, i, game.getPotcommon() * game.getBblind(), game.getBblind()), ranges[j], game, preflop, flop, turn, river);
-				if (akt.range.size() == 0) break;
-				aktRanges.push_back(akt);
-			}
-			
-			if (aktRanges.size() != ranges.size()) continue;
-			
-			double eq = calculateEQ(aktRanges, game.getBoard(), game.getHand());
-			double fe = 0;
-
-			double totalpot = game.getTotalPot() * game.getBblind();
 			double betsize = getBetsize(1, i, game.getPotcommon() * game.getBblind(), game.getBblind());
-			double commonpot = game.getPotcommon() * game.getBblind();
-			double heroCurrentBet = game.getHero().getBetsize() * game.getBblind();
+			double maxraise = getMaxRaise(game);
+			if (maxraise * 2 < betsize) betsize = maxraise;
 
-			double evraise = fe * totalpot + (1 - fe) * (eq * (commonpot + (ranges.size() + 1) * betsize - betsize + heroCurrentBet) - (1 - eq) * (betsize - heroCurrentBet));
-
-			stringstream stream;
-			
-			stream << "Totalpot: " << totalpot << " " << "BetSize: " << betsize << " " << "CommonPot: " << commonpot << " " << "heroCurrentBet: " << heroCurrentBet << endl;
-			
-			stream << "EQ= " << eq << endl;
-			stream << "EVRAISE= " << evraise << endl;
-
-			logger.logExp(stream.str(), LOGGER_TYPE::BOT_LOGIC);
-
-			if (evraise > EVRAISE)
-			{
-				EVRAISE = evraise;
-				maxRaiseSize = getBetsize(1, i, game.getPotcommon() * game.getBblind(), game.getBblind());
-			}
-		}
-
-		if (EVRAISE == -100000)
-		{
-			logger.logExp("Cannot decide action EVRAISE == -10000", LOGGER_TYPE::BOT_LOGIC);
-			return Action('n', 0);
-		}
-
-
-		double totalpot = game.getTotalPot() * game.getBblind();
-		double call = game.getAmountToCall() * game.getBblind();
-
-		double eq = calculateEQ(ranges, game.getBoard(), game.getHand());
-		EVCALL = eq * (totalpot + call) - (1 - eq) * (call);
-
-		stringstream stream;
-		stream << "EQ= " << eq << endl;
-		stream << "EVCALL= " << EVCALL << endl;
-
-		logger.logExp(stream.str(), LOGGER_TYPE::BOT_LOGIC);
-
-	}
-	
-	if (game.getStreet() == 1)
-	{
-		logger.logExp("FLOP CALCULATION STARTED", LOGGER_TYPE::BOT_LOGIC);
-		for (int i = normalizeBetSize(game.getStreet() + 1, game.getBiggestBet() * game.getBblind(), game.getPotcommon() * game.getBblind(), game.getBblind()) + 1; i < flop.PLAYER_BET_SIZE_NUM; ++i)
-		{
 			logger.logExp("actualBetSize: ", i, LOGGER_TYPE::BOT_LOGIC);
+
 			vector<PlayerRange> aktRanges;
 			for (int j = 0; j < ranges.size(); ++j)
 			{
-				PlayerRange akt = getCallRaiseRange(getBetsize(game.getStreet() + 1, i, game.getPotcommon() * game.getBblind(), game.getBblind()), ranges[j], game, preflop, flop, turn, river);
-				if (akt.range.size() == 0) 
-				{
-					logger.logExp("Couldn't get opponent's calling+raising range.", LOGGER_TYPE::BOT_LOGIC);
-					break;
-				}
-				aktRanges.push_back(akt);
-			}
-			
-			if (aktRanges.size() != ranges.size()) continue;
-			
-			double eq = calculateEQ(aktRanges, game.getBoard(), game.getHand());
-			double fe = 1;
-
-			for (int j = 0; j < ranges.size(); ++j)
-			{
-				CurrentPlayerInfo player = game.getPlayerbyId(ranges[j].getId());
-				double akt = flop.getProbabilityFE(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * game.getBblind(), 
-					player.getLine(), player.getBetsize() * game.getBblind(), game.getBblind(), game.getPotcommon() * game.getBblind(), patternsNeeded);
-
-				if (akt < 0) 
-				{
-					fe = 0;
-				}
-
-				fe *= akt;
-			}
-
-			double totalpot = game.getTotalPot() * game.getBblind();
-			double betsize = getBetsize(2, i, game.getPotcommon() * game.getBblind(), game.getBblind());
-			double commonpot = game.getPotcommon() * game.getBblind();
-			double heroCurrentBet = game.getHero().getBetsize() * game.getBblind();
-
-			double evraise = fe * totalpot + (1 - fe) * (eq * (commonpot + (ranges.size() + 1) * betsize - betsize + heroCurrentBet) - (1 - eq) * (betsize - heroCurrentBet));
-
-			stringstream stream;
-			
-			stream << "Totalpot: " << totalpot << " " << "BetSize: " << betsize << " " << "CommonPot: " << commonpot << " " << "heroCurrentBet: " << heroCurrentBet << endl;
-			
-			stream << "FE= " << fe << endl;
-			stream << "EQ= " << eq << endl;
-			stream << "EVRAISE= " << evraise << endl;
-
-			logger.logExp(stream.str(), LOGGER_TYPE::BOT_LOGIC);
-
-			if (evraise > EVRAISE)
-			{
-				EVRAISE = evraise;
-				maxRaiseSize = getBetsize(game.getStreet() + 1, i, game.getPotcommon() * game.getBblind(), game.getBblind());
-			}
-		}
-
-		if (EVRAISE == -100000)
-		{
-			logger.logExp("Cannot decide action EVRAISE == -10000", LOGGER_TYPE::BOT_LOGIC);
-			return Action('n', 0);
-		}
-
-		double totalpot = game.getTotalPot() * game.getBblind();
-		double call = game.getAmountToCall() * game.getBblind();
-
-		double eq = calculateEQ(ranges, game.getBoard(), game.getHand());
-		EVCALL = eq * (totalpot + call) - (1 - eq) * (call);
-
-		stringstream stream;
-		stream << "EQ= " << eq << endl;
-		stream << "EVCALL= " << EVCALL << endl;
-
-		logger.logExp(stream.str(), LOGGER_TYPE::BOT_LOGIC);
-	}
-
-	if (game.getStreet() == 2)
-	{
-		logger.logExp("TURN CALCULATION STARTED", LOGGER_TYPE::BOT_LOGIC);
-		for (int i = normalizeBetSize(game.getStreet() + 1, game.getBiggestBet() * game.getBblind(), game.getPotcommon() * game.getBblind(), game.getBblind()) + 1; i < turn.PLAYER_BET_SIZE_NUM; ++i)
-		{
-			logger.logExp("actualBetSize: ", i, LOGGER_TYPE::BOT_LOGIC);
-			vector<PlayerRange> aktRanges;
-			for (int j = 0; j < ranges.size(); ++j)
-			{
-				PlayerRange akt = getCallRaiseRange(getBetsize(game.getStreet() + 1, i, game.getPotcommon() * game.getBblind(), game.getBblind()), ranges[j], game, preflop, flop, turn, river);
+				PlayerRange akt = getCallRaiseRange(betsize, ranges[j], game, preflop, flop, turn, river);
 				if (akt.range.size() == 0) break;
 				aktRanges.push_back(akt);
 			}
 			
-			if (aktRanges.size() != ranges.size()) continue;
+			//CONTINUE?
+			if (aktRanges.size() != ranges.size()) break;
 			
 			double eq = calculateEQ(aktRanges, game.getBoard(), game.getHand());
+			eq = modifyEQbyRelativePosition(game, eq);
 			double fe = 1;
 
 			for (int j = 0; j < ranges.size(); ++j)
 			{
 				CurrentPlayerInfo player = game.getPlayerbyId(ranges[j].getId());
-				double akt = turn.getProbabilityFE(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * game.getBblind(), 
+				double akt = river.getProbabilityFE(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * game.getBblind(), 
 					player.getLine(), player.getBetsize() * game.getBblind(), game.getBblind(), game.getPotcommon() * game.getBblind(), patternsNeeded);
-
+				logger.logExp("Player's original FE : ", akt, BOT_LOGIC);
+				akt = modifyFEbyBetSize(1, player, betsize / game.getBblind(), game.getPotcommon(), akt, game.getBblind());
+				logger.logExp("Player's modified FE by betsize : ", akt, BOT_LOGIC);
+				//akt = modifyFEbyPlayersInPlay(ranges.size(), akt);
+				akt = modifyFEbyRelativePosition(game, akt);
+				logger.logExp("Player's modified FE by relative position : ", akt, BOT_LOGIC);
 				if (akt < 0) 
 				{
 					fe = 0;
@@ -392,7 +370,6 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 			}
 
 			double totalpot = game.getTotalPot() * game.getBblind();
-			double betsize = getBetsize(2, i, game.getPotcommon() * game.getBblind(), game.getBblind());
 			double commonpot = game.getPotcommon() * game.getBblind();
 			double heroCurrentBet = game.getHero().getBetsize() * game.getBblind();
 
@@ -411,21 +388,203 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 			if (evraise > EVRAISE)
 			{
 				EVRAISE = evraise;
-				maxRaiseSize = getBetsize(game.getStreet() + 1, i, game.getPotcommon() * game.getBblind(), game.getBblind());
+				maxRaiseSize = betsize;
 			}
 		}
-
-		if (EVRAISE == -100000) return Action('n', 0);
 
 		double totalpot = game.getTotalPot() * game.getBblind();
 		double call = game.getAmountToCall() * game.getBblind();
 
 		double eq = calculateEQ(ranges, game.getBoard(), game.getHand());
+		eq = modifyEQbyRelativePosition(game, eq);
+		if (game.getAmountToCall() > 6) eq = modifyValue(eq, -0.1); 
+		
+		EVCALL = eq * (totalpot + call) - (1 - eq) * (call);
+
+		stringstream stream;
+		stream << "CALL= " << call << endl;
+		stream << "EQ= " << eq << endl;
+		stream << "EVCALL= " << EVCALL << endl;
+
+		if (EVRAISE == -100000 && EVCALL < 0)
+		{
+			logger.logExp("Cannot decide action EVRAISE == -10000", LOGGER_TYPE::BOT_LOGIC);
+			return Action('n', 0);
+		}
+
+		logger.logExp(stream.str(), LOGGER_TYPE::BOT_LOGIC);
+
+	}
+	
+	if (game.getStreet() == 1)
+	{
+		logger.logExp("FLOP CALCULATION STARTED", LOGGER_TYPE::BOT_LOGIC);
+		for (int i = normalizeBetSize(game.getStreet() + 1, game.getBiggestBet() * game.getBblind(), game.getPotcommon() * game.getBblind(), game.getBblind()) + 1; i < flop.PLAYER_BET_SIZE_NUM; ++i)
+		{
+			double betsize = getBetsize(2, i, game.getPotcommon() * game.getBblind(), game.getBblind());
+			double maxraise = getMaxRaise(game);
+			if (maxraise * 2 < betsize) betsize = maxraise;
+			
+			logger.logExp("actualBetSize: ", i, LOGGER_TYPE::BOT_LOGIC);
+			vector<PlayerRange> aktRanges;
+			for (int j = 0; j < ranges.size(); ++j)
+			{
+				PlayerRange akt = getCallRaiseRange(betsize, ranges[j], game, preflop, flop, turn, river);
+				if (akt.range.size() == 0) 
+				{
+					logger.logExp("Couldn't get opponent's calling+raising range.", LOGGER_TYPE::BOT_LOGIC);
+					break;
+				}
+				aktRanges.push_back(akt);
+			}
+			
+			if (aktRanges.size() != ranges.size()) continue;
+			
+			double eq = calculateEQ(aktRanges, game.getBoard(), game.getHand());
+			eq = modifyEQbyRelativePosition(game, eq);
+			double fe = 1;
+
+			for (int j = 0; j < ranges.size(); ++j)
+			{
+				CurrentPlayerInfo player = game.getPlayerbyId(ranges[j].getId());
+				double akt = flop.getProbabilityFE(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * game.getBblind(), 
+					player.getLine(), player.getBetsize() * game.getBblind(), game.getBblind(), game.getPotcommon() * game.getBblind(), patternsNeeded);
+
+				akt = modifyFEbyBetSize(2, player, betsize / game.getBblind(), game.getPotcommon(), akt, game.getBblind());
+				akt = modifyFEbyPlayersInPlay(ranges.size(), akt);
+				akt = modifyFEbyRelativePosition(game, akt);
+
+				if (akt < 0) 
+				{
+					fe = 0;
+				}
+
+				fe *= akt;
+			}
+
+			double totalpot = game.getTotalPot() * game.getBblind();
+			double commonpot = game.getPotcommon() * game.getBblind();
+			double heroCurrentBet = game.getHero().getBetsize() * game.getBblind();
+
+			double evraise = fe * totalpot + (1 - fe) * (eq * (commonpot + (ranges.size() + 1) * betsize - betsize + heroCurrentBet) - (1 - eq) * (betsize - heroCurrentBet));
+
+			stringstream stream;
+			
+			stream << "Totalpot: " << totalpot << " " << "BetSize: " << betsize << " " << "CommonPot: " << commonpot << " " << "heroCurrentBet: " << heroCurrentBet << endl;
+			
+			stream << "FE= " << fe << endl;
+			stream << "EQ= " << eq << endl;
+			stream << "EVRAISE= " << evraise << endl;
+
+			logger.logExp(stream.str(), LOGGER_TYPE::BOT_LOGIC);
+
+			if (evraise > EVRAISE)
+			{
+				EVRAISE = evraise;
+				maxRaiseSize = getBetsize(game.getStreet() + 1, i, game.getPotcommon() * game.getBblind(), game.getBblind());
+			}
+		}
+
+		double totalpot = game.getTotalPot() * game.getBblind();
+		double call = game.getAmountToCall() * game.getBblind();
+
+		double eq = calculateEQ(ranges, game.getBoard(), game.getHand());
+		eq = modifyEQbyRelativePosition(game, eq);
+		EVCALL = eq * (totalpot + call) - (1 - eq) * (call);
+
+		
+		if (EVRAISE == -100000 && EVCALL < 0)
+		{
+			logger.logExp("Cannot decide action EVRAISE == -10000", LOGGER_TYPE::BOT_LOGIC);
+			return Action('n', 0);
+		}
+
+		stringstream stream;
+		stream << "EQ= " << eq << endl;
+		stream << "EVCALL= " << EVCALL << endl;
+
+		logger.logExp(stream.str(), LOGGER_TYPE::BOT_LOGIC);
+	}
+
+	if (game.getStreet() == 2)
+	{
+		logger.logExp("TURN CALCULATION STARTED", LOGGER_TYPE::BOT_LOGIC);
+		for (int i = normalizeBetSize(game.getStreet() + 1, game.getBiggestBet() * game.getBblind(), game.getPotcommon() * game.getBblind(), game.getBblind()) + 1; i < turn.PLAYER_BET_SIZE_NUM; ++i)
+		{
+			double betsize = getBetsize(2, i, game.getPotcommon() * game.getBblind(), game.getBblind());
+			double maxraise = getMaxRaise(game);
+			if (maxraise * 2 < betsize) betsize = maxraise;
+			
+			logger.logExp("actualBetSize: ", i, LOGGER_TYPE::BOT_LOGIC);
+			vector<PlayerRange> aktRanges;
+			for (int j = 0; j < ranges.size(); ++j)
+			{
+				PlayerRange akt = getCallRaiseRange(betsize, ranges[j], game, preflop, flop, turn, river);
+				if (akt.range.size() == 0) break;
+				aktRanges.push_back(akt);
+			}
+			
+			if (aktRanges.size() != ranges.size()) continue;
+			
+			double eq = calculateEQ(aktRanges, game.getBoard(), game.getHand());
+			eq = modifyEQbyRelativePosition(game, eq);
+			double fe = 1;
+
+			for (int j = 0; j < ranges.size(); ++j)
+			{
+				CurrentPlayerInfo player = game.getPlayerbyId(ranges[j].getId());
+				double akt = turn.getProbabilityFE(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * game.getBblind(), 
+					player.getLine(), player.getBetsize() * game.getBblind(), game.getBblind(), game.getPotcommon() * game.getBblind(), patternsNeeded);
+
+				akt = modifyFEbyBetSize(2, player, betsize / game.getBblind(), game.getPotcommon(), akt, game.getBblind());
+				akt = modifyFEbyPlayersInPlay(ranges.size(), akt);
+				akt = modifyFEbyRelativePosition(game, akt);
+
+				if (akt < 0) 
+				{
+					fe = 0;
+				}
+
+				fe *= akt;
+			}
+
+			double totalpot = game.getTotalPot() * game.getBblind();
+			double commonpot = game.getPotcommon() * game.getBblind();
+			double heroCurrentBet = game.getHero().getBetsize() * game.getBblind();
+
+			double evraise = fe * totalpot + (1 - fe) * (eq * (commonpot + (ranges.size() + 1) * betsize - betsize + heroCurrentBet) - (1 - eq) * (betsize - heroCurrentBet));
+
+			stringstream stream;
+			
+			stream << "Totalpot: " << totalpot << " " << "BetSize: " << betsize << " " << "CommonPot: " << commonpot << " " << "heroCurrentBet: " << heroCurrentBet << endl;
+		
+			stream << "FE= " << fe << endl;
+			stream << "EQ= " << eq << endl;
+			stream << "EVRAISE= " << evraise << endl;
+
+			logger.logExp(stream.str(), LOGGER_TYPE::BOT_LOGIC);
+
+			if (evraise > EVRAISE)
+			{
+				EVRAISE = evraise;
+				maxRaiseSize = betsize;
+			}
+		}
+
+		
+
+		double totalpot = game.getTotalPot() * game.getBblind();
+		double call = game.getAmountToCall() * game.getBblind();
+
+		double eq = calculateEQ(ranges, game.getBoard(), game.getHand());
+		eq = modifyEQbyRelativePosition(game, eq);
 		EVCALL = eq * (totalpot + call) - (1 - eq) * (call);
 
 		stringstream stream;
 		stream << "EQ= " << eq << endl;
 		stream << "EVCALL= " << EVCALL << endl;
+
+		if (EVRAISE == -100000 && EVCALL < 0) return Action('n', 0);
 
 		logger.logExp(stream.str(), LOGGER_TYPE::BOT_LOGIC);
 	}
@@ -435,11 +594,15 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 		logger.logExp("RIVER CALCULATION STARTED", LOGGER_TYPE::BOT_LOGIC);
 		for (int i = normalizeBetSize(game.getStreet() + 1, game.getBiggestBet() * game.getBblind(), game.getPotcommon() * game.getBblind(), game.getBblind()) + 1; i < river.PLAYER_BET_SIZE_NUM; ++i)
 		{
+			double betsize = getBetsize(2, i, game.getPotcommon() * game.getBblind(), game.getBblind());
+			double maxraise = getMaxRaise(game);
+			if (maxraise * 2 < betsize) betsize = maxraise;
+
 			logger.logExp("actualBetSize: ", i, LOGGER_TYPE::BOT_LOGIC);
 			vector<PlayerRange> aktRanges;
 			for (int j = 0; j < ranges.size(); ++j)
 			{
-				PlayerRange akt = getCallRaiseRange(getBetsize(game.getStreet() + 1, i, game.getPotcommon() * game.getBblind(), game.getBblind()), ranges[j], game, preflop, flop, turn, river);
+				PlayerRange akt = getCallRaiseRange(betsize, ranges[j], game, preflop, flop, turn, river);
 				if (akt.range.size() == 0) break;
 				aktRanges.push_back(akt);
 			}
@@ -455,6 +618,9 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 				double akt = river.getProbabilityFE(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * game.getBblind(), 
 					player.getLine(), player.getBetsize() * game.getBblind(), game.getBblind(), game.getPotcommon() * game.getBblind(), patternsNeeded);
 
+				akt = modifyFEbyBetSize(2, player, betsize / game.getBblind(), game.getPotcommon(), akt, game.getBblind());
+				akt = modifyFEbyPlayersInPlay(ranges.size(), akt);
+
 				if (akt < 0) 
 				{
 					fe = 0;
@@ -464,7 +630,6 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 			}
 
 			double totalpot = game.getTotalPot() * game.getBblind();
-			double betsize = getBetsize(2, i, game.getPotcommon() * game.getBblind(), game.getBblind());
 			double commonpot = game.getPotcommon() * game.getBblind();
 			double heroCurrentBet = game.getHero().getBetsize() * game.getBblind();
 
@@ -483,11 +648,9 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 			if (evraise > EVRAISE)
 			{
 				EVRAISE = evraise;
-				maxRaiseSize = getBetsize(game.getStreet() + 1, i, game.getPotcommon() * game.getBblind(), game.getBblind());
+				maxRaiseSize = betsize;
 			}
 		}
-
-		if (EVRAISE == -100000) return Action('n', 0);
 		
 		double totalpot = game.getTotalPot() * game.getBblind();
 		double call = game.getAmountToCall() * game.getBblind();
@@ -499,10 +662,12 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 		stream << "EQ= " << eq << endl;
 		stream << "EVCALL= " << EVCALL << endl;
 
+		if (EVRAISE == -100000 && EVCALL < 0) return Action('n', 0);
+
 		logger.logExp(stream.str(), LOGGER_TYPE::BOT_LOGIC);
 	}
 
-	if (EVRAISE > 0 || EVCALL > 0)
+	if (EVRAISE > 0.04 || EVCALL > 0.04)
 	{
 		if (EVRAISE > EVCALL)
 		{

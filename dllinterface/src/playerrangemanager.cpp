@@ -35,6 +35,7 @@ void PlayerRangeManager::resetRanges(GameStateManager& gameState)
     for (int idx = 0; idx < 6; ++idx)
     {
 		pr.setId(idx);
+		pr.setValid(true);
         playerRanges.push_back(pr);
     }
 

@@ -20,6 +20,7 @@ public:
 	PlayerRange()
 	{
 		preflopNotPlaying = true;
+		valid = true;
 	}
 
 	void printRange()
@@ -422,7 +423,7 @@ public:
 		return res;
 	}
 
-	static PlayerRange mergeRange(PlayerRange r1, PlayerRange r2, vector<Card>& v, Hand& own)
+	static PlayerRange mergeRange(PlayerRange r1, PlayerRange r2, vector<Card> v, Hand own)
 	{
 		double hsr1[20], hsr2[20];
 		memset(hsr1, 0, sizeof(hsr1));

@@ -20,6 +20,8 @@ public:
 
 	static double modifyFEbyBetSize(int, CurrentPlayerInfo&, double, double, double, double);
 	static double modifyEQbyRelativePosition(CurrentGameInfo& gameInfo, double EQ);
+	static double modifyFEbyPlayersInPlay(int, double);
+	static double modifyFEbyRelativePosition(CurrentGameInfo&, double);
 
 public:
 	//range-t kap

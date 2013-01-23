@@ -14,7 +14,7 @@
 #include "plusEVBotLogic.h"
 #include "botmanager.h"
 #include "abstractbotlogic.h"
-
+#include "database.h"
 #include <sstream>
 
 
@@ -254,6 +254,56 @@ char convertRankToChar(int rank)
     return map[rank];
 }
 
+int nextPosition(int position)
+{
+    int result = position + 1;
+    if (result >= 6)
+    {
+        result -= 6;
+    }
+
+    return result;
+}
+
+void calculateRelativPositions(vector<int>& relativPositions, int dealerPosition, bool usePostFlopRelatives = false)
+{    
+    int absolutePositionsMap[6];
+        
+    int pos = dealerPosition;
+    for (int idx = 0; idx <= 5; ++idx)
+    {
+        absolutePositionsMap[pos] = idx;
+        pos = nextPosition(pos);        
+    }
+
+    int relposMap[6];
+    if (!usePostFlopRelatives)
+    {
+        relposMap[0] = 0;
+        relposMap[1] = 1;
+        relposMap[2] = 2;
+        relposMap[3] = -3;
+        relposMap[4] = -2;
+        relposMap[5] = -1;
+    }
+    else
+    {
+        relposMap[0] = 0; // bu
+        relposMap[1] = -5; // sb
+        relposMap[2] = -4; // bb
+        relposMap[3] = -3; // utg
+        relposMap[4] = -2; // mp
+        relposMap[5] = -1; // guess what : co
+    }
+
+    relativPositions.clear();
+    for (int idx = 0; idx < 6; ++idx)
+    {
+        int key = absolutePositionsMap[idx];
+        relativPositions.push_back(relposMap[key]);
+    }
+}
+
 CurrentGameInfo* createCurrentGameInfo(bool& isValid)
 {
     isValid = true; // we are optimistic as always    
@@ -376,17 +426,6 @@ CurrentGameInfo* createCurrentGameInfo(bool& isValid)
     return currentGameInfo;
 }
 
-int nextPosition(int position)
-{
-    int result = position + 1;
-    if (result >= 6)
-    {
-        result -= 6;
-    }
-
-    return result;
-}
-
 bool isBitSet(int toTest, int bitNumber)
 {
     int bitposition = 1 << bitNumber;
@@ -467,45 +506,6 @@ void resetHand(holdem_state* pstate, Hand hand)
     }
 }
 
-void calculateRelativPositions(vector<int>& relativPositions, int dealerPosition, bool usePostFlopRelatives = false)
-{    
-    int absolutePositionsMap[6];
-        
-    int pos = dealerPosition;
-    for (int idx = 0; idx <= 5; ++idx)
-    {
-        absolutePositionsMap[pos] = idx;
-        pos = nextPosition(pos);        
-    }
-
-    int relposMap[6];
-    if (!usePostFlopRelatives)
-    {
-        relposMap[0] = 0;
-        relposMap[1] = 1;
-        relposMap[2] = 2;
-        relposMap[3] = -3;
-        relposMap[4] = -2;
-        relposMap[5] = -1;
-    }
-    else
-    {
-        relposMap[0] = 0; // bu
-        relposMap[1] = -5; // sb
-        relposMap[2] = -4; // bb
-        relposMap[3] = -3; // utg
-        relposMap[4] = -2; // mp
-        relposMap[5] = -1; // guess what : co
-    }
-
-    relativPositions.clear();
-    for (int idx = 0; idx < 6; ++idx)
-    {
-        int key = absolutePositionsMap[idx];
-        relativPositions.push_back(relposMap[key]);
-    }
-}
-
 void detectMissedChecksAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
 {
 	if (old_cgi == NULL)
@@ -545,9 +545,13 @@ void detectMissedChecksAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
 
 					old_cgi->addCurrentPlayerInfo(gamestateManager.getCurrentPlayerInfo(idx));
 					
-					PlayerRange& updatedRange = botLogic->calculateRange(idx, *old_cgi, playerRangeManager.getPlayerRange(idx));
+					PlayerRange& range = playerRangeManager.getPlayerRange(idx);
+					range.setValid(true);
+					PlayerRange& updatedRange = botLogic->calculateRange(idx, *old_cgi, range);
 					updatedRange.setId(idx);
 
+
+					logger.logExp("Cache set to false CheckHevele", DLL_DECISION_LOGGER);
 					gamestateManager.setCache(false);
 					playerRangeManager.setPlayerRange(idx, updatedRange);
 				}
@@ -610,10 +614,12 @@ void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
                 // let's update
 				PlayerRange pr = playerRangeManager.getPlayerRange(idx);
 				pr.setId(idx);
+				pr.setValid(true);
 				PlayerRange& updatedRange = botLogic->calculateRange(idx, *old_cgi, pr);
 				updatedRange.setId(idx);
 
 				gamestateManager.setCache(false);
+				logger.logExp("Cache set to false Detected call", DLL_DECISION_LOGGER);
 				playerRangeManager.setPlayerRange(idx, updatedRange);
 			}
 			else
@@ -628,10 +634,14 @@ void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
 
 					old_cgi->addCurrentPlayerInfo(gamestateManager.getCurrentPlayerInfo(idx));
 					
-					PlayerRange& updatedRange = botLogic->calculateRange(idx, *old_cgi, playerRangeManager.getPlayerRange(idx));
+					PlayerRange& range = playerRangeManager.getPlayerRange(idx);
+					range.setValid(true);
+					PlayerRange& updatedRange = botLogic->calculateRange(idx, *old_cgi, range);
 					updatedRange.setId(idx);
 
+
 					gamestateManager.setCache(false);
+					logger.logExp("Cache set to false Detected call", DLL_DECISION_LOGGER);
 					playerRangeManager.setPlayerRange(idx, updatedRange);
 				}
 			}
@@ -673,7 +683,9 @@ void detectChecksAndUpdateRanges(int relativTo)
             if (isEqual(currentBets[idx], 0.0) && (relativePositions[idx] < relativePositions[relativTo] ) )
             {
                 CurrentPlayerInfo& currentPlayerInfo = gamestateManager.getCurrentPlayerInfo(idx);
-				
+			
+				if (currentPlayerInfo.getLine() == 2) continue;
+
 				logger.logExp("DETECTED : Check Boldifele " + currentPlayerInfo.getName(), DLL_INTERFACE_LOGGER);
                 currentPlayerInfo.setLine(2);
 			    currentPlayerInfo.setBetsize(0);
@@ -688,10 +700,13 @@ void detectChecksAndUpdateRanges(int relativTo)
                     logger.logExp("--> ERROR : CurrentGameInfo is null!", DLL_INTERFACE_LOGGER);
                 }
 					
-                PlayerRange& updatedRange = botLogic->calculateRange(idx, *cgi, playerRangeManager.getPlayerRange(idx));
+				PlayerRange& range = playerRangeManager.getPlayerRange(idx);
+				range.setValid(true);
+                PlayerRange& updatedRange = botLogic->calculateRange(idx, *cgi, range);
 				updatedRange.setId(idx);
 
 			    gamestateManager.setCache(false);
+				logger.logExp("Cache set to false CheckBoldifele", DLL_DECISION_LOGGER);
                 playerRangeManager.setPlayerRange(idx, updatedRange);
             }
         }
@@ -719,11 +734,56 @@ void refreshStackSizes(vector<double>& currentBets)
     }
 }
 
+double AnyVPIP(int index)
+{
+	Logger& logger = Logger::getLogger(DLL_DECISION_LOGGER);
+
+	Database database("127.0.0.1", "root", "root", "kutya");
+	GameStateManager& gamestateManager = GameStateManager::getGameStateManager();
+
+	vector<int> relativePositions;
+    calculateRelativPositions(relativePositions, gamestateManager.getDealerPosition());
+
+	int idx = 0;
+	for (; idx < 6; ++idx)
+	{
+		if (relativePositions[idx] == index) break;
+	}
+
+	string name = gamestateManager.getPlayerNameByPos(idx);
+	
+	logger.logExp("Query " + name,DLL_DECISION_LOGGER);
+
+	double VPIP = 0;
+
+	if (database.isUser(name))
+	{
+		VPIP = database.getVPIP(name);
+	}
+	else
+	{
+		VPIP = 20;
+	}
+
+	return VPIP;
+}
+
 
 double process_state(holdem_state* pstate);
 
 double process_query(const char* pquery)
 {
+
+	if (!strcmp(pquery,"dll$BUVPIP"))
+	{
+		return AnyVPIP(0);
+	}
+
+	if (!strcmp(pquery,"dll$BBVPIP"))
+	{
+		return AnyVPIP(2);
+	}
+
 	Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER); 
 	logger.logExp(string("[Processing query] : ").append(pquery).c_str(), DLL_DECISION_LOGGER);
 
@@ -732,7 +792,12 @@ double process_query(const char* pquery)
     
 
 	int total = 0;
-	while (process_state(NULL) && (++total)<100);
+	while (process_state(NULL)==-1)
+	{
+		if (total++ > 10) break;
+	}
+	//LET THE OLD BOT DECIDE
+	if (process_state(NULL) == -1) return -1;
 
 	if(pquery == NULL)
     {
@@ -776,7 +841,8 @@ double process_query(const char* pquery)
 	{
 		CurrentGameInfo* cgi = gamestateManager.getCurrentGameInfo();
 
-		for (int idx = 0; idx <=5; ++idx)
+		//HERO SHOULD BE THERE?
+		for (int idx = 1; idx <=5; ++idx)
 		{
 			if (isBitSet((int)playersplayingbits, idx) && gamestateManager.isCurrentPlayerInfoSet(idx))
 			{
@@ -808,17 +874,7 @@ double process_query(const char* pquery)
 
 		gamestateManager.setAction(action);
 		gamestateManager.setCache(true);
-
-		 //!!MAYBE THE BOT CAN MISSCLICK -> process_statet currentbet for hero too..
-        // taking into account hero's bet
-		/*
-        double maxraise = gamestateManager.getMaxRaise();
-       
-		if (action.getSize() > maxraise)
-        {
-            gamestateManager.setMaxRaise(maxraise);
-        }
-		*/
+		//logger.logExp("Action is cached\n");
 
 		return result;
     }
@@ -1016,6 +1072,7 @@ double process_state(holdem_state* pstate)
                     {
                         // this is impossible - something went wrong :(
                         logger.logExp("[ERROR at setting last line !]", DLL_INTERFACE_LOGGER);
+						return -1;
                     }
 
                     // this player did something so we update his/her range
@@ -1034,8 +1091,11 @@ double process_state(holdem_state* pstate)
                             detectChecksAndUpdateRanges(idx);
                         }
 
-						PlayerRange& updatedRange = botLogic->calculateRange(idx, *cgi, playerRange);
+						PlayerRange& range = playerRangeManager.getPlayerRange(idx);
+						range.setValid(true);
+						PlayerRange& updatedRange = botLogic->calculateRange(idx, *cgi, range);
 						updatedRange.setId(idx);
+
 
 						logger.logExp("1 Cache = false", DLL_DECISION_LOGGER);
 						gamestateManager.setCache(false);
@@ -1073,6 +1133,8 @@ double process_state(holdem_state* pstate)
                     {
                         // this is impossible - something went wrong :(
                         logger.logExp("[ERROR at setting last line !]", DLL_INTERFACE_LOGGER);
+						//TODO THIS NEEDS TO BE DONE
+						return -1;
                     }
 
                     gamestateManager.setCurrentPlayerInfo(idx, currentPlayerInfo);
@@ -1090,8 +1152,10 @@ double process_state(holdem_state* pstate)
 
 						PlayerRange pr = playerRangeManager.getPlayerRange(idx);
 						pr.setId(idx);
+						pr.setValid(true);
 						PlayerRange& updatedRange = botLogic->calculateRange(idx, *cgi, pr);
 						updatedRange.setId(idx);
+
 
 						logger.logExp("2 Cache = false", DLL_DECISION_LOGGER);
 						gamestateManager.setCache(false);

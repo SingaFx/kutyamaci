@@ -166,6 +166,8 @@ int main()
 
 		preflop.read("preflopBayes");
 		flop.read("flopBayes");
+		turn.read("turnBayes");
+		river.read("riverBayes");
 
 		int nPotSize;
 		int nStackSize;
@@ -176,6 +178,7 @@ int main()
 		int nAF;
 		int poz;
 
+		/*
 		int v[8];
 
 		nStackSize = normalizeStackSize(110.75*0.04, 0.04); //150
@@ -199,10 +202,7 @@ int main()
 		printf("PREFLOP\n");
 		preflopRange.printRange();
 
-		vector<Card> cards;
-		/*cards.push_back(Card('J','d'));
-		cards.push_back(Card('5','h'));
-		cards.push_back(Card('Q','d'));*/
+
 		Hand own(Card('A','d'), Card('Q','s'));
 
 		vector<PlayerRange> ranges;
@@ -268,6 +268,32 @@ int main()
 		printf("total = %lf\n", range.totalPercentage());
 
 		printf("BOTLOGIC TESTS\n");
+		*/
+
+		{
+			double FE = preflop.getProbabilityFE(20, 15, 213.25*0.04, -1, 1, 0.16, 0.04, 0, 0);
+			printf("FE = %lf\n", FE);
+		}
+
+		{
+			double FE = preflop.getProbabilityFE(20, 15, 213.25*0.04, -1, 1, 0.16, 0.04, 0, 0);
+			printf("FE = %lf\n", FE);
+		}
+
+		{
+			vector<Card> board;
+			board.push_back(Card('A', 's'));
+			board.push_back(Card('2', 'h'));
+			board.push_back(Card('Q', 'h'));
+			board.push_back(Card('2', 'd'));
+			board.push_back(Card('Q', 'c'));
+
+			Hand own(Card('6', 'c'), Card('7','d'));
+
+			printf("RIVER RANGE\N");
+			PlayerRange riverRange = river.getRange(40, 10, 1, 49 * 0.04, 2, 0, 0.04, 6.75 * 0.04, board, own, 0);
+			riverRange.printRange();
+		}
 
 		/*
 		CurrentPlayerInfo info;

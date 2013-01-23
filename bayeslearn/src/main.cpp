@@ -83,7 +83,7 @@ void parseHands(string filename)
 			river->updateProbabilities(history[i]);
 		}
 
-		//if (total > 100000) return ;
+		if (total > 1000000) return ;
 	}
 }
 int main(int argc, char* argv[])
@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
 		flop = new BayesLearnFlop();
 		turn = new BayesLearnTurn();
 		river = new BayesLearnRiver();
-		parseHands("f:\\pokerbot\\hh.txt");
+		parseHands("d:\\pokerbot\\hh.txt");
 		//parseHands("..\\tests\\resource\\bayes\\testhh.txt");
 
 		preflop->write("preflopBayes");
