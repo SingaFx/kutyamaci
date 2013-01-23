@@ -30,7 +30,6 @@ public:
     const char* HAND_END;
     const char* TABLE;
     const char* PLAYER;
-    const char* SBLIND;
     const char* BBLIND;
     const char* CALL;
     const char* FOLD;
