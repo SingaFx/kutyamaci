@@ -3,11 +3,11 @@
 #include <boost/regex.hpp>
 #include "HandHistoryUtils.h"
 
-vector<HandHistory> OnGameParser::parse(string filename)
+vector<HandHistory> OnGameParser::parse()
 {
-	cout << "Begin parsing file: " << filename << endl;
+	//cout << "Begin parsing file: " << filename << endl;
 	ifstream file;
-	file.open(filename);
+	/*file.open(filename);*/
 
 	vector<HandHistory> result;
 	HandHistory actualhand;

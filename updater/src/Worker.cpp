@@ -25,16 +25,28 @@ void Worker::operator()()
     logger.logExp("Thread watches: ", hFind.c_str(), LOGGER_TYPE::HAND_HISTORY_PARSER);
     threadCounter++;
 
+    ifstream fileHandle;
+
+    BwinPartyParser parser(PARSER_TYPE::LIVE_PARSER, fileHandle);
+
+    vector<HandHistory> history;
+
+    //parser.openFileForParsing(hFind);
+
     while(1)
     {
-        BwinPartyParser parser;
-        vector<HandHistory> history = parser.parse(hFind);
+        parser.openFileForParsing(hFind);
+
+        history = parser.parse();
 
         boost::mutex::scoped_lock lock1(updateLock);
+
         updater->update(history);
+
+        history.clear();
+
+        parser.closeFileAfterParsing();
 
         Sleep(5000);
     }
-
-    logger.logExp("One of the thread workers ended.", LOGGER_TYPE::HAND_HISTORY_PARSER);
 }   

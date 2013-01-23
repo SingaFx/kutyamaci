@@ -69,8 +69,12 @@ public:
 		map<string, int>* passM = new map<string, int>();
 		map<string, int>* handnr = new map<string, int>();
 
-		BwinPartyParser parser;
-		vector<HandHistory> history =  parser.parse(filename);
+        ifstream fileHandle;
+
+        BwinPartyParser parser(PARSER_TYPE::IMPORT_PARSER, fileHandle);
+        parser.openFileForParsing(filename);
+		vector<HandHistory> history =  parser.parse();
+        parser.closeFileAfterParsing();
 		nrofhands += HandHistoryUtils::exportToFile(history, "hh.txt");
 
 		HandHistoryUtils::detailedExportToFile(history,"dhh.txt");
@@ -175,68 +179,68 @@ public:
 
 	void parseAndUpdate2(string filename)
 	{
-		//cout << "Parsing file: " << filename << endl;
+		////cout << "Parsing file: " << filename << endl;
 
-		OnGameParser parser;
-		vector<HandHistory> history =  parser.parse(filename);
-		HandHistoryUtils::exportToFile(history,"hh.txt");
+		//OnGameParser parser;
+		//vector<HandHistory> history =  parser.parse();
+		//HandHistoryUtils::exportToFile(history,"hh.txt");
 
-		for (int i = 0; i < history.size(); ++i)
-		{
-			if (database->isHand(history[i].getId())) continue;
-			database->insertHand(history[i].getId());
+		//for (int i = 0; i < history.size(); ++i)
+		//{
+		//	if (database->isHand(history[i].getId())) continue;
+		//	database->insertHand(history[i].getId());
 
-			for (int j = 0; j < history[i].getPlayerHistories().size(); ++j)
-			{
-				PlayerHistory player = history[i].getPlayerHistories()[j];
+		//	for (int j = 0; j < history[i].getPlayerHistories().size(); ++j)
+		//	{
+		//		PlayerHistory player = history[i].getPlayerHistories()[j];
 
-				if (!database->isUser(player.getPlayerName()))
-				{
-					database->insertUser(player.getPlayerName());
-				}
-				bool raised = false;
-				bool called = false;
-				for (int k = 0; k < player.getPreflopAction().size(); ++k)
-				{
-					if (player.getPreflopAction()[k].getType() == 'r') raised = true;
-					if (player.getPreflopAction()[k].getType() == 'c') called = true;
-				}
+		//		if (!database->isUser(player.getPlayerName()))
+		//		{
+		//			database->insertUser(player.getPlayerName());
+		//		}
+		//		bool raised = false;
+		//		bool called = false;
+		//		for (int k = 0; k < player.getPreflopAction().size(); ++k)
+		//		{
+		//			if (player.getPreflopAction()[k].getType() == 'r') raised = true;
+		//			if (player.getPreflopAction()[k].getType() == 'c') called = true;
+		//		}
 
-				if (called || raised)
-					database->setVPIP(100, 1, player.getPlayerName());
-				else
-					database->setVPIP(0, 1, player.getPlayerName());
+		//		if (called || raised)
+		//			database->setVPIP(100, 1, player.getPlayerName());
+		//		else
+		//			database->setVPIP(0, 1, player.getPlayerName());
 
-				if (raised)
-					database->setPFR(100, 1, player.getPlayerName());
-				else
-					database->setPFR(0, 1, player.getPlayerName());
+		//		if (raised)
+		//			database->setPFR(100, 1, player.getPlayerName());
+		//		else
+		//			database->setPFR(0, 1, player.getPlayerName());
 
-				int aggr = 0;
-				int pass = 0;
-				for (int k = 0; k < player.getFlopAction().size(); ++k)
-				{
-					if (player.getFlopAction()[k].getType() == 'c') pass++;
-					if (player.getFlopAction()[k].getType() == 'r') aggr++;
-					//if (player.getFlopAction()[k].getType() == 'x') pass++;
-				}
-				for (int k = 0; k < player.getTurnAction().size(); ++k)
-				{
-					if (player.getFlopAction()[k].getType() == 'c') pass++;
-					if (player.getFlopAction()[k].getType() == 'r') aggr++;
-					//if (player.getFlopAction()[k].getType() == 'x') pass++;
-				}
-				for (int k = 0; k < player.getRiverAction().size(); ++k)
-				{
-					if (player.getFlopAction()[k].getType() == 'c') pass++;
-					if (player.getFlopAction()[k].getType() == 'r') aggr++;
-					//if (player.getFlopAction()[k].getType() == 'x') pass++;
-				}
+		//		int aggr = 0;
+		//		int pass = 0;
+		//		for (int k = 0; k < player.getFlopAction().size(); ++k)
+		//		{
+		//			if (player.getFlopAction()[k].getType() == 'c') pass++;
+		//			if (player.getFlopAction()[k].getType() == 'r') aggr++;
+		//			//if (player.getFlopAction()[k].getType() == 'x') pass++;
+		//		}
+		//		for (int k = 0; k < player.getTurnAction().size(); ++k)
+		//		{
+		//			if (player.getFlopAction()[k].getType() == 'c') pass++;
+		//			if (player.getFlopAction()[k].getType() == 'r') aggr++;
+		//			//if (player.getFlopAction()[k].getType() == 'x') pass++;
+		//		}
+		//		for (int k = 0; k < player.getRiverAction().size(); ++k)
+		//		{
+		//			if (player.getFlopAction()[k].getType() == 'c') pass++;
+		//			if (player.getFlopAction()[k].getType() == 'r') aggr++;
+		//			//if (player.getFlopAction()[k].getType() == 'x') pass++;
+		//		}
 
-				database->setAGGR(aggr, player.getPlayerName());
-				database->setPASS(pass, player.getPlayerName());
-				database->incHandnr(1, player.getPlayerName());
-			}
-		}
+		//		database->setAGGR(aggr, player.getPlayerName());
+		//		database->setPASS(pass, player.getPlayerName());
+		//		database->incHandnr(1, player.getPlayerName());
+		//	}
+		//}
 	}
 };
