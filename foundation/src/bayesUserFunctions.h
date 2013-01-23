@@ -33,9 +33,8 @@ public:
 	{
 		FILE* f = fopen(filename.c_str(), "r");
 		back(f, false, 1);
-		int totalS = 1;
-		for (int i = 1; i < preflop_node_number; ++i)
-			totalS *= preflop_nums[i];
+		backFE(f, false, 1);
+		
 		fclose(f);
 	}
 
@@ -43,6 +42,8 @@ public:
 	{
 		FILE* f = fopen(filename.c_str(), "w");
 		back(f, true, 1);
+		backFE(f, true, 1);
+
 		fclose(f);
 	}
 	double getProbability(int v[])
@@ -117,6 +118,23 @@ public:
 
 		return getProbabilityFE(v, x);
 	}
+
+	double getProbabilityFE(double VPIP, double PFR, double stacksize, int poz, int line, double betsize, double bblind, double potcommon, int x)
+	{
+		int v[7];
+		v[1] = normalizeStackSize(stacksize, bblind);
+		v[2] = normalizeBetSize(1, betsize, potcommon, bblind);
+		v[3] = line;
+		v[4] = normalizeVPIP(VPIP);
+		v[5] = normalizePFR(PFR);
+		v[6] = poz + 3;
+
+		if (line == 5)
+			return getProbabilityFE2(v, x);
+
+		return getProbabilityFE(v, x);
+	}
+
 	int preflopHandType(Hand hand)
 	{
 		int rank1 = convertRankToNumbers(hand.getCard1());
@@ -129,7 +147,7 @@ public:
 			swap(rank1, rank2);
 		}
 
-		if (hand.getCard1().getRank() == hand.getCard2().getRank())
+		if (rank1 == rank2)
 		{
 			if (rank1 < 10) return 0; // alacsony PP
 			if (rank1 < 12) return 13; //TT-JJ
@@ -445,7 +463,6 @@ private:
 			else
 			{
 				fscanf(f,"%d ", &totalPreflop[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
-				//totalSituation += totalPreflop[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]];
 
 				if (totalPreflop[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]] > 100000)
 				{
@@ -473,6 +490,7 @@ private:
 			{
 				fprintf(f,"%d ", totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
 				fprintf(f,"%d ", probabilityFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]]);
+				
 			}
 			else
 			{
@@ -486,7 +504,7 @@ private:
 		for (int i = 0; i < preflop_nums[k]; ++i)
 		{
 			v[k] = i;
-			back(f, b, k + 1);
+			backFE(f, b, k + 1);
 		}
 	}
 };

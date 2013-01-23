@@ -21,6 +21,8 @@ class LiveUpdater : public Updater
 {
 private:
 
+    Database* database;
+    string folder;
     boost::mutex updateMutex;
 public:
 

@@ -4,11 +4,17 @@
 #include "HandHistoryUtils.h"
 #include "logger.h"
 
-BwinPartyParser::BwinPartyParser()
- : HAND_START("^\\*{5} Hand History for Game (.+) \\*{5}")
+using namespace std;
+
+BwinPartyParser::BwinPartyParser(int parserType, ifstream& fileHandle)
+ : parserType(parserType)
+ , fileHandle(fileHandle)
+ , HAND_START("^\\*{5} Hand History for Game (.+) \\*{5}")
  , HAND_END("^Game #[[:digit:]]* starts\.$")
  , TABLE("^(Table Supersonic .*)$")
  , PLAYER("^Seat ([[:digit:]]*): (.*) \\( \\$(.*) \\)$")
+ , BBLIND("^(.*) posts small blind \\[\\$(.*)")
+ , SBLIND("^(.*) posts big blind \\[\\$(.*)")
  , CALL("^(.*) calls \\[\\$(.*)")
  , FOLD("^(.*) folds")
  , BET("^(.*) bets \\[\\$(.*)")
@@ -24,12 +30,20 @@ BwinPartyParser::BwinPartyParser()
 {
 }
 
-vector<HandHistory> BwinPartyParser::parse(string filename)
+void BwinPartyParser::openFileForParsing(string fileName)
 {
-    ifstream file;
-	file.open(filename);
+    fileHandle.open(fileName);
+}
 
-	vector<HandHistory> result;
+void BwinPartyParser::closeFileAfterParsing()
+{
+    fileHandle.close();
+    //fileHandle.clear();
+}
+
+vector<HandHistory> BwinPartyParser::parse()
+{
+    vector<HandHistory> result;
 	HandHistory actualhand;
 	PlayerHistory actualPlayerHistory;
 	string actualPlayer;
@@ -46,6 +60,8 @@ vector<HandHistory> BwinPartyParser::parse(string filename)
 	boost::regex handend(HAND_END);
 	boost::regex table(TABLE);
 	boost::regex player(PLAYER);
+    boost::regex sblind(SBLIND);
+    boost::regex bblind(BBLIND);
 	boost::regex call(CALL);
 	boost::regex fold(FOLD);
 	boost::regex bet(BET);
@@ -60,9 +76,9 @@ vector<HandHistory> BwinPartyParser::parse(string filename)
 
     bool foundFirstHandEnd = false;
 
-    while (!file.eof() && !foundFirstHandEnd)
+    while (!fileHandle.eof() && !foundFirstHandEnd)
     {
-        getline(file, line);
+        getline(fileHandle, line);
         if (regex_match(line, handend))
         {
             foundFirstHandEnd = true;
@@ -71,9 +87,9 @@ vector<HandHistory> BwinPartyParser::parse(string filename)
 
     bool isInHand = false;
 
-	while (!file.eof())
+	while (!fileHandle.eof())
 	{
-		getline(file, line);
+		getline(fileHandle, line);
 
 		// Found a new hand
 		if (regex_search(line, what, handstart, flags))
@@ -113,6 +129,22 @@ vector<HandHistory> BwinPartyParser::parse(string filename)
 				actualPlayerHistory.setHandKnown(false);
 				actualhand.getPlayerHistories().push_back(actualPlayerHistory);
 			}
+		}
+        // Found a small blind action
+		else if (regex_search(line, what, sblind, flags))
+		{
+            Action tempAction;
+            tempAction.setAction('r', atof(string(what[2].first,what[2].second).c_str()));
+			string player_name = string(what[1].first,what[1].second);
+			HandHistoryUtils::addActiontoPlayer(actualhand, tempAction, player_name, round);
+		}
+        // Found a big blind action
+		else if (regex_search(line, what, bblind, flags))
+		{
+            Action tempAction;
+            tempAction.setAction('r', atof(string(what[2].first,what[2].second).c_str()));
+			string player_name = string(what[1].first,what[1].second);
+			HandHistoryUtils::addActiontoPlayer(actualhand, tempAction, player_name, round);
 		}
 		// Found a call action
 		else if (regex_search(line, what, call, flags))
@@ -216,8 +248,6 @@ vector<HandHistory> BwinPartyParser::parse(string filename)
             HandHistoryUtils::setPlayersHand(actualhand, string(what[1].first,what[1].second), tempHand);
 		}
 	}
-
-	file.close();
 
     if (true == isInHand) {
         this->pushActualHandToParseResult(result, actualhand, buttonSeat);

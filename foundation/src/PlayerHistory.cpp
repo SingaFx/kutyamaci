@@ -146,3 +146,91 @@ vector<Action>& PlayerHistory::getRiverAction()
 {
     return riverAction;
 }
+
+double PlayerHistory::getMax(vector<Action>& actions)
+{
+	double max = 0;
+	for (int i = 0; i < actions.size(); ++i)
+	{
+		if (actions[i].getType() == 'r' || actions[i].getType() == 'c')
+		{
+			if (max < actions[i].getSize()) max = actions[i].getSize();
+		}
+	}
+
+	return max;
+}
+
+double PlayerHistory::getBalanceInRound(int round)
+{
+	double playerBalance = balance;
+	if (round > 1)
+	{
+		playerBalance -= getMax(preflopAction);
+	}
+
+	if (round > 2)
+	{
+		playerBalance -= getMax(flopAction);
+	}
+
+	if (round > 3)
+	{
+		playerBalance -= getMax(turnAction);
+	}
+
+	return playerBalance;
+}
+
+bool PlayerHistory::isFolded()
+{
+	bool folded = false;
+
+	for (int j = 0; j < getPreflopAction().size(); ++j)
+	{
+		Action action = getPreflopAction()[j];
+		if (action.getType() == 'f')
+		{
+			folded = true;
+			break;
+		}
+	}
+	for (int j = 0; j < getFlopAction().size(); ++j)
+	{
+		Action action = getFlopAction()[j];
+		if (action.getType() == 'f')
+		{
+			folded = true;
+			break;
+		}
+	}
+	for (int j = 0; j < getTurnAction().size(); ++j)
+	{
+		Action action = getTurnAction()[j];
+		if (action.getType() == 'f')
+		{
+			folded = true;
+			break;
+		}
+	}
+	for (int j = 0; j < getRiverAction().size(); ++j)
+	{
+		Action action = getRiverAction()[j];
+		if (action.getType() == 'f')
+		{
+			folded = true;
+			break;
+		}
+	}
+
+	return folded;
+}
+bool PlayerHistory::isFoldedInRound(vector<Action>& actions)
+{
+	for (int i = 0; i < actions.size(); ++i)
+	{
+		if (actions[i].getType() == 'f') return true;		
+	}
+
+	return false;
+}

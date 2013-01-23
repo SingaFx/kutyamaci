@@ -10,6 +10,6 @@ using namespace std;
 class OnGameParser : public HandHistoryParser
 {
 public:
-    virtual vector<HandHistory> parse(string filename);
+    virtual vector<HandHistory> parse();
     //nice to have: destructor!
 };

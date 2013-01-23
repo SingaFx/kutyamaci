@@ -11,10 +11,15 @@ private:
 public:
 	//static double calculateEV(
 	static double calculateEQ(vector<PlayerRange>&, vector<Card>&, Hand&);
-	static PlayerRange& getCallRaiseRange(double, PlayerRange&, CurrentGameInfo&, BayesUserPreflop&, BayesUserFlop&, BayesUserTurn&, BayesUserRiver&);
+	static PlayerRange getCallRaiseRange(double, PlayerRange&, CurrentGameInfo&, BayesUserPreflop&, BayesUserFlop&, BayesUserTurn&, BayesUserRiver&);
 
 	static char calculateDecision(CurrentGameInfo&, vector<PlayerRange>&, BayesUserPreflop&, BayesUserFlop&, BayesUserTurn&, BayesUserRiver&);
 	static double calculateBetSize(CurrentGameInfo&, vector<PlayerRange>&, BayesUserPreflop&, BayesUserFlop&, BayesUserTurn&, BayesUserRiver&);
+
+	static double modifyValue(double, double);
+
+	static double modifyFEbyBetSize(int, CurrentPlayerInfo&, double, double, double, double);
+	static double modifyEQbyRelativePosition(CurrentGameInfo& gameInfo, double EQ);
 
 public:
 	//range-t kap
