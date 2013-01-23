@@ -16,6 +16,11 @@ public:
 	static char calculateDecision(CurrentGameInfo&, vector<PlayerRange>&, BayesUserPreflop&, BayesUserFlop&, BayesUserTurn&, BayesUserRiver&);
 	static double calculateBetSize(CurrentGameInfo&, vector<PlayerRange>&, BayesUserPreflop&, BayesUserFlop&, BayesUserTurn&, BayesUserRiver&);
 
+	static double modifyValue(double, double);
+
+	static double modifyFEbyBetSize(int, CurrentPlayerInfo&, double, double, double, double);
+	static double modifyEQbyRelativePosition(CurrentGameInfo& gameInfo, double EQ);
+
 public:
 	//range-t kap
 	static Action makeDecision(CurrentGameInfo&, vector<PlayerRange>&, BayesUserPreflop&, BayesUserFlop&, BayesUserTurn&, BayesUserRiver&);

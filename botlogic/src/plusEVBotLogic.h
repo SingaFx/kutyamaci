@@ -18,6 +18,7 @@ private:
 
 	CurrentPlayerInfo setStandardPlayerType(CurrentPlayerInfo&, double);
 	void extendGameInfo(CurrentGameInfo&);
+	bool preflopOpenRaise(CurrentGameInfo&);
 
 public:
 	PlusEVBotLogic();

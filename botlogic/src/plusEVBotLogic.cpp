@@ -125,7 +125,7 @@ Action PlusEVBotLogic::makeDecision(CurrentGameInfo& gameInfo, vector<PlayerRang
 {
 	Logger& logger = logger.getLogger(BOT_LOGIC);
 	logger.logExp("game street: ", gameInfo.getStreet(), LOGGER_TYPE::BOT_LOGIC);
-	if (gameInfo.getStreet() == 0)
+	if (preflopOpenRaise(gameInfo))
 	{
 		logger.logExp("PREFLOP game street: ", gameInfo.getStreet(), LOGGER_TYPE::BOT_LOGIC);
 		return Action('n', 0);
@@ -188,4 +188,15 @@ void PlusEVBotLogic::extendGameInfo(CurrentGameInfo& gameInfo)
 			gameInfo.getOpponentsInfo()[i] = setStandardPlayerType(gameInfo.getOpponentsInfo()[i], gameInfo.getBblind());
 		}
 	}
+}
+
+bool PlusEVBotLogic::preflopOpenRaise(CurrentGameInfo& gameInfo)
+{
+	for (int i = 0; i < gameInfo.getOpponentsInfo().size(); ++i)
+	{
+		CurrentPlayerInfo player = gameInfo.getOpponentsInfo()[i];
+		if (player.getBetsize() > 1) return false; 
+	}
+
+	return true;
 }
