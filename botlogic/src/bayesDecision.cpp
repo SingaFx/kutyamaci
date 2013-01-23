@@ -91,12 +91,99 @@ double BayesDecision::calculateEQ(vector<PlayerRange>& ranges, vector<Card>& boa
 
 	return calc.calculate(result, board, 10000) / 100;
 }
-
 char BayesDecision::calculateDecision(CurrentGameInfo& game, vector<PlayerRange>& ranges, BayesUserPreflop& preflop, BayesUserFlop& flop, BayesUserTurn& turn, BayesUserRiver& river)
 {
 	char res = 'n';
 
 	return res;
+}
+
+double BayesDecision::modifyValue(double value, double change)
+{
+	value += change;
+	if (value < 0) value = 0;
+	if (value > 1) value = 1;
+
+	return value;
+}
+double BayesDecision::modifyFEbyBetSize(int street, CurrentPlayerInfo& player, double betsize, double potcommon, double FE, double bblind)
+{
+	double currentbet = player.getBetsize();
+	int nBetsize = normalizeBetSize(street, betsize, potcommon, bblind);
+
+	if (street == 1)
+	{
+		if (nBetsize > 2 && nBetsize < 5)
+		{
+			double ratio = betsize / currentbet;
+
+			if (ratio < 2.5)
+			{
+				FE = modifyValue(FE, -0.1);
+			}
+			
+			if (ratio > 5)
+			{
+				FE = modifyValue(FE, 0.1);
+			}
+		}
+	}
+	else
+	{
+		if (currentbet > potcommon * 0.5)
+		{
+			double ratio = betsize / currentbet;
+			if (ratio < 2.5)
+			{
+				FE = modifyValue(FE, -0.15);
+			}
+			else if (ratio < 3.5)
+			{
+			}
+			else if (ratio < 5)
+			{
+				FE = modifyValue(FE, 0.1);
+			}
+			else
+			{
+				FE = modifyValue(FE, 0.15);
+			}
+		}
+		else
+		{
+			if (nBetsize == 0)
+			{
+				FE = modifyValue(FE, -0.2);
+			}
+
+			if (nBetsize == 1)
+			{
+				FE = modifyValue(FE, -0.1);
+			}
+
+			if (nBetsize == 2)
+			{
+			}
+
+			if (nBetsize == 3)
+			{
+				FE = modifyValue(FE, 0.1);
+			}
+
+			if (nBetsize == 4)
+			{
+				FE = modifyValue(FE, 0.15);
+			}
+
+			if (nBetsize > 4)
+			{
+				FE = modifyValue(FE, 0.2);
+			}
+
+		}
+	}
+
+	return FE;
 }
 
 Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& ranges, BayesUserPreflop& preflop, BayesUserFlop& flop, BayesUserTurn& turn, BayesUserRiver& river)
@@ -121,15 +208,6 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 	}
 
 	Action res;
-
-	//FE = FE1 * FE2 * ...
-	//EVRAISE = FE * totalpot + (1 - FE) * (EQ * (totalpot + (nopponents + 1) * betsize) - (1 - EQ) * (betsize))
-	//--> EQ vs calling + raiserange
-	//--> FE: novelni, ha pozicioban van!
-	//??--> minEQ ahhoz h beteljen (flop 20%, turn+ 30%)
-	//EVCALL = EQ * (totalpot + call) - (1 - EQ) * call
-	
-	//--> LINE EV?
 
 	double EVRAISE = -100000;
 	double maxRaiseSize = 0;
