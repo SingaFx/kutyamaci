@@ -74,7 +74,7 @@ void parseHands(string filename)
 		std::vector<HandHistory> history = HandHistoryUtils::importFromFile(f, historyNumber);
 		total += history.size();
 		printf("Total number of parsed hands = %d\n", total);
-		//if (total < 6283000) continue;
+		//if (total < 110000) continue;
 		for (int i = 0; i < history.size(); ++i)
 		{
 			preflop->updateProbabilities(history[i]);
@@ -83,10 +83,9 @@ void parseHands(string filename)
 			river->updateProbabilities(history[i]);
 		}
 
-		//if (total > 1000000) return ;
+		if (total > 1000000) return ;
 	}
 }
-
 int main(int argc, char* argv[])
 {
 	try
@@ -95,7 +94,7 @@ int main(int argc, char* argv[])
 		flop = new BayesLearnFlop();
 		turn = new BayesLearnTurn();
 		river = new BayesLearnRiver();
-		parseHands("d:\\pokerbot\\hh.txt");
+		parseHands("f:\\pokerbot\\hh.txt");
 		//parseHands("..\\tests\\resource\\bayes\\testhh.txt");
 
 		preflop->write("preflopBayes");

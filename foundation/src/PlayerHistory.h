@@ -60,6 +60,11 @@ public:
    void setRiverAction(vector<Action>);
    const vector<Action>& getRiverAction() const;
    vector<Action>& getRiverAction();
+
+   double getMax(vector<Action>& actions);
+   double getBalanceInRound(int);
+   bool isFolded();
+   bool isFoldedInRound(vector<Action>& actions);
 };
 
 #endif
