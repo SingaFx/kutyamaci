@@ -193,20 +193,20 @@ int main()
 		v[6] = poz;
 
 		preflop.printRange(v);
-		PlayerRange preflopRange = preflop.getRange(20, 15, 182.75*0.04, -3, 1, 0.12, 0.04, 0, 10);
+		PlayerRange preflopRange = preflop.getRange(20, 15, 110.75*0.04, -3, 1, 0.56, 0.04, 0, 10);
 		//PlayerRange preflopRange = preflop.getRange(v, 10);
 
 		printf("PREFLOP\n");
 		preflopRange.printRange();
 
 		//FLOP
-		nPotSize = normalizePotSize(2, 0.08, 0.04);
+		nPotSize = normalizePotSize(2, 0.37, 0.04);
 		nStackSize = normalizeStackSize(185 * 0.04, 0.04);
-		nBetSize = normalizeBetSize(2, 0.08, 0.08, 0.04);
+		nBetSize = normalizeBetSize(2, 0.37, 0.37, 0.04);
 		nLine = 0;
-		nVPIP = normalizeVPIP(20);
-		nPFR = normalizePFR(15);
-		nAF = normalizeAF(3.5);
+		nVPIP = normalizeVPIP(84);
+		nPFR = normalizePFR(45);
+		nAF = normalizeAF(3);
 
 		v[1] = nPotSize;
 		v[2] = nStackSize;
@@ -219,11 +219,13 @@ int main()
 		cout << "FE = " << flop.getProbabilityFE(v, 100) << endl;
 		flop.printRange(v, 100);
 
+		cout << "FE2 = " << flop.getProbabilityFE2(v, 100) << endl;
+
 		vector<Card> cards;
+		cards.push_back(Card('J','d'));
 		cards.push_back(Card('5','h'));
-		cards.push_back(Card('6','s'));
-		cards.push_back(Card('K','d'));
-		Hand own(Card('5','s'), Card('6','c'));
+		cards.push_back(Card('Q','d'));
+		Hand own(Card('K','d'), Card('Q','s'));
 		PlayerRange range = flop.getRange(v, cards, own, 50);
 		printf("FLOP\n");
 		range.printRange();

@@ -727,11 +727,12 @@ double process_query(const char* pquery)
 	Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER); 
 	logger.logExp(string("[Processing query] : ").append(pquery).c_str(), DLL_DECISION_LOGGER);
 
-	while (process_state(NULL) == -1);
-
 	if (strcmp(pquery,"dll$swag") && strcmp(pquery,"dll$srai") && strcmp(pquery,"dll$call") && strcmp(pquery,"dll$prefold"))
 		return 0;
     
+
+	int total = 0;
+	while (process_state(NULL) && (++total)<100);
 
 	if(pquery == NULL)
     {
@@ -782,6 +783,8 @@ double process_query(const char* pquery)
 				cgi->addCurrentPlayerInfo(gamestateManager.getCurrentPlayerInfo(idx));
 			}
 		}
+
+		cgi->setHero(gamestateManager.getCurrentPlayerInfo(0));
 
 		action = botLogic->makeDecision(*cgi, ranges);
 	} 
@@ -935,6 +938,8 @@ double process_state(holdem_state* pstate)
     // testing new hand   
 	if (gamestateManager.IsHandReset(cgi->getHandNumber()))
     {
+		gamestateManager.setCache(false);
+		logger.logExp("HandReset Cache = false", DLL_DECISION_LOGGER);
 		gamestateManager.setHandNumber(cgi->getHandNumber());
         resetHand(pstate, cgi->getHand());
 
@@ -947,6 +952,8 @@ double process_state(holdem_state* pstate)
     // testing if we advanced to the next betting round
     if (cgi->getStreet() > gamestateManager.getBettingRound())
     {
+		logger.logExp("betround Cache = false", DLL_DECISION_LOGGER);
+		gamestateManager.setCache(false);
         detectMissedCallsAndUpdatePlayerRanges(old_cgi);
 		detectMissedChecksAndUpdatePlayerRanges(old_cgi);
         gamestateManager.resetBettingRound();
@@ -1030,8 +1037,13 @@ double process_state(holdem_state* pstate)
 						PlayerRange& updatedRange = botLogic->calculateRange(idx, *cgi, playerRange);
 						updatedRange.setId(idx);
 
+						logger.logExp("1 Cache = false", DLL_DECISION_LOGGER);
 						gamestateManager.setCache(false);
 						playerRangeManager.setPlayerRange(idx, updatedRange);
+					}
+					else
+					{
+						cgi->setHero(currentPlayerInfo);
 					}
                 }
                 else
@@ -1081,8 +1093,14 @@ double process_state(holdem_state* pstate)
 						PlayerRange& updatedRange = botLogic->calculateRange(idx, *cgi, pr);
 						updatedRange.setId(idx);
 
+						logger.logExp("2 Cache = false", DLL_DECISION_LOGGER);
 						gamestateManager.setCache(false);
+						
 						playerRangeManager.setPlayerRange(idx, updatedRange);
+					}
+					else
+					{
+						cgi->setHero(currentPlayerInfo);
 					}
                 }
             }

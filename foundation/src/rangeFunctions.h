@@ -51,7 +51,6 @@ public:
 	PlayerRange create100()
 	{
 		PlayerRange res;
-		valid = true;
 		char map[4];
 		map[0] = 's';
 		map[1] = 'h';
@@ -103,6 +102,7 @@ public:
 		}
 
 		res = res.normalize();
+		res.setValid(true);
 
 		return res;
 	}
@@ -422,7 +422,7 @@ public:
 		return res;
 	}
 
-	static PlayerRange mergeRange(PlayerRange& r1, PlayerRange& r2, vector<Card>& v, Hand& own)
+	static PlayerRange mergeRange(PlayerRange r1, PlayerRange r2, vector<Card>& v, Hand& own)
 	{
 		double hsr1[20], hsr2[20];
 		memset(hsr1, 0, sizeof(hsr1));
