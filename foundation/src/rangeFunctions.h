@@ -5,6 +5,9 @@
 #include "bayesUtils.h"
 #include <set>
 #include <vector>
+#include <sstream>
+
+using namespace std;
 
 class PlayerRange
 {
@@ -30,9 +33,24 @@ public:
 		}
 		printf("Total = %lf\n", total);
 	}
-	void create100()
+	string toString()
 	{
-		valid = true;
+		stringstream os;
+
+		std::set<pair<Hand, double> >::iterator it;
+		double total = 0;
+		for (it = range.begin(); it != range.end(); ++it)
+		{
+			os << it->first.getCard1().getRank() << it->first.getCard1().getSuit() << it->first.getCard2().getRank() << it->first.getCard2().getSuit() << " " <<  it->second << endl;
+			total += it->second;
+		}
+		os << total << endl;
+
+		return os.str();
+	}
+	PlayerRange create100()
+	{
+		PlayerRange res;
 		char map[4];
 		map[0] = 's';
 		map[1] = 'h';
@@ -63,7 +81,7 @@ public:
 						hand.getCard1().setSuit(map[i1]);
 						hand.getCard2().setSuit(map[i2]);
 
-						range.insert(make_pair(hand, 1.0/1326));
+						res.range.insert(make_pair(hand, 1.0/1326));
 						
 					}
 
@@ -77,13 +95,16 @@ public:
 						hand.getCard1().setSuit(map[i1]);
 						hand.getCard2().setSuit(map[i2]);
 
-						range.insert(make_pair(hand, 1.0/1326));
+						res.range.insert(make_pair(hand, 1.0/1326));
 					}
 				}
 			}
 		}
 
-		normalize();
+		res = res.normalize();
+		res.setValid(true);
+
+		return res;
 	}
 	double totalPercentage()
 	{
@@ -401,7 +422,7 @@ public:
 		return res;
 	}
 
-	static PlayerRange mergeRange(PlayerRange& r1, PlayerRange& r2, vector<Card>& v, Hand& own)
+	static PlayerRange mergeRange(PlayerRange r1, PlayerRange r2, vector<Card>& v, Hand& own)
 	{
 		double hsr1[20], hsr2[20];
 		memset(hsr1, 0, sizeof(hsr1));

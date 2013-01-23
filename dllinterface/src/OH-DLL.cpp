@@ -639,7 +639,7 @@ void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
     }
 }
 
-void detectChecksAndUpdateRanges()
+void detectChecksAndUpdateRanges(int relativTo)
 {
     Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER); 
     logger.logExp("[Processing in detectChecksAndUpdateRanges]", DLL_INTERFACE_LOGGER);
@@ -670,7 +670,7 @@ void detectChecksAndUpdateRanges()
                 continue;
             }
 
-            if (isEqual(currentBets[idx], 0.0) && (relativePositions[idx] < relativePositions[0] ) )
+            if (isEqual(currentBets[idx], 0.0) && (relativePositions[idx] < relativePositions[relativTo] ) )
             {
                 CurrentPlayerInfo& currentPlayerInfo = gamestateManager.getCurrentPlayerInfo(idx);
 				
@@ -727,11 +727,12 @@ double process_query(const char* pquery)
 	Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER); 
 	logger.logExp(string("[Processing query] : ").append(pquery).c_str(), DLL_DECISION_LOGGER);
 
-	//process_state(NULL);
-
 	if (strcmp(pquery,"dll$swag") && strcmp(pquery,"dll$srai") && strcmp(pquery,"dll$call") && strcmp(pquery,"dll$prefold"))
 		return 0;
     
+
+	int total = 0;
+	while (process_state(NULL) && (++total)<100);
 
 	if(pquery == NULL)
     {
@@ -752,7 +753,7 @@ double process_query(const char* pquery)
 
 	double playersplayingbits = gws("playersplayingbits");
 
-    detectChecksAndUpdateRanges();
+    detectChecksAndUpdateRanges(0); // here we can just detect whom are  already made a check
     //
 	vector<PlayerRange> allRanges = playerRangeManager.getPlayerRanges();
     vector<PlayerRange> ranges;
@@ -782,6 +783,8 @@ double process_query(const char* pquery)
 				cgi->addCurrentPlayerInfo(gamestateManager.getCurrentPlayerInfo(idx));
 			}
 		}
+
+		cgi->setHero(gamestateManager.getCurrentPlayerInfo(0));
 
 		action = botLogic->makeDecision(*cgi, ranges);
 	} 
@@ -916,7 +919,7 @@ double process_state(holdem_state* pstate)
     {
         delete cgi;
         logger.logExp("[SKIPPING SCRAPPING CYCLE] : hero hole cards are not valid!", DLL_INTERFACE_LOGGER);
-        return 0;
+        return -1;
     }
 
 	vector<double> currentBets(6);
@@ -926,7 +929,7 @@ double process_state(holdem_state* pstate)
 	{
 		delete cgi;
         logger.logExp("[SKIPPING SCRAPPING CYCLE] : Not valid commmon pot!", DLL_INTERFACE_LOGGER);
-		return 0;
+		return -1;
 	}
 
 	CurrentGameInfo* old_cgi = gamestateManager.getCurrentGameInfo();
@@ -935,6 +938,8 @@ double process_state(holdem_state* pstate)
     // testing new hand   
 	if (gamestateManager.IsHandReset(cgi->getHandNumber()))
     {
+		gamestateManager.setCache(false);
+		logger.logExp("HandReset Cache = false", DLL_DECISION_LOGGER);
 		gamestateManager.setHandNumber(cgi->getHandNumber());
         resetHand(pstate, cgi->getHand());
 
@@ -947,9 +952,11 @@ double process_state(holdem_state* pstate)
     // testing if we advanced to the next betting round
     if (cgi->getStreet() > gamestateManager.getBettingRound())
     {
+		logger.logExp("betround Cache = false", DLL_DECISION_LOGGER);
+		gamestateManager.setCache(false);
         detectMissedCallsAndUpdatePlayerRanges(old_cgi);
 		detectMissedChecksAndUpdatePlayerRanges(old_cgi);
-        gamestateManager.resetBettingRound();        
+        gamestateManager.resetBettingRound();
     }
 
 	/*
@@ -1022,11 +1029,21 @@ double process_state(holdem_state* pstate)
                     
 					if (idx > 0)
 					{
+                        if (cgi->getStreet() > 0)
+                        {
+                            detectChecksAndUpdateRanges(idx);
+                        }
+
 						PlayerRange& updatedRange = botLogic->calculateRange(idx, *cgi, playerRange);
 						updatedRange.setId(idx);
 
+						logger.logExp("1 Cache = false", DLL_DECISION_LOGGER);
 						gamestateManager.setCache(false);
 						playerRangeManager.setPlayerRange(idx, updatedRange);
+					}
+					else
+					{
+						cgi->setHero(currentPlayerInfo);
 					}
                 }
                 else
@@ -1066,13 +1083,24 @@ double process_state(holdem_state* pstate)
 
 					if (idx > 0)
 					{
+                        if (cgi->getStreet() > 0)
+                        {
+                            detectChecksAndUpdateRanges(idx);
+                        }
+
 						PlayerRange pr = playerRangeManager.getPlayerRange(idx);
 						pr.setId(idx);
 						PlayerRange& updatedRange = botLogic->calculateRange(idx, *cgi, pr);
 						updatedRange.setId(idx);
 
+						logger.logExp("2 Cache = false", DLL_DECISION_LOGGER);
 						gamestateManager.setCache(false);
+						
 						playerRangeManager.setPlayerRange(idx, updatedRange);
+					}
+					else
+					{
+						cgi->setHero(currentPlayerInfo);
 					}
                 }
             }
