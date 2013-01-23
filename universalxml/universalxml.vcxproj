@@ -79,6 +79,7 @@
       <FileType>Document</FileType>
       <SubType>Designer</SubType>
       <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">src\</OutDir>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">src\</OutDir>
     </CXX_Tree_Mapping_Rule>
   </ItemGroup>
   <ItemGroup>
