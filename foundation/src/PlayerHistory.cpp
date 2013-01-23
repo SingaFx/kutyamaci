@@ -229,7 +229,7 @@ bool PlayerHistory::isFoldedInRound(vector<Action>& actions)
 {
 	for (int i = 0; i < actions.size(); ++i)
 	{
-		if (actions[i].getType() == 'f') return true;		
+		if (actions[i].getType() == 'f') return true;
 	}
 
 	return false;

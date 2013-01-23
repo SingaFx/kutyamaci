@@ -3,6 +3,7 @@
 HandHistory::HandHistory()
  : id("")
  , table("")
+ , bigBlind(0)
  , playerHistories()
  , flopCard1()
  , flopCard2()
@@ -14,9 +15,10 @@ HandHistory::HandHistory()
 {
 }
 
-HandHistory::HandHistory(string i , string t, vector<PlayerHistory> ph, Card f1, Card f2, Card f3, Card turn, Card river, int fbr, int bs)
+HandHistory::HandHistory(string i , string t, double bigBlind, vector<PlayerHistory> ph, Card f1, Card f2, Card f3, Card turn, Card river, int fbr, int bs)
  : id(i)
  , table(t)
+ , bigBlind(bigBlind)
  , playerHistories(ph)
  , flopCard1(f1)
  , flopCard2(f2)
@@ -46,6 +48,16 @@ void HandHistory::setTable(string t)
 const string& HandHistory::getTable() const
 {
     return table;
+}
+
+void HandHistory::setBigBlind(double bB)
+{
+    bigBlind = bB;
+}
+
+double HandHistory::getBigBlind() const
+{
+    return bigBlind;
 }
 
 void HandHistory::setPlayerHistories(vector<PlayerHistory> ph)

@@ -14,7 +14,6 @@ BwinPartyParser::BwinPartyParser(int parserType, ifstream& fileHandle)
  , TABLE("^(Table Supersonic .*)$")
  , PLAYER("^Seat ([[:digit:]]*): (.*) \\( \\$(.*) \\)$")
  , BBLIND("^(.*) posts small blind \\[\\$(.*)")
- , SBLIND("^(.*) posts big blind \\[\\$(.*)")
  , CALL("^(.*) calls \\[\\$(.*)")
  , FOLD("^(.*) folds")
  , BET("^(.*) bets \\[\\$(.*)")
@@ -60,7 +59,6 @@ vector<HandHistory> BwinPartyParser::parse()
 	boost::regex handend(HAND_END);
 	boost::regex table(TABLE);
 	boost::regex player(PLAYER);
-    boost::regex sblind(SBLIND);
     boost::regex bblind(BBLIND);
 	boost::regex call(CALL);
 	boost::regex fold(FOLD);
@@ -113,6 +111,12 @@ vector<HandHistory> BwinPartyParser::parse()
 			actualhand.setTable(string(what[1].first, what[1].second));
 		}
 
+        // Found a big blind action
+		else if (regex_search(line, what, bblind, flags))
+		{
+            actualhand.setBigBlind(atof(string(what[2].first,what[2].second).c_str()));
+		}
+
 		// Found a player
 		else if (regex_search(line, what, player, flags))
 		{
@@ -129,22 +133,6 @@ vector<HandHistory> BwinPartyParser::parse()
 				actualPlayerHistory.setHandKnown(false);
 				actualhand.getPlayerHistories().push_back(actualPlayerHistory);
 			}
-		}
-        // Found a small blind action
-		else if (regex_search(line, what, sblind, flags))
-		{
-            Action tempAction;
-            tempAction.setAction('r', atof(string(what[2].first,what[2].second).c_str()));
-			string player_name = string(what[1].first,what[1].second);
-			HandHistoryUtils::addActiontoPlayer(actualhand, tempAction, player_name, round);
-		}
-        // Found a big blind action
-		else if (regex_search(line, what, bblind, flags))
-		{
-            Action tempAction;
-            tempAction.setAction('r', atof(string(what[2].first,what[2].second).c_str()));
-			string player_name = string(what[1].first,what[1].second);
-			HandHistoryUtils::addActiontoPlayer(actualhand, tempAction, player_name, round);
 		}
 		// Found a call action
 		else if (regex_search(line, what, call, flags))
