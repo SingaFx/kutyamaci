@@ -11,16 +11,13 @@ using namespace std;
 
 class PlayerRange
 {
-	int id;
-	bool valid;
-	bool preflopNotPlaying;
 public:
 	std::set<pair<Hand, double> > range;
+	bool valid;
+	int id;
 
 	PlayerRange()
 	{
-		preflopNotPlaying = true;
-		valid = true;
 	}
 
 	void printRange()
@@ -103,10 +100,19 @@ public:
 		}
 
 		res = res.normalize();
-		res.setValid(true);
 
 		return res;
 	}
+
+	void setValid(bool valid)
+	{
+		this->valid;
+	}
+	bool getValid()
+	{
+		return valid;
+	}
+
 	double totalPercentage()
 	{
 		std::set<pair<Hand, double> >::iterator it;
@@ -141,23 +147,7 @@ public:
 	{
 		return id;
 	}
-	void setValid(bool valid)
-	{
-		this->valid;
-	}
-	bool getValid()
-	{
-		return valid;
-	}
 
-	void setPreflopNotPlaying(bool preflopNotPlaying)
-	{
-		this->preflopNotPlaying = preflopNotPlaying;
-	}
-	double getPreflopNotPlaying()
-	{
-		return preflopNotPlaying;
-	}
 };
 class RangeUtils
 {

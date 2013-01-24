@@ -546,8 +546,13 @@ void detectMissedChecksAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
 					old_cgi->addCurrentPlayerInfo(gamestateManager.getCurrentPlayerInfo(idx));
 					
 					PlayerRange& range = playerRangeManager.getPlayerRange(idx);
-					range.setValid(true);
-					PlayerRange& updatedRange = botLogic->calculateRange(idx, *old_cgi, range);
+					PlayerRange updatedRange = botLogic->calculateRange(idx, *old_cgi, range);
+
+					if (!updatedRange.getValid())
+					{
+						logger.logExp("UpdatedRange set to false1\n", BOT_LOGIC);
+					}
+
 					updatedRange.setId(idx);
 
 
@@ -587,7 +592,7 @@ void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
     calculateRelativPositions(relativePositions, gamestateManager.getDealerPosition());
 
     double playersplayingbits = gws("playersplayingbits");
-    for (int idx = 1; idx < 6; ++idx)
+    for (int idx = 0; idx < 6; ++idx)
     {        
         if (isBitSet((int)playersplayingbits, idx))
         {
@@ -606,21 +611,32 @@ void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
 				currentPlayerInfo.setId(idx);
 
 				logger.logExp("DETECTED : Call, currentplayer info not set " + currentPlayerInfo.getName(), DLL_INTERFACE_LOGGER);
+				
+				if (idx > 0)
+				{
+					gamestateManager.setCurrentPlayerInfo(idx, currentPlayerInfo);
 
-				gamestateManager.setCurrentPlayerInfo(idx, currentPlayerInfo);
-
-				old_cgi->addCurrentPlayerInfo(currentPlayerInfo);
+					old_cgi->addCurrentPlayerInfo(currentPlayerInfo);
 					
-                // let's update
-				PlayerRange pr = playerRangeManager.getPlayerRange(idx);
-				pr.setId(idx);
-				pr.setValid(true);
-				PlayerRange& updatedRange = botLogic->calculateRange(idx, *old_cgi, pr);
-				updatedRange.setId(idx);
+					// let's update
+					PlayerRange pr = playerRangeManager.getPlayerRange(idx);
+					pr.setId(idx);
+					PlayerRange updatedRange = botLogic->calculateRange(idx, *old_cgi, pr);
+					updatedRange.setId(idx);
 
-				gamestateManager.setCache(false);
-				logger.logExp("Cache set to false Detected call", DLL_DECISION_LOGGER);
-				playerRangeManager.setPlayerRange(idx, updatedRange);
+					if (!updatedRange.getValid())
+					{
+						logger.logExp("UpdatedRange set to false2\n", BOT_LOGIC);
+					}
+
+					gamestateManager.setCache(false);
+					logger.logExp("Cache set to false Detected call", DLL_DECISION_LOGGER);
+					playerRangeManager.setPlayerRange(idx, updatedRange);
+				}
+				else
+				{
+					gamestateManager.setCurrentPlayerInfo(0, currentPlayerInfo);
+				}
 			}
 			else
 			{
@@ -632,17 +648,28 @@ void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
 					currentPlayerInfo.setLine(0);
 					currentPlayerInfo.setBetsize(maxRaise);
 
-					old_cgi->addCurrentPlayerInfo(gamestateManager.getCurrentPlayerInfo(idx));
+					if (idx > 0)
+					{
+						old_cgi->addCurrentPlayerInfo(gamestateManager.getCurrentPlayerInfo(idx));
 					
-					PlayerRange& range = playerRangeManager.getPlayerRange(idx);
-					range.setValid(true);
-					PlayerRange& updatedRange = botLogic->calculateRange(idx, *old_cgi, range);
-					updatedRange.setId(idx);
+						PlayerRange& range = playerRangeManager.getPlayerRange(idx);
+						PlayerRange updatedRange = botLogic->calculateRange(idx, *old_cgi, range);
+						updatedRange.setId(idx);
+
+						if (!updatedRange.getValid())
+						{
+							logger.logExp("UpdatedRange set to false3\n", BOT_LOGIC);
+						}	
 
 
-					gamestateManager.setCache(false);
-					logger.logExp("Cache set to false Detected call", DLL_DECISION_LOGGER);
-					playerRangeManager.setPlayerRange(idx, updatedRange);
+						gamestateManager.setCache(false);
+						logger.logExp("Cache set to false Detected call", DLL_DECISION_LOGGER);
+						playerRangeManager.setPlayerRange(idx, updatedRange);
+					}
+					else
+					{
+						gamestateManager.setCurrentPlayerInfo(0, currentPlayerInfo);
+					}
 				}
 			}
         }
@@ -701,9 +728,13 @@ void detectChecksAndUpdateRanges(int relativTo)
                 }
 					
 				PlayerRange& range = playerRangeManager.getPlayerRange(idx);
-				range.setValid(true);
-                PlayerRange& updatedRange = botLogic->calculateRange(idx, *cgi, range);
+                PlayerRange updatedRange = botLogic->calculateRange(idx, *cgi, range);
 				updatedRange.setId(idx);
+
+				if (!updatedRange.getValid())
+				{
+					logger.logExp("UpdatedRange set to false4\n", BOT_LOGIC);
+				}
 
 			    gamestateManager.setCache(false);
 				logger.logExp("Cache set to false CheckBoldifele", DLL_DECISION_LOGGER);
@@ -827,6 +858,10 @@ double process_query(const char* pquery)
 	{
 		if (isBitSet((int)playersplayingbits, idx) && gamestateManager.isCurrentPlayerInfoSet(idx))
 		{
+			if (!allRanges[idx].getValid())
+			{
+				logger.logExp("range is not valid", BOT_LOGIC);
+			}
 			ranges.push_back(allRanges[idx]);
 		}
 	}
@@ -850,6 +885,10 @@ double process_query(const char* pquery)
 			}
 		}
 
+		vector<int> relativPositions;
+		calculateRelativPositions(relativPositions, gamestateManager.getDealerPosition());
+
+		gamestateManager.getCurrentPlayerInfo(0).setPoz(relativPositions[0]);
 		cgi->setHero(gamestateManager.getCurrentPlayerInfo(0));
 
 		action = botLogic->makeDecision(*cgi, ranges);
@@ -869,7 +908,15 @@ double process_query(const char* pquery)
 		}
 		else
 		{
-			result = action.getSize();
+			if (action.getType() == 'h')
+			{
+				logger.logExp("Action is hack dll$swag\n", DLL_DECISION_LOGGER);
+				result = -1;
+			}
+			else
+			{
+				result = action.getSize();
+			}
 		}
 
 		gamestateManager.setAction(action);
@@ -896,6 +943,12 @@ double process_query(const char* pquery)
 		if (action.getType() == 'n')
 		{
 			return -1;
+		}
+
+		if (action.getType() == 'h')
+		{
+			logger.logExp("Action is hack dll$call\n", DLL_DECISION_LOGGER);
+			return 1;
 		}
 
 		gamestateManager.setAction(action);
@@ -1092,14 +1145,20 @@ double process_state(holdem_state* pstate)
                         }
 
 						PlayerRange& range = playerRangeManager.getPlayerRange(idx);
-						range.setValid(true);
-						PlayerRange& updatedRange = botLogic->calculateRange(idx, *cgi, range);
+						PlayerRange updatedRange = botLogic->calculateRange(idx, *cgi, range);
 						updatedRange.setId(idx);
 
 
 						logger.logExp("1 Cache = false", DLL_DECISION_LOGGER);
 						gamestateManager.setCache(false);
 						playerRangeManager.setPlayerRange(idx, updatedRange);
+
+						
+						if (!updatedRange.getValid())
+						{
+							logger.logExp("UpdatedRange set to false5\n", BOT_LOGIC);
+						}
+
 					}
 					else
 					{
@@ -1152,10 +1211,20 @@ double process_state(holdem_state* pstate)
 
 						PlayerRange pr = playerRangeManager.getPlayerRange(idx);
 						pr.setId(idx);
-						pr.setValid(true);
-						PlayerRange& updatedRange = botLogic->calculateRange(idx, *cgi, pr);
+						if (!pr.getValid())
+						{
+							logger.logExp("Given range set to false6\n", BOT_LOGIC);
+						}
+
+
+						PlayerRange updatedRange = botLogic->calculateRange(idx, *cgi, pr);
 						updatedRange.setId(idx);
 
+						
+						if (!updatedRange.getValid())
+						{
+							logger.logExp("UpdatedRange set to false6\n", BOT_LOGIC);
+						}
 
 						logger.logExp("2 Cache = false", DLL_DECISION_LOGGER);
 						gamestateManager.setCache(false);

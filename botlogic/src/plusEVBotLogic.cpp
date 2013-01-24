@@ -17,7 +17,19 @@ PlusEVBotLogic::~PlusEVBotLogic()
 
 PlayerRange PlusEVBotLogic::calculateRange(int id, CurrentGameInfo& gameInfo, PlayerRange& oldPlayerRange)
 {
+	//bb checks
+	if (gameInfo.getStreet() == 0)
+	{
+		CurrentPlayerInfo player = gameInfo.getPlayerbyId(id);
+		if (player.getPoz() == 2 && player.getLine() == 2)
+		{
+			return oldPlayerRange;
+		}
+	}
+	
+
 	//validation
+	if (!oldPlayerRange.getValid()) return oldPlayerRange;
 
 	extendGameInfo(gameInfo);
 
@@ -110,8 +122,14 @@ PlayerRange PlusEVBotLogic::calculateRange(int id, CurrentGameInfo& gameInfo, Pl
 
 	if (res.range.size() == 0)
 	{
-		oldPlayerRange.setValid(false);
+		CurrentPlayerInfo player = gameInfo.getPlayerbyId(id);
+		if (player.getLine() == 2)
+		{
+			logger.logExp("Not enough patterns for check!!!", BOT_LOGIC);
+			return oldPlayerRange;
+		}
 
+		oldPlayerRange.setValid(false);
 		logger.logExp("ERROR in range!!!", BOT_LOGIC);
 
 		return oldPlayerRange;

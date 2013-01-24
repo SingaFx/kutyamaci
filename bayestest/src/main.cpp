@@ -271,6 +271,22 @@ int main()
 		*/
 
 		{
+			vector<Card> board;
+			board.push_back(Card('A', 's'));
+			board.push_back(Card('2', 'h'));
+			board.push_back(Card('Q', 'h'));
+			board.push_back(Card('2', 'd'));
+			board.push_back(Card('Q', 'c'));
+
+			Hand own(Card('6', 'c'), Card('7','d'));
+
+			printf("FLOP RANGE\N");
+			PlayerRange riverRange = flop.getRange(40, 10, 1, 55.25 * 0.04, 2, 0, 0.04, 6.75 * 0.04, board, own, 0);
+			riverRange.printRange();
+		}
+
+
+		{
 			double FE = preflop.getProbabilityFE(20, 15, 213.25*0.04, -1, 1, 0.16, 0.04, 0, 0);
 			printf("FE = %lf\n", FE);
 		}

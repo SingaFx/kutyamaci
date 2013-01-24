@@ -1,4 +1,4 @@
-##2013-01-20 16:21:21##
+##2013-01-23 20:12:50##
 
 ##notes##
 
@@ -97,8 +97,8 @@ nopponentsseated < 3 || nopponentsdealt < 2 ? -2
 
 ##list01##
 AA  KK  QQ  JJ  TT  99  88  77  
-AKs AQs AJs KQs 
-KA  QA  QK  JA  
+AKs AQs KQs 
+KA  QA  QK  
 
 ##list02##
 AA  KK  QQ  JJ  TT  99  88  77  66  55  
@@ -112,8 +112,8 @@ KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  9A
 
 ##list04##
 AA  KK  QQ  JJ  TT  99  88  77  66  55  44  33  22  
-AKs AQs AJs ATs A9s A8s A7s A6s A5s A4s A3s A2s KQs KJs KTs K9s K8s K7s K6s K5s K4s K3s K2s QJs QTs Q9s Q8s Q7s Q6s Q5s Q4s Q3s Q2s JTs J9s J8s J7s J6s T9s T8s T7s T6s 98s 97s 87s 76s 65s 54s 
-KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  9A  9T  8A  89  7A  78  6A  67  5A  4A  3A  2A  
+AKs AQs AJs ATs A9s A8s A7s A6s A5s A4s A3s A2s KQs KJs KTs K9s K8s K7s K6s K5s K4s K3s K2s QJs QTs Q9s Q8s Q7s Q6s Q5s Q4s Q3s Q2s JTs J9s J8s J7s J6s J5s J4s J3s J2s T9s T8s T7s T6s T5s T4s 98s 97s 96s 95s 94s 87s 86s 85s 84s 76s 75s 74s 65s 64s 54s 
+KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  9A  9K  9Q  9J  9T  8A  8K  8Q  8J  8T  89  7A  7K  7Q  7J  7T  79  78  6A  6K  6Q  6J  67  5A  56  4A  45  3A  2A  
 
 ##list12##
 AA  KK  QQ  JJ  TT  99  88  77  
@@ -167,6 +167,11 @@ KA  QA  QK  9T
 
 ##list26##
 AA  KK  QQ  
+
+##list05##
+AA  KK  QQ  JJ  TT  99  88  77  66  55  44  33  22  
+AKs AQs AJs ATs A9s A8s A7s A6s A5s A4s A3s A2s KQs KJs KTs K9s K8s K7s K6s K5s K4s K3s K2s QJs QTs Q9s Q8s Q7s JTs J9s J8s J7s T9s T8s T7s 98s 97s 87s 76s 65s 
+KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  9A  9K  9Q  9J  9T  8A  8K  89  7A  78  6A  5A  4A  3A  2A  
 
 ##f$BetSize##
 br == 1 ? 
@@ -364,9 +369,9 @@ nsuitedcommon < 3 && nstraightfillcommon > 1
 f$PreflopFirstIn ?
 		f$PositionEP ? islist01 
   :f$PositionMP ? islist02 
-  :f$PositionCO ? islist03 
+  :f$PositionCO ? dll$BUVPIP < 21 ? islist05 : islist03 
   :f$PositionBU ? islist04
-  :f$PositionSB ? islist03
+  :f$PositionSB ? dll$BBVPIP < 18 ? 1 : islist03
 	 :f$PositionBB ? islist12
   :0
 :f$Preflop1Limper ? 

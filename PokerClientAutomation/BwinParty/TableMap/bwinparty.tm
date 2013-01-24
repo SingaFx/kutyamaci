@@ -2,7 +2,7 @@
 
 // OpenScrape 2.0.0
 
-// 2013-01-22 15:04:01
+// 2013-01-24 02:15:03
 // 32 bits per pixel
 
 //
@@ -17,10 +17,10 @@ z$clientsize       480  323
 
 s$activemethod              2
 s$buttonclickmethod         Single
-s$handresetmethod           7
+s$handresetmethod           6
 s$nchairs                   6
 s$network                   bwinparty
-s$potmethod                 2
+s$potmethod                 1
 s$sitename                  bwin
 s$swagconfirmationmethod    Click Bet
 s$swagdeletionmethod        Delete
@@ -39,7 +39,7 @@ r$c0cardface2        223  95 233 124        0    0 H0
 r$c0cardface3        262  95 272 124        0    0 H0
 r$c0cardface4        300  95 310 124        0    0 H0
 r$c0handnumber       420   2 476  10   ffffff    0 T3
-r$c0pot0             216  59 263  67   b4d5bd    0 T2
+r$c0pot0             214 159 261 167   ffffff    0 T2
 r$i0button           304 285 316 297        0    0 N
 r$i0label            279 287 288 291   38c7e2    0 H3
 r$i0state            279 287 288 291    59dca    2 H2
@@ -361,6 +361,7 @@ h2$onra1se            0656c440
 h2$onprefold          2b09bf7f
 h2$onraise            4752ff79
 h2$oncall             9079a163
+h2$onca11             9520bdfc
 h2$onfold             a216f6ce
 h2$oncheck            a81b4ec0
 h2$onbet              dc9a7897
@@ -368,6 +369,7 @@ h3$check              54b3277b
 h3$prefold            726ffd12
 h3$raise              885d46ed
 h3$fold               8fdb9715
+h3$ca11               9ee73211
 h3$call               a0be181e
 h3$ra1se              cf6c148b
 h3$bet                d914ebff
@@ -606,6 +608,12 @@ fcfdfd00fafbfc00f8fafa00f7fafa00dbdede00242525002c2d2d00d7dadb00f3f7f800f2f6f700
 fcfdfd00f9fbfb00f7fafa00f4f7f800c0c3c3007879790077787800c4c7c700f1f5f600f0f5f600eff4f500
 fcfdfd00f8fafa00f5f8f900f4f7f800f4f7f800f4f7f800f3f7f800f1f6f600eff5f500eef4f500eef3f400
 fbfcfc00f7f9fa00f4f7f800f2f6f700f1f6f700f0f5f600eff4f500eef4f500edf3f400ecf2f300ebf2f300
+i$onca11           10  5  
+1515150048e5fd0048e5fd001515150048e5fd001515150048e5fd0048e5fd0048e5fd0048e5fd00
+151515004be9fe004be9fe00151515004be9fe00151515004be9fe004ce9ff004be9fe004be9fe00
+1515150050eafe0050eafe001515150050eafe001515150015151500151515001515150050eafe00
+151515001515150050eafe001515150050eafe001515150050eafe0051ebff0050eafe0050eafe00
+56edfe001515150056edfe001515150056edfe001515150056edfe0056edff0056edfe0056edfe00
 i$8h               11  30 
 dfdfdf00fdfdfd00fefefe00ffffff00ffffff00fefefe00ffffff00ffffff00fefefe00ffffff00ffffff00
 fdfdfd00ffffff00ffffff00ffffff00fefeff00fcfcfe00fcfcfe00fdfdfe00ffffff00ffffff00ffffff00
@@ -1275,6 +1283,12 @@ fcfdfd00fafbfc00f8fafa00f7fafa00f3d5c400e3560900e2500000e56c2900f4eae300f2f6f700
 fcfcfd00f9fbfb00f7fafa00f5f8f900f4f5f300eb986a00e3580b00eebca000f1f6f700f0f5f600eff4f500
 fcfcfd00f8fafa00f5f8f900f4f7f800f3f7f800f2ddd100eb986b00f1ebe600eff5f500eef4f500eef3f400
 fbfcfc00f7f9fa00f4f7f800f2f6f700f1f6f700f0f5f600f2f6f700eef4f500edf3f400ecf2f300ebf2f300
+i$ca11             10  5  
+1515150048e5fd0048e5fd001515150048e5fd001515150048e5fd0048e5fd0048e5fd0048e5fd00
+151515004be9fe004be9fe00151515004be9fe00151515004be9fe004ce9ff004be9fe004be9fe00
+1515150050eafe0050eafe001515150050eafe001515150015151500151515001515150050eafe00
+151515001515150050eafe001515150050eafe001515150050eafe0051ebff0050eafe0050eafe00
+56edfe001515150056edfe001515150056edfe001515150056edfe0056edff0056edfe0056edfe00
 i$raise            10  5  
 15151500151515001515150048e5fd0048e5fd0048e5fd0048e5fd0048e5fd0048e5fd0015151500
 4be9fe0015151500151515004be9fe001515150015151500151515004be9fe004be9fe0015151500
