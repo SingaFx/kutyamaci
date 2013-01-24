@@ -97,14 +97,30 @@ double BayesDecision::calculateEQ(vector<PlayerRange>& ranges, vector<Card>& boa
 	}
 
 	logger.logExp("Calculating EQ...", BOT_LOGIC);
+	double eq = calc.calculate(result, board, 15000) / 100;
+	logger.logExp("Calculated original EQ", eq, BOT_LOGIC);
+	eq -= 0.05;
 
-	return calc.calculate(result, board, 15000) / 100;
+	return eq;
 }
 char BayesDecision::calculateDecision(CurrentGameInfo& game, vector<PlayerRange>& ranges, BayesUserPreflop& preflop, BayesUserFlop& flop, BayesUserTurn& turn, BayesUserRiver& river)
 {
 	char res = 'n';
 
 	return res;
+}
+
+double getMaxRaise(CurrentGameInfo& gameInfo)
+{
+	double betsize = 0;
+	for (int i = 0; i < gameInfo.getOpponentsInfo().size(); ++i)
+	{
+		CurrentPlayerInfo& player = gameInfo.getOpponentsInfo()[i];
+		if (player.getBetsize() > betsize)
+			betsize = player.getBetsize();
+	}
+
+	return betsize;
 }
 
 double BayesDecision::modifyValue(double value, double change)
@@ -190,18 +206,85 @@ double BayesDecision::modifyFEbyBetSize(int street, CurrentPlayerInfo& player, d
 
 	return FE;
 }
-double getMaxRaise(CurrentGameInfo& gameInfo)
+double BayesDecision::modifyEQbyBetSize(CurrentGameInfo& game, double betsize, double potcommon, double EQ, double bblind)
 {
-	double betsize = 0;
-	for (int i = 0; i < gameInfo.getOpponentsInfo().size(); ++i)
+	double currentbet = game.getBiggestBet();
+
+	int street = game.getStreet() + 1;
+	int nBetsize = normalizeBetSize(street, betsize, potcommon, bblind);
+
+	if (street == 1)
 	{
-		CurrentPlayerInfo& player = gameInfo.getOpponentsInfo()[i];
-		if (player.getBetsize() > betsize)
-			betsize = player.getBetsize();
+		double ratio = betsize / currentbet;
+
+		if (ratio < 2.5)
+		{
+			EQ = modifyValue(EQ, 0.0);
+		}
+
+		if (ratio > 5)
+		{
+			EQ = modifyValue(EQ, -0.05);
+		}
+	}
+	else
+	{
+		if (currentbet > potcommon * 0.5)
+		{
+			double ratio = betsize / currentbet;
+			if (ratio < 2.5)
+			{
+				EQ = modifyValue(EQ, -0.05);
+			}
+			else if (ratio < 3.5)
+			{
+				EQ = modifyValue(EQ, -0.07);
+			}
+			else if (ratio < 5)
+			{
+				EQ = modifyValue(EQ, -0.1);
+			}
+			else
+			{
+				EQ = modifyValue(EQ, -0.15);
+			}
+		}
+		else
+		{
+			if (nBetsize == 0)
+			{
+				EQ = modifyValue(EQ, 0.03);
+			}
+
+			if (nBetsize == 1)
+			{
+				EQ = modifyValue(EQ, 0.02);
+			}
+
+			if (nBetsize == 2)
+			{
+			}
+
+			if (nBetsize == 3)
+			{
+				EQ = modifyValue(EQ, -0.04);
+			}
+
+			if (nBetsize == 4)
+			{
+				EQ = modifyValue(EQ, -0.06);
+			}
+
+			if (nBetsize > 4)
+			{
+				EQ = modifyValue(EQ, -0.08);
+			}
+		}
 	}
 
-	return betsize;
+	return EQ;
 }
+
 double BayesDecision::modifyFEbyPlayersInPlay(int number, double FE)
 {
 	if (number == 2)
@@ -318,7 +401,7 @@ double BayesDecision::modifyEQbyRelativePosition(CurrentGameInfo& gameInfo, vect
 		logger.logExp("In position\n", BOT_LOGIC);
 		if (gameInfo.getStreet() == 0)
 		{
-			EQ = modifyValue(EQ, 0.00);
+			EQ = modifyValue(EQ, 0.05);
 		}
 		if (gameInfo.getStreet() == 1)
 		{
@@ -326,7 +409,7 @@ double BayesDecision::modifyEQbyRelativePosition(CurrentGameInfo& gameInfo, vect
 		}
 		if (gameInfo.getStreet() == 2)
 		{
-			EQ = modifyValue(EQ, 0.05);
+			EQ = modifyValue(EQ, 0.00);
 		}
 	}
 	else
@@ -347,6 +430,29 @@ double BayesDecision::modifyEQbyRelativePosition(CurrentGameInfo& gameInfo, vect
 	}
 
 	return EQ;
+}
+double BayesDecision::modifyFEbyBoardType(vector<Card>& board, double FE)
+{
+	int boardType = Evaluator::boardType(board);
+
+	if (boardType == 0)
+	{
+		FE = modifyValue(FE, 0.05);
+	}
+	else if (boardType == 1)
+	{
+		FE = modifyValue(FE, -0.1);
+	}
+	else if (boardType == 2)
+	{
+		FE = modifyValue(FE, -0.13);
+	}
+	else if (boardType == 3)
+	{
+		FE = modifyValue(FE, -0.15);
+	}
+
+	return FE;
 }
 //TODO: modify FE by board
 
@@ -369,7 +475,7 @@ vector<double> BayesDecision::getFoldEquities(double betsize, CurrentGameInfo& g
 			logger.logExp("Player's modified FE by betsize : ", akt, BOT_LOGIC);
 			akt = modifyFEbyRelativePosition(game, akt);
 			logger.logExp("Player's modified FE by relative position : ", akt, BOT_LOGIC);
-			
+
 			result.push_back(akt);
 		}
 	}
@@ -384,6 +490,7 @@ vector<double> BayesDecision::getFoldEquities(double betsize, CurrentGameInfo& g
 			akt = modifyFEbyBetSize(2, player, betsize / game.getBblind(), game.getPotcommon(), akt, game.getBblind());
 			akt = modifyFEbyPlayersInPlay(ranges.size(), akt);
 			akt = modifyFEbyRelativePosition(game, akt);
+			akt = modifyFEbyBoardType(game.getBoard(), akt);
 
 			result.push_back(akt);
 		}
@@ -399,6 +506,7 @@ vector<double> BayesDecision::getFoldEquities(double betsize, CurrentGameInfo& g
 			akt = modifyFEbyBetSize(2, player, betsize / game.getBblind(), game.getPotcommon(), akt, game.getBblind());
 			akt = modifyFEbyPlayersInPlay(ranges.size(), akt);
 			akt = modifyFEbyRelativePosition(game, akt);
+			akt = modifyFEbyBoardType(game.getBoard(), akt);
 
 			result.push_back(akt);
 		}
@@ -413,6 +521,7 @@ vector<double> BayesDecision::getFoldEquities(double betsize, CurrentGameInfo& g
 			logger.logExp("Player's original FE : ", akt, BOT_LOGIC);
 			akt = modifyFEbyBetSize(2, player, betsize / game.getBblind(), game.getPotcommon(), akt, game.getBblind());
 			akt = modifyFEbyPlayersInPlay(ranges.size(), akt);
+			akt = modifyFEbyBoardType(game.getBoard(), akt);
 
 			result.push_back(akt);
 		}
@@ -472,7 +581,8 @@ double BayesDecision::calculateEVRaise(CurrentGameInfo& gameInfo, vector<PlayerR
 		if (nr > 0) eq = calculateEQ(actualRanges, gameInfo.getBoard(), gameInfo.getHand());
 		logger.logExp("Calculated EQ : ", eq, BOT_LOGIC);
 		if (nr > 0) eq = modifyEQbyRelativePosition(gameInfo, playersPlaying, eq);
-		logger.logExp("Modified EQ : ", eq, BOT_LOGIC);
+		logger.logExp("Modified EQ by relativ position : ", eq, BOT_LOGIC);
+		if (nr > 0) eq = modifyEQbyBetSize(gameInfo, betsize, gameInfo.getPotcommon(), eq, gameInfo.getBblind());
 
 		// TODO : Include players who already folded ??
 		double thisEV = eq * (pot + nr * betsize + heroCurrentBet) - (1 - eq) * (betsize - heroCurrentBet);

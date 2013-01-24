@@ -2306,7 +2306,7 @@ public:
 
 		if (v.size() == 3)
 		{
-			if (flopDangerousBoard(v[0],v[1],v[2])
+			if (flopDangerousBoard(v[0],v[1],v[2]))
 			{
 				return 1;
 			}
