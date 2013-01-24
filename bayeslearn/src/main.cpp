@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <cstdio>
+#include <map>
 
 #include "handHistoryParser.h"
 #include "bayesLearnFunctions.h"
@@ -60,6 +61,9 @@ BayesLearnRiver* river;
 
 int total;
 
+
+map<string, DatabaseMapStruct> DatabaseMAP;
+
 void parseHands(string filename)
 {
 	int total = 0;
@@ -77,13 +81,13 @@ void parseHands(string filename)
 		//if (total < 110000) continue;
 		for (int i = 0; i < history.size(); ++i)
 		{
-			preflop->updateProbabilities(history[i]);
-			flop->updateProbabilities(history[i]);
-			turn->updateProbabilities(history[i]);
-			river->updateProbabilities(history[i]);
+			preflop->updateProbabilities(history[i], DatabaseMAP);
+			flop->updateProbabilities(history[i], DatabaseMAP);
+			turn->updateProbabilities(history[i], DatabaseMAP);
+			river->updateProbabilities(history[i], DatabaseMAP);
 		}
 
-		if (total > 1000000) return ;
+		//if (total > 1000000) return ;
 	}
 }
 int main(int argc, char* argv[])

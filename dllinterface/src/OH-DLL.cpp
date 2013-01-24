@@ -768,8 +768,14 @@ void refreshStackSizes(vector<double>& currentBets)
 double AnyVPIP(int index)
 {
 	Logger& logger = Logger::getLogger(DLL_DECISION_LOGGER);
+	//logger.logExp("
+
+	BotManager& botManager = BotManager::getBotManager();
+	AbstractBotLogic* botLogic = botManager.getPluggableBot();
 
 	Database database("127.0.0.1", "root", "root", "kutya");
+	
+	
 	GameStateManager& gamestateManager = GameStateManager::getGameStateManager();
 
 	vector<int> relativePositions;
@@ -782,7 +788,8 @@ double AnyVPIP(int index)
 	}
 
 	string name = gamestateManager.getPlayerNameByPos(idx);
-	
+	if (name == "") return 20;
+
 	logger.logExp("Query " + name,DLL_DECISION_LOGGER);
 
 	double VPIP = 0;
@@ -790,6 +797,7 @@ double AnyVPIP(int index)
 	if (database.isUser(name))
 	{
 		VPIP = database.getVPIP(name);
+		logger.logExp("VPIP got: ", VPIP,DLL_DECISION_LOGGER);
 	}
 	else
 	{

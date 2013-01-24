@@ -19,10 +19,12 @@ public:
 	static double modifyValue(double, double);
 
 	static double modifyFEbyBetSize(int, CurrentPlayerInfo&, double, double, double, double);
-	static double modifyEQbyRelativePosition(CurrentGameInfo& gameInfo, double EQ);
+	static double modifyEQbyRelativePosition(CurrentGameInfo&, vector<CurrentPlayerInfo>&, double EQ);
 	static double modifyFEbyPlayersInPlay(int, double);
 	static double modifyFEbyRelativePosition(CurrentGameInfo&, double);
 
+	static vector<double> getFoldEquities(double, CurrentGameInfo&, vector<PlayerRange>&, BayesUserPreflop&, BayesUserFlop&, BayesUserTurn&, BayesUserRiver&);
+	static double calculateEVRaise(CurrentGameInfo&, vector<PlayerRange>&, vector<double>& , double);
 public:
 	//range-t kap
 	static Action makeDecision(CurrentGameInfo&, vector<PlayerRange>&, BayesUserPreflop&, BayesUserFlop&, BayesUserTurn&, BayesUserRiver&);

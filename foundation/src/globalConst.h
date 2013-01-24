@@ -1,2 +1,2 @@
 #pragma once
-static const int patternsNeeded = 30;
+static const int patternsNeeded = 50;

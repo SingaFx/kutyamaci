@@ -297,6 +297,12 @@ int main()
 		}
 
 		{
+			double FE = flop.getProbabilityFE(40, 10, 1,76.75*0.04, 1, 0.48, 0.04, 6.75 * 0.04, 50);
+			printf("FLOP FE = %lf\n", FE);
+		}
+
+
+		{
 			vector<Card> board;
 			board.push_back(Card('A', 's'));
 			board.push_back(Card('2', 'h'));

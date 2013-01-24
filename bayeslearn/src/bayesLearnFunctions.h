@@ -12,6 +12,14 @@
 
 using namespace std;
 
+struct DatabaseMapStruct
+{
+	string name;
+	double VPIP;
+	double PFR;
+	double AF;
+};
+
 class BayesLearnPreflop : public BayesPreflop
 {
 public:
@@ -52,7 +60,7 @@ public:
 		fclose(f);
 	}
 
-	void updateProbabilities(HandHistory& handhistory)
+	void updateProbabilities(HandHistory& handhistory, map<string, DatabaseMapStruct>& databaseMAP)
 	{
 		if (handhistory.getPlayerHistories().size() > 6)
 		{
@@ -64,18 +72,37 @@ public:
 		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
 		{
 			PlayerHistory player = handhistory.getPlayerHistories()[i];
-			double VPIP = database->getVPIP(player.getPlayerName());
-			if (VPIP > 100 || VPIP < 0)
-			{
-				printf("ERROR VPIP: %lf\n", VPIP);
-				printf("NAME: %s\n", player.getPlayerName().c_str());
-			}
+			double VPIP;
+			double PFR;
 
-			double PFR = database->getPFR(player.getPlayerName());
-			if (PFR > 100 || PFR < 0)
+			string name = player.getPlayerName();
+			if (databaseMAP[name].name == name)
 			{
-				printf("ERROR PFR: %lf\n", PFR);
-				printf("NAME: %s\n", player.getPlayerName().c_str());
+				VPIP = databaseMAP[name].VPIP;
+				PFR = databaseMAP[name].PFR;
+			}
+			else
+			{
+				VPIP = database->getVPIP(player.getPlayerName());
+				if (VPIP > 100 || VPIP < 0)
+				{
+					printf("ERROR VPIP: %lf\n", VPIP);
+					printf("NAME: %s\n", player.getPlayerName().c_str());
+				}
+
+				PFR = database->getPFR(player.getPlayerName());
+				if (PFR > 100 || PFR < 0)
+				{
+					printf("ERROR PFR: %lf\n", PFR);
+					printf("NAME: %s\n", player.getPlayerName().c_str());
+				}
+
+				double AF = database->getAF(player.getPlayerName());
+
+				databaseMAP[name].name = name;
+				databaseMAP[name].VPIP = VPIP;
+				databaseMAP[name].PFR = PFR;
+				databaseMAP[name].AF = AF;
 			}
 
 			int poz = player.getPosition() + 3;
@@ -346,7 +373,7 @@ public:
 		fclose(f);
 	}
 
-	void updateProbabilities(HandHistory& handhistory)
+	void updateProbabilities(HandHistory& handhistory, map<string, DatabaseMapStruct>& databaseMAP)
 	{
 		if (handhistory.getPlayerHistories().size() > 6)
 		{
@@ -377,21 +404,40 @@ public:
 		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
 		{
 			PlayerHistory player = handhistory.getPlayerHistories()[i];
-			double VPIP = database->getVPIP(player.getPlayerName());
-			if (VPIP > 100 || VPIP < 0)
-			{
-				printf("ERROR VPIP: %lf\n", VPIP);
-				printf("NAME: %s\n", player.getPlayerName().c_str());
-			}
+			double VPIP;
+			double PFR;
+			double AF;
 
-			double PFR = database->getPFR(player.getPlayerName());
-			if (PFR > 100 || PFR < 0)
+			string name = player.getPlayerName();
+			if (databaseMAP[name].name == name)
 			{
-				printf("ERROR PFR: %lf\n", PFR);
-				printf("NAME: %s\n", player.getPlayerName().c_str());
+				VPIP = databaseMAP[name].VPIP;
+				PFR = databaseMAP[name].PFR;
+				AF = databaseMAP[name].AF;
 			}
+			else
+			{
+				VPIP = database->getVPIP(player.getPlayerName());
+				if (VPIP > 100 || VPIP < 0)
+				{
+					printf("ERROR VPIP: %lf\n", VPIP);
+					printf("NAME: %s\n", player.getPlayerName().c_str());
+				}
 
-			double AF = database->getAF(player.getPlayerName());
+				PFR = database->getPFR(player.getPlayerName());
+				if (PFR > 100 || PFR < 0)
+				{
+					printf("ERROR PFR: %lf\n", PFR);
+					printf("NAME: %s\n", player.getPlayerName().c_str());
+				}
+
+				AF = database->getAF(player.getPlayerName());
+
+				databaseMAP[name].name = name;
+				databaseMAP[name].VPIP = VPIP;
+				databaseMAP[name].PFR = PFR;
+				databaseMAP[name].AF = AF;
+			}
 
 			int nVPIP = normalizeVPIP(VPIP);
 			int nPFR = normalizePFR(PFR);
@@ -684,7 +730,7 @@ public:
 		fclose(f);
 	}
 
-	void updateProbabilities(HandHistory& handhistory)
+	void updateProbabilities(HandHistory& handhistory, map<string, DatabaseMapStruct>& databaseMAP)
 	{
 		if (handhistory.getPlayerHistories().size() > 6)
 		{
@@ -728,21 +774,40 @@ public:
 		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
 		{
 			PlayerHistory player = handhistory.getPlayerHistories()[i];
-			double VPIP = database->getVPIP(player.getPlayerName());
-			if (VPIP > 100 || VPIP < 0)
-			{
-				printf("ERROR VPIP: %lf\n", VPIP);
-				printf("NAME: %s\n", player.getPlayerName().c_str());
-			}
+			double VPIP;
+			double PFR;
+			double AF;
 
-			double PFR = database->getPFR(player.getPlayerName());
-			if (PFR > 100 || PFR < 0)
+			string name = player.getPlayerName();
+			if (databaseMAP[name].name == name)
 			{
-				printf("ERROR PFR: %lf\n", PFR);
-				printf("NAME: %s\n", player.getPlayerName().c_str());
+				VPIP = databaseMAP[name].VPIP;
+				PFR = databaseMAP[name].PFR;
+				AF = databaseMAP[name].AF;
 			}
+			else
+			{
+				VPIP = database->getVPIP(player.getPlayerName());
+				if (VPIP > 100 || VPIP < 0)
+				{
+					printf("ERROR VPIP: %lf\n", VPIP);
+					printf("NAME: %s\n", player.getPlayerName().c_str());
+				}
 
-			double AF = database->getAF(player.getPlayerName());
+				PFR = database->getPFR(player.getPlayerName());
+				if (PFR > 100 || PFR < 0)
+				{
+					printf("ERROR PFR: %lf\n", PFR);
+					printf("NAME: %s\n", player.getPlayerName().c_str());
+				}
+
+				AF = database->getAF(player.getPlayerName());
+
+				databaseMAP[name].name = name;
+				databaseMAP[name].VPIP = VPIP;
+				databaseMAP[name].PFR = PFR;
+				databaseMAP[name].AF = AF;
+			}
 
 			int nVPIP = normalizeVPIP(VPIP);
 			int nPFR = normalizePFR(PFR);
@@ -1034,7 +1099,7 @@ public:
 		fclose(f);
 	}
 
-	void updateProbabilities(HandHistory& handhistory)
+	void updateProbabilities(HandHistory& handhistory, map<string, DatabaseMapStruct>& databaseMAP)
 	{
 		if (handhistory.getPlayerHistories().size() > 6)
 		{
@@ -1092,21 +1157,40 @@ public:
 		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
 		{
 			PlayerHistory player = handhistory.getPlayerHistories()[i];
-			double VPIP = database->getVPIP(player.getPlayerName());
-			if (VPIP > 100 || VPIP < 0)
-			{
-				printf("ERROR VPIP: %lf\n", VPIP);
-				printf("NAME: %s\n", player.getPlayerName().c_str());
-			}
+			double VPIP;
+			double PFR;
+			double AF;
 
-			double PFR = database->getPFR(player.getPlayerName());
-			if (PFR > 100 || PFR < 0)
+			string name = player.getPlayerName();
+			if (databaseMAP[name].name == name)
 			{
-				printf("ERROR PFR: %lf\n", PFR);
-				printf("NAME: %s\n", player.getPlayerName().c_str());
+				VPIP = databaseMAP[name].VPIP;
+				PFR = databaseMAP[name].PFR;
+				AF = databaseMAP[name].AF;
 			}
+			else
+			{
+				VPIP = database->getVPIP(player.getPlayerName());
+				if (VPIP > 100 || VPIP < 0)
+				{
+					printf("ERROR VPIP: %lf\n", VPIP);
+					printf("NAME: %s\n", player.getPlayerName().c_str());
+				}
 
-			double AF = database->getAF(player.getPlayerName());
+				PFR = database->getPFR(player.getPlayerName());
+				if (PFR > 100 || PFR < 0)
+				{
+					printf("ERROR PFR: %lf\n", PFR);
+					printf("NAME: %s\n", player.getPlayerName().c_str());
+				}
+
+				AF = database->getAF(player.getPlayerName());
+
+				databaseMAP[name].name = name;
+				databaseMAP[name].VPIP = VPIP;
+				databaseMAP[name].PFR = PFR;
+				databaseMAP[name].AF = AF;
+			}
 
 			int nVPIP = normalizeVPIP(VPIP);
 			int nPFR = normalizePFR(PFR);
