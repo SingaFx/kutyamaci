@@ -1,4 +1,5 @@
 #include "eqcalculator.h"
+#include "logger.h"
 #include <time.h>
 
 Hand EqCalculator::sampleRange(PlayerRange &range)
@@ -7,10 +8,19 @@ Hand EqCalculator::sampleRange(PlayerRange &range)
 
 	double sum = 0;
 	set<pair<Hand, double>>::iterator it = range.range.begin();
-	while (sum + it->second < x)
+	while (sum + it->second < x && it != range.range.end())
 	{
 		sum += it->second;
 		it++;
+	}
+
+	if (it == range.range.end())
+	{
+		//Logger& logger = Logger::getLogger(BOT_LOGIC);
+		//logger.logExp("ERROR END OF SAMPLING", BOT_LOGIC);
+
+		it--;
+		return it->first; 
 	}
 
 	return it->first;

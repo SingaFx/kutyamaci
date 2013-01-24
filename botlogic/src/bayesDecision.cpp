@@ -93,7 +93,7 @@ double BayesDecision::calculateEQ(vector<PlayerRange>& ranges, vector<Card>& boa
 	{
 		result.push_back(ranges[i]);
 		logger.logExp("Total percentage of ranges: ", result[i + 1].totalPercentage(), BOT_LOGIC);
-		logger.logExp(result[i + 1].toString(), BOT_LOGIC);
+		//logger.logExp(result[i + 1].toString(), BOT_LOGIC);
 	}
 
 	logger.logExp("Calculating EQ...", BOT_LOGIC);
@@ -318,11 +318,15 @@ double BayesDecision::modifyEQbyRelativePosition(CurrentGameInfo& gameInfo, vect
 		logger.logExp("In position\n", BOT_LOGIC);
 		if (gameInfo.getStreet() == 0)
 		{
-			EQ = modifyValue(EQ, 0.05);
+			EQ = modifyValue(EQ, 0.00);
 		}
 		if (gameInfo.getStreet() == 1)
 		{
 			EQ = modifyValue(EQ, 0.03);
+		}
+		if (gameInfo.getStreet() == 2)
+		{
+			EQ = modifyValue(EQ, 0.05);
 		}
 	}
 	else
@@ -330,11 +334,11 @@ double BayesDecision::modifyEQbyRelativePosition(CurrentGameInfo& gameInfo, vect
 		logger.logExp("Not in position\n", BOT_LOGIC);
 		if (gameInfo.getStreet() == 0)
 		{
-			EQ = modifyValue(EQ, -0.1);
+			EQ = modifyValue(EQ, -0.15);
 		}
 		if (gameInfo.getStreet() == 1)
 		{
-			EQ = modifyValue(EQ, -0.08);
+			EQ = modifyValue(EQ, -0.1);
 		}
 		if (gameInfo.getStreet() == 2)
 		{
@@ -464,7 +468,8 @@ double BayesDecision::calculateEVRaise(CurrentGameInfo& gameInfo, vector<PlayerR
 			}
 		}
 
-		double eq = calculateEQ(actualRanges, gameInfo.getBoard(), gameInfo.getHand());
+		double eq = 1;
+		if (nr > 0) eq = calculateEQ(actualRanges, gameInfo.getBoard(), gameInfo.getHand());
 		logger.logExp("Calculated EQ : ", eq, BOT_LOGIC);
 		if (nr > 0) eq = modifyEQbyRelativePosition(gameInfo, playersPlaying, eq);
 		logger.logExp("Modified EQ : ", eq, BOT_LOGIC);
