@@ -12,6 +12,7 @@ private:
 
     string id;
 	string table;
+    double bigBlind;
 	vector<PlayerHistory> playerHistories;
 	Card flopCard1, flopCard2, flopCard3, turnCard, riverCard;
 	int finalBetRound;
@@ -19,13 +20,16 @@ private:
 public:
 
     HandHistory();
-    HandHistory(string, string, vector<PlayerHistory>, Card, Card, Card, Card, Card, int, int);
+    HandHistory(string, string, double, vector<PlayerHistory>, Card, Card, Card, Card, Card, int, int);
 
     void setId(string);
     const string& getId() const;
 
     void setTable(string);
     const string& getTable() const;
+
+    void setBigBlind(double);
+    double getBigBlind() const;
 
     void setPlayerHistories(vector<PlayerHistory>);
     const vector<PlayerHistory>& getPlayerHistories() const;
