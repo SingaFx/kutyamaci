@@ -2294,4 +2294,62 @@ public:
 
 		return -1;
 	}
+
+	static int boardType(vector<Card>& board)
+	{
+		vector<Card> v = board;
+		
+		for (int i = 0; i < v.size(); ++i)
+		{
+			convertRankToNumbers(v[i]);
+		}
+
+		if (v.size() == 3)
+		{
+			if (flopDangerousBoard(v[0],v[1],v[2])
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else if (v.size() == 4)
+		{
+			if (turnVeryDangerousBoard(v))
+			{
+				return 2;
+			}
+			else if (turnDangerousBoard(v[0],v[1],v[2],v[3]))
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else if (v.size() == 5)
+		{
+			if (riverFuckedUpBoard(v))
+			{
+				return 3;
+			}
+			else if (riverVeryDangerousBoard(v))
+			{
+				return 2;
+			}
+			else if (riverDangerousBoard(v))
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+
+		return -1;
+	}
 };
