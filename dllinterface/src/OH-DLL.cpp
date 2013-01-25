@@ -450,10 +450,11 @@ double getBalanceByPos(int idx)
 	{
 		if (balance > 0)
 		{
-			
+			gameStateManager.setMyStackSize(balance);
 		}
 		else
 		{
+			balance = gameStateManager.getMyStackSize();
 		}
 	}
 

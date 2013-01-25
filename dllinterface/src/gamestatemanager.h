@@ -88,4 +88,7 @@ public:
 
 	void setHandNumber(double);
 	double getHandNumber();
+
+	void setMyStackSize(double);
+	double getMyStackSize();
 };

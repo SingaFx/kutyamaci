@@ -226,3 +226,12 @@ double GameStateManager::getHandNumber()
 {
 	return handNumber;
 }
+
+void GameStateManager::setMyStackSize(double stackSize)
+{
+	this->myStackSize = stackSize;
+}
+double GameStateManager::getMyStackSize()
+{
+	return myStackSize;
+}
