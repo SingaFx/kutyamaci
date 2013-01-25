@@ -147,3 +147,12 @@ double CurrentGameInfo::getHandNumber()
 {
 	return handNumber;
 }
+
+void CurrentGameInfo::setFlopPotSize(double potSize)
+{
+	this->flopPotSize = potSize;
+}
+double CurrentGameInfo::getFlopPotSize()
+{
+	return flopPotSize;
+}
