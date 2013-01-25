@@ -15,6 +15,7 @@ private:
 
 	double handNumber;
 	double myStackSize;
+	double flopPotSize;
 
     int dealerPosition;
     int bettingRound;
@@ -91,4 +92,7 @@ public:
 
 	void setMyStackSize(double);
 	double getMyStackSize();
+
+	void setFlopPotSize(double);
+	double getFlopPotSize();
 };

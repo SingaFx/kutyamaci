@@ -12,6 +12,7 @@ private:
 	double potcommon; //until this street (preflop - 0, flop - totalPreflop, ...)
 	double bblind; //nagyvak merete -> 0.04
 	double totalPot; //total potsize
+	double flopPotSize; // pot size on the flop
 
 	vector<CurrentPlayerInfo> opponentsInfo;
 	CurrentPlayerInfo hero;
@@ -64,4 +65,7 @@ public:
 
 	void setHandNumber(double);
 	double getHandNumber();
+
+	void setFlopPotSize(double);
+	double getFlopPotSize();
 };

@@ -1069,6 +1069,7 @@ double process_state(holdem_state* pstate)
 	}
 
 	CurrentGameInfo* old_cgi = gamestateManager.getCurrentGameInfo();
+	cgi->setFlopPotSize(old_cgi->getFlopPotSize());
     gamestateManager.setCurrentGameInfo(cgi);
 
     // testing new hand   
@@ -1092,6 +1093,8 @@ double process_state(holdem_state* pstate)
 		gamestateManager.setCache(false);
         detectMissedCallsAndUpdatePlayerRanges(old_cgi);
 		detectMissedChecksAndUpdatePlayerRanges(old_cgi);
+		if (cgi->getStreet() == 1)
+			gamestateManager.setFlopPotSize(cgi->getPotcommon());
         gamestateManager.resetBettingRound();
     }
 
