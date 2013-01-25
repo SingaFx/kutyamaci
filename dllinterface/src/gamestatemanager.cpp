@@ -235,12 +235,3 @@ double GameStateManager::getMyStackSize()
 {
 	return myStackSize;
 }
-
-void GameStateManager::setFlopPotSize(double potSize)
-{
-	this->flopPotSize = potSize;
-}
-double GameStateManager::getFlopPotSize()
-{
-	return flopPotSize;
-}

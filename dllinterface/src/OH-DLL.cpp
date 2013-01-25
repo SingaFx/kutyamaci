@@ -115,6 +115,13 @@ void WriteToDebugWindow()
 		myOutput.push_back(os.str());
 	}
 
+	{
+		ostringstream os;
+
+		os << "FLop pot common: " << gamestate.getCurrentGameInfo()->getFlopPotSize();
+		myOutput.push_back(os.str());
+	}
+
 	stream.clear();
 
 	vector<double> currentBets(6);
@@ -1094,7 +1101,7 @@ double process_state(holdem_state* pstate)
         detectMissedCallsAndUpdatePlayerRanges(old_cgi);
 		detectMissedChecksAndUpdatePlayerRanges(old_cgi);
 		if (cgi->getStreet() == 1)
-			gamestateManager.setFlopPotSize(cgi->getPotcommon());
+			cgi->setFlopPotSize(cgi->getPotcommon());
         gamestateManager.resetBettingRound();
     }
 
