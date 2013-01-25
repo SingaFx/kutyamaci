@@ -1110,7 +1110,7 @@ public:
 		return -2.0;
 	}
 
-	double getProbabilityFE(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, int x)
+	double getProbabilityFE(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, double flop_potcommon, int x)
 	{
 		int v[8];
 		v[0] = 0;
@@ -1121,7 +1121,7 @@ public:
 		v[5] = normalizeVPIP(VPIP);
 		v[6] = normalizePFR(PFR);
 		v[7] = normalizeAF(AF);
-		v[8] = normalizePotSize(2, potcommon, bblind);
+		v[8] = normalizePotSize(2, flop_potcommon, bblind);
 
 		if (line == 5)
 			return getProbabilityFE2(v, x);
@@ -1129,7 +1129,7 @@ public:
 		return getProbabilityFE(v, x);
 	}
 
-	PlayerRange getRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x)
+	PlayerRange getRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, double flop_potcommon, vector<Card>& cards, Hand own, int x)
 	{
 		PlayerRange res;
 		int v[8];
@@ -1140,7 +1140,7 @@ public:
 		v[5] = normalizeVPIP(VPIP);
 		v[6] = normalizePFR(PFR);
 		v[7] = normalizeAF(AF);
-		v[8] = normalizePotSize(2, potcommon, bblind);
+		v[8] = normalizePotSize(2, flop_potcommon, bblind);
 
 		double HS[10];
 		for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
@@ -1171,7 +1171,7 @@ public:
 
 		return res;
 	}
-	PlayerRange getCallRaiseRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x)
+	PlayerRange getCallRaiseRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, double flop_potcommon, vector<Card>& cards, Hand own, int x)
 	{
 		PlayerRange res;
 
@@ -1185,7 +1185,7 @@ public:
 		v[5] = normalizeVPIP(VPIP);
 		v[6] = normalizePFR(PFR);
 		v[7] = normalizeAF(AF);
-		v[8] = normalizePotSize(2, potcommon, bblind);
+		v[8] = normalizePotSize(2, flop_potcommon, bblind);
 
 		PlayerRange callingRange = getRange(v, cards, own, x);
 		PlayerRange raiseRangeTotal;

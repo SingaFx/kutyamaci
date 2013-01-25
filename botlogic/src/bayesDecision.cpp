@@ -28,13 +28,13 @@ PlayerRange BayesDecision::getCallRaiseRange(double betsize, PlayerRange& range,
 	if (game.getStreet() == 2)
 	{
 		totalRange = turn.getCallRaiseRange(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * game.getBblind(), 0, betsize, game.getBblind(),
-			game.getPotcommon() * game.getBblind(), game.getBoard(), game.getHand(), patternsNeeded);
+			game.getPotcommon() * game.getBblind(),  game.getFlopPotSize() * game.getBblind(), game.getBoard(), game.getHand(), patternsNeeded);
 	}
 
 	if (game.getStreet() == 3)
 	{
 		totalRange = river.getCallRaiseRange(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * game.getBblind(), 0, betsize, game.getBblind(),
-			game.getPotcommon() * game.getBblind(), game.getBoard(), game.getHand(), patternsNeeded);
+			game.getPotcommon() * game.getBblind(),  game.getFlopPotSize() * game.getBblind(), game.getBoard(), game.getHand(), patternsNeeded);
 	}
 
 	ostringstream s;
@@ -611,7 +611,7 @@ vector<double> BayesDecision::getFoldEquities(double betsize, CurrentGameInfo& g
 		{
 			CurrentPlayerInfo player = game.getPlayerbyId(ranges[j].getId());
 			double akt = turn.getProbabilityFE(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * game.getBblind(),
-				player.getLine(), player.getBetsize() * game.getBblind(), game.getBblind(), game.getPotcommon() * game.getBblind(), patternsNeeded);
+				player.getLine(), player.getBetsize() * game.getBblind(), game.getBblind(), game.getPotcommon() * game.getBblind(), game.getFlopPotSize() * game.getBblind(), patternsNeeded);
 			logger.logExp("Player's original FE : ", akt, BOT_LOGIC);
 			akt = modifyFEbyBetSize(2, player, betsize / game.getBblind(), game.getPotcommon(), akt, game.getBblind());
 			akt = modifyFEbyPlayersInPlay(ranges.size(), akt);
@@ -627,7 +627,7 @@ vector<double> BayesDecision::getFoldEquities(double betsize, CurrentGameInfo& g
 		{
 			CurrentPlayerInfo player = game.getPlayerbyId(ranges[j].getId());
 			double akt = river.getProbabilityFE(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * game.getBblind(),
-				player.getLine(), player.getBetsize() * game.getBblind(), game.getBblind(), game.getPotcommon() * game.getBblind(), patternsNeeded);
+				player.getLine(), player.getBetsize() * game.getBblind(), game.getBblind(), game.getPotcommon() * game.getBblind(), game.getFlopPotSize() * game.getBblind(), patternsNeeded);
 			logger.logExp("Player's original FE : ", akt, BOT_LOGIC);
 			akt = modifyFEbyBetSize(2, player, betsize / game.getBblind(), game.getPotcommon(), akt, game.getBblind());
 			akt = modifyFEbyPlayersInPlay(ranges.size(), akt);
