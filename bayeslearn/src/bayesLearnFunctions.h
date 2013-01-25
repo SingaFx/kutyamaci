@@ -992,17 +992,17 @@ private:
 		{
 			if (b)
 			{
-				fprintf(f,"%d ", totalS[v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]]);
+				fprintf(f,"%d ", totalS[v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]][v[9]]);
 				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
 				{
-					fprintf(f,"%d ", probabilityHS[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]]);
+					fprintf(f,"%d ", probabilityHS[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]][v[9]]);
 				}
 			}
 			else
 			{
-				fscanf(f,"%d ", &totalS[v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]]);
+				fscanf(f,"%d ", &totalS[v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]][v[9]]);
 				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
-					fscanf(f,"%d ", &probabilityHS[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]]);
+					fscanf(f,"%d ", &probabilityHS[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]][v[9]]);
 			}
 
 			return ;
@@ -1021,17 +1021,17 @@ private:
 		{
 			if (b)
 			{
-				fprintf(f,"%d ", totalFE[v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]]);
+				fprintf(f,"%d ", totalFE[v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]][v[9]]);
 				for (int i = 0; i < FOLD_EQUITY_NUM; ++i)
 				{
-					fprintf(f,"%d ", probabilityFE[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]]);
+					fprintf(f,"%d ", probabilityFE[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]][v[9]]);
 				}
 			}
 			else
 			{
-				fscanf(f,"%d ", &totalFE[v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]]);
+				fscanf(f,"%d ", &totalFE[v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]][v[9]]);
 				for (int i = 0; i < FOLD_EQUITY_NUM; ++i)
-					fscanf(f,"%d ", &probabilityFE[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]]);
+					fscanf(f,"%d ", &probabilityFE[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]][v[9]]);
 			}
 
 			return ;
@@ -1043,6 +1043,7 @@ private:
 			backFE(f, b, k + 1);
 		}
 	}
+
 
 	int maxBetSize(HandHistory& handhistory, double potcommon)
 	{
@@ -1401,17 +1402,17 @@ private:
 		{
 			if (b)
 			{
-				fprintf(f,"%d ", totalS[v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]]);
+				fprintf(f,"%d ", totalS[v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]][v[9]]);
 				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
 				{
-					fprintf(f,"%d ", probabilityHS[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]]);
+					fprintf(f,"%d ", probabilityHS[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]][v[9]]);
 				}
 			}
 			else
 			{
-				fscanf(f,"%d ", &totalS[v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]]);
+				fscanf(f,"%d ", &totalS[v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]][v[9]]);
 				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
-					fscanf(f,"%d ", &probabilityHS[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]]);
+					fscanf(f,"%d ", &probabilityHS[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]][v[9]]);
 			}
 
 			return ;
@@ -1430,17 +1431,17 @@ private:
 		{
 			if (b)
 			{
-				fprintf(f,"%d ", totalFE[v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]]);
+				fprintf(f,"%d ", totalFE[v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]][v[9]]);
 				for (int i = 0; i < FOLD_EQUITY_NUM; ++i)
 				{
-					fprintf(f,"%d ", probabilityFE[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]]);
+					fprintf(f,"%d ", probabilityFE[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]][v[9]]);
 				}
 			}
 			else
 			{
-				fscanf(f,"%d ", &totalFE[v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]]);
+				fscanf(f,"%d ", &totalFE[v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]][v[9]]);
 				for (int i = 0; i < FOLD_EQUITY_NUM; ++i)
-					fscanf(f,"%d ", &probabilityFE[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]]);
+					fscanf(f,"%d ", &probabilityFE[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]][v[9]]);
 			}
 
 			return ;
