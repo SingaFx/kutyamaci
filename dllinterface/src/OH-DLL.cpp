@@ -1076,7 +1076,8 @@ double process_state(holdem_state* pstate)
 	}
 
 	CurrentGameInfo* old_cgi = gamestateManager.getCurrentGameInfo();
-	cgi->setFlopPotSize(old_cgi->getFlopPotSize());
+	if (old_cgi != NULL)
+		cgi->setFlopPotSize(old_cgi->getFlopPotSize());
     gamestateManager.setCurrentGameInfo(cgi);
 
     // testing new hand   
