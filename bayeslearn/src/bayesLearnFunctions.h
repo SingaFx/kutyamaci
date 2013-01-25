@@ -79,30 +79,41 @@ public:
 			if (databaseMAP[name].name == name)
 			{
 				VPIP = databaseMAP[name].VPIP;
+				if (VPIP < 0) continue;
 				PFR = databaseMAP[name].PFR;
 			}
 			else
 			{
-				VPIP = database->getVPIP(player.getPlayerName());
-				if (VPIP > 100 || VPIP < 0)
+				int handnr = database->getHandnr(name);
+				if (handnr < 15)
 				{
-					printf("ERROR VPIP: %lf\n", VPIP);
-					printf("NAME: %s\n", player.getPlayerName().c_str());
+					databaseMAP[name].name = name;
+					databaseMAP[name].VPIP = -1;
+					continue;
 				}
-
-				PFR = database->getPFR(player.getPlayerName());
-				if (PFR > 100 || PFR < 0)
+				else
 				{
-					printf("ERROR PFR: %lf\n", PFR);
-					printf("NAME: %s\n", player.getPlayerName().c_str());
+					VPIP = database->getVPIP(player.getPlayerName());
+					if (VPIP > 100 || VPIP < 0)
+					{
+						printf("ERROR VPIP: %lf\n", VPIP);
+						printf("NAME: %s\n", player.getPlayerName().c_str());
+					}
+
+					PFR = database->getPFR(player.getPlayerName());
+					if (PFR > 100 || PFR < 0)
+					{
+						printf("ERROR PFR: %lf\n", PFR);
+						printf("NAME: %s\n", player.getPlayerName().c_str());
+					}
+
+					double AF = database->getAF(player.getPlayerName());
+					
+					databaseMAP[name].name = name;
+					databaseMAP[name].VPIP = VPIP;
+					databaseMAP[name].PFR = PFR;
+					databaseMAP[name].AF = AF;
 				}
-
-				double AF = database->getAF(player.getPlayerName());
-
-				databaseMAP[name].name = name;
-				databaseMAP[name].VPIP = VPIP;
-				databaseMAP[name].PFR = PFR;
-				databaseMAP[name].AF = AF;
 			}
 
 			int poz = player.getPosition() + 3;
@@ -412,31 +423,43 @@ public:
 			if (databaseMAP[name].name == name)
 			{
 				VPIP = databaseMAP[name].VPIP;
+				if (VPIP < 0) continue;
 				PFR = databaseMAP[name].PFR;
 				AF = databaseMAP[name].AF;
 			}
 			else
 			{
-				VPIP = database->getVPIP(player.getPlayerName());
-				if (VPIP > 100 || VPIP < 0)
+				int handnr = database->getHandnr(name);
+				if (handnr < 15)
 				{
-					printf("ERROR VPIP: %lf\n", VPIP);
-					printf("NAME: %s\n", player.getPlayerName().c_str());
+					databaseMAP[name].name = name;
+					databaseMAP[name].VPIP = -1;
+					continue;
 				}
-
-				PFR = database->getPFR(player.getPlayerName());
-				if (PFR > 100 || PFR < 0)
+				else
 				{
-					printf("ERROR PFR: %lf\n", PFR);
-					printf("NAME: %s\n", player.getPlayerName().c_str());
+					VPIP = database->getVPIP(player.getPlayerName());
+					if (VPIP > 100 || VPIP < 0)
+					{
+						printf("ERROR VPIP: %lf\n", VPIP);
+						printf("NAME: %s\n", player.getPlayerName().c_str());
+					}
+
+					PFR = database->getPFR(player.getPlayerName());
+					if (PFR > 100 || PFR < 0)
+					{
+						printf("ERROR PFR: %lf\n", PFR);
+						printf("NAME: %s\n", player.getPlayerName().c_str());
+					}
+
+					AF = database->getAF(player.getPlayerName());
+					if (AF < 0) AF = 4;
+
+					databaseMAP[name].name = name;
+					databaseMAP[name].VPIP = VPIP;
+					databaseMAP[name].PFR = PFR;
+					databaseMAP[name].AF = AF;
 				}
-
-				AF = database->getAF(player.getPlayerName());
-
-				databaseMAP[name].name = name;
-				databaseMAP[name].VPIP = VPIP;
-				databaseMAP[name].PFR = PFR;
-				databaseMAP[name].AF = AF;
 			}
 
 			int nVPIP = normalizeVPIP(VPIP);
@@ -705,6 +728,7 @@ public:
 		nums[6] = PLAYER_VPIP_NUM;
 		nums[7] = PLAYER_PFR_NUM;
 		nums[8] = PLAYER_AF_NUM;
+		nums[9] = FLOP_POT_SIZE_NUM;
 
 		database = new Database("127.0.0.1", "root", "root", "kutya");
 		memset(totalS, 0, sizeof(totalS));
@@ -753,6 +777,9 @@ public:
 				}
 			totalpot += maxcall;
 		}
+
+		int flopPotCommon = normalizePotSize(2, totalpot, 0.04);
+
 		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
 		{
 			PlayerHistory player = handhistory.getPlayerHistories()[i];
@@ -782,31 +809,43 @@ public:
 			if (databaseMAP[name].name == name)
 			{
 				VPIP = databaseMAP[name].VPIP;
+				if (VPIP < 0) continue;
 				PFR = databaseMAP[name].PFR;
 				AF = databaseMAP[name].AF;
 			}
 			else
 			{
-				VPIP = database->getVPIP(player.getPlayerName());
-				if (VPIP > 100 || VPIP < 0)
+				int handnr = database->getHandnr(name);
+				if (handnr < 15)
 				{
-					printf("ERROR VPIP: %lf\n", VPIP);
-					printf("NAME: %s\n", player.getPlayerName().c_str());
+					databaseMAP[name].name = name;
+					databaseMAP[name].VPIP = -1;
+					continue;
 				}
-
-				PFR = database->getPFR(player.getPlayerName());
-				if (PFR > 100 || PFR < 0)
+				else
 				{
-					printf("ERROR PFR: %lf\n", PFR);
-					printf("NAME: %s\n", player.getPlayerName().c_str());
+					VPIP = database->getVPIP(player.getPlayerName());
+					if (VPIP > 100 || VPIP < 0)
+					{
+						printf("ERROR VPIP: %lf\n", VPIP);
+						printf("NAME: %s\n", player.getPlayerName().c_str());
+					}
+
+					PFR = database->getPFR(player.getPlayerName());
+					if (PFR > 100 || PFR < 0)
+					{
+						printf("ERROR PFR: %lf\n", PFR);
+						printf("NAME: %s\n", player.getPlayerName().c_str());
+					}
+
+					AF = database->getAF(player.getPlayerName());
+					if (AF < 0) AF = 4;
+
+					databaseMAP[name].name = name;
+					databaseMAP[name].VPIP = VPIP;
+					databaseMAP[name].PFR = PFR;
+					databaseMAP[name].AF = AF;
 				}
-
-				AF = database->getAF(player.getPlayerName());
-
-				databaseMAP[name].name = name;
-				databaseMAP[name].VPIP = VPIP;
-				databaseMAP[name].PFR = PFR;
-				databaseMAP[name].AF = AF;
 			}
 
 			int nVPIP = normalizeVPIP(VPIP);
@@ -819,11 +858,11 @@ public:
 			{
 				if (player.getTurnAction()[0].getType() == 'c' || player.getTurnAction()[0].getType() == 'f')
 				{
-					++totalFE[nPotSize][nStackSize][4][2][nVPIP][nPFR][nAF];
+					++totalFE[nPotSize][nStackSize][4][2][nVPIP][nPFR][nAF][flopPotCommon];
 				}
 				if (player.getTurnAction()[0].getType() == 'r' && player.getTurnAction()[0].getSize() > firstRaise(handhistory))
 				{
-					++totalFE[nPotSize][nStackSize][4][2][nVPIP][nPFR][nAF];
+					++totalFE[nPotSize][nStackSize][4][2][nVPIP][nPFR][nAF][flopPotCommon];
 				}
 			}
 
@@ -837,27 +876,27 @@ public:
 					int size = normalizeBetSize(2, action.getSize(), totalpot, 0.04);
 					if (action.getType() == 'c')
 					{
-						++probabilityHS[hand][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
-						++totalS[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
+						++probabilityHS[hand][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF][flopPotCommon];
+						++totalS[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF][flopPotCommon];
 						if (j + 1 < player.getTurnAction().size())
-							++totalFE[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
+							++totalFE[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF][flopPotCommon];
 					}
 
 					if (action.getType() == 'r')
 					{
 						if (size > mSize) size = mSize;
-						++probabilityHS[hand][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
-						++totalS[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
+						++probabilityHS[hand][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon];
+						++totalS[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon];
 						if (j + 1 < player.getTurnAction().size())
-							++totalFE[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
+							++totalFE[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon];
 					}
 
 					if (action.getType() == 'x')
 					{
-						++probabilityHS[hand][nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF];
-						++totalS[nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF];
+						++probabilityHS[hand][nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF][flopPotCommon];
+						++totalS[nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF][flopPotCommon];
 						if (j + 1 < player.getTurnAction().size())
-							++totalFE[nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF];
+							++totalFE[nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF][flopPotCommon];
 					}
 				}
 			}
@@ -874,26 +913,26 @@ public:
 						int size = normalizeBetSize(2, action.getSize(), totalpot, 0.04);
 						if (action.getType() == 'c')
 						{
-							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
-							++totalS[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
+							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF][flopPotCommon];
+							++totalS[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF][flopPotCommon];
 							if (j + 1 < player.getTurnAction().size())
-								++totalFE[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
+								++totalFE[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF][flopPotCommon];
 						}
 
 						if (action.getType() == 'r')
 						{
-							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
-							++totalS[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
+							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon];
+							++totalS[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon];
 							if (j + 1 < player.getTurnAction().size())
-								++totalFE[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
+								++totalFE[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon];
 						}
 
 						if (action.getType() == 'x')
 						{
-							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF];
-							++totalS[nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF];
+							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF][flopPotCommon];
+							++totalS[nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF][flopPotCommon];
 							if (j + 1 < player.getTurnAction().size())
-								++totalFE[nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF];
+								++totalFE[nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF][flopPotCommon];
 						}
 					}
 
@@ -901,7 +940,7 @@ public:
 					{
 						if (player.getTurnAction().size() == 1)
 						{
-							++probabilityFE[0][nPotSize][nStackSize][4][2][nVPIP][nPFR][nAF];
+							++probabilityFE[0][nPotSize][nStackSize][4][2][nVPIP][nPFR][nAF][flopPotCommon];
 						}
 						else
 						{
@@ -909,18 +948,18 @@ public:
 							int size = normalizeBetSize(2, action.getSize(), totalpot, 0.04);
 							if (action.getType() == 'c')
 							{
-								++probabilityFE[0][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
+								++probabilityFE[0][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF][flopPotCommon];
 							}
 
 							if (action.getType() == 'r')
 							{
 								if (size > mSize) size = mSize;
-								++probabilityFE[0][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
+								++probabilityFE[0][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon];
 							}
 
 							if (action.getType() == 'x')
 							{
-								++probabilityFE[0][nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF];
+								++probabilityFE[0][nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF][flopPotCommon];
 							}
 						}
 					}
@@ -931,18 +970,18 @@ public:
 
 	double getProbabilityHS(int v[])
 	{
-		return (double)probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]] / (double)totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
+		return (double)probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]] / (double)totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 	}
 
 	double getProbabilityFE(int v[])
 	{
-		return (double)probabilityFE[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]] / (double)totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
+		return (double)probabilityFE[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]] / (double)totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 	}
 
 	double getNormProbabilityHS(int v[])
 	{
 		//normalize!!
-		return (double)probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]] / (double)totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
+		return (double)probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]] / (double)totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 	}
 private:
 	int v[node_number];
@@ -1074,6 +1113,7 @@ public:
 		nums[6] = PLAYER_VPIP_NUM;
 		nums[7] = PLAYER_PFR_NUM;
 		nums[8] = PLAYER_AF_NUM;
+		nums[9] = FLOP_POT_SIZE_NUM;
 
 		database = new Database("127.0.0.1", "root", "root", "kutya");
 		memset(totalS, 0, sizeof(totalS));
@@ -1122,6 +1162,9 @@ public:
 				}
 			totalpot += maxcall;
 		}
+
+		int flopPotCommon = normalizePotSize(2, totalpot, 0.04);
+
 		for (int i = 0; i < handhistory.getPlayerHistories().size(); ++i)
 		{
 			PlayerHistory player = handhistory.getPlayerHistories()[i];
@@ -1165,31 +1208,43 @@ public:
 			if (databaseMAP[name].name == name)
 			{
 				VPIP = databaseMAP[name].VPIP;
+				if (VPIP < 0) continue;
 				PFR = databaseMAP[name].PFR;
 				AF = databaseMAP[name].AF;
 			}
 			else
 			{
-				VPIP = database->getVPIP(player.getPlayerName());
-				if (VPIP > 100 || VPIP < 0)
+				int handnr = database->getHandnr(name);
+				if (handnr < 15)
 				{
-					printf("ERROR VPIP: %lf\n", VPIP);
-					printf("NAME: %s\n", player.getPlayerName().c_str());
+					databaseMAP[name].name = name;
+					databaseMAP[name].VPIP = -1;
+					continue;
 				}
-
-				PFR = database->getPFR(player.getPlayerName());
-				if (PFR > 100 || PFR < 0)
+				else
 				{
-					printf("ERROR PFR: %lf\n", PFR);
-					printf("NAME: %s\n", player.getPlayerName().c_str());
+					VPIP = database->getVPIP(player.getPlayerName());
+					if (VPIP > 100 || VPIP < 0)
+					{
+						printf("ERROR VPIP: %lf\n", VPIP);
+						printf("NAME: %s\n", player.getPlayerName().c_str());
+					}
+
+					PFR = database->getPFR(player.getPlayerName());
+					if (PFR > 100 || PFR < 0)
+					{
+						printf("ERROR PFR: %lf\n", PFR);
+						printf("NAME: %s\n", player.getPlayerName().c_str());
+					}
+
+					AF = database->getAF(player.getPlayerName());
+					if (AF < 0) AF = 4;
+
+					databaseMAP[name].name = name;
+					databaseMAP[name].VPIP = VPIP;
+					databaseMAP[name].PFR = PFR;
+					databaseMAP[name].AF = AF;
 				}
-
-				AF = database->getAF(player.getPlayerName());
-
-				databaseMAP[name].name = name;
-				databaseMAP[name].VPIP = VPIP;
-				databaseMAP[name].PFR = PFR;
-				databaseMAP[name].AF = AF;
 			}
 
 			int nVPIP = normalizeVPIP(VPIP);
@@ -1202,11 +1257,11 @@ public:
 			{
 				if (player.getRiverAction()[0].getType() == 'c' || player.getRiverAction()[0].getType() == 'f')
 				{
-					++totalFE[nPotSize][nStackSize][4][2][nVPIP][nPFR][nAF];
+					++totalFE[nPotSize][nStackSize][4][2][nVPIP][nPFR][nAF][flopPotCommon];
 				}
 				if (player.getRiverAction()[0].getType() == 'r' && player.getRiverAction()[0].getSize() > firstRaise(handhistory))
 				{
-					++totalFE[nPotSize][nStackSize][4][2][nVPIP][nPFR][nAF];
+					++totalFE[nPotSize][nStackSize][4][2][nVPIP][nPFR][nAF][flopPotCommon];
 				}
 			}
 
@@ -1220,27 +1275,27 @@ public:
 					int size = normalizeBetSize(1, action.getSize(), 0, 0.04);
 					if (action.getType() == 'c')
 					{
-						++probabilityHS[hand][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
-						++totalS[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
+						++probabilityHS[hand][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF][flopPotCommon];
+						++totalS[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF][flopPotCommon];
 						if (j + 1 < player.getRiverAction().size())
-							++totalFE[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
+							++totalFE[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF][flopPotCommon];
 					}
 
 					if (action.getType() == 'r')
 					{
 						if (size > mSize) size = mSize;
-						++probabilityHS[hand][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
-						++totalS[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
+						++probabilityHS[hand][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon];
+						++totalS[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon];
 						if (j + 1 < player.getRiverAction().size())
-							++totalFE[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
+							++totalFE[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon];
 					}
 
 					if (action.getType() == 'x')
 					{
-						++probabilityHS[hand][nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF];
-						++totalS[nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF];
+						++probabilityHS[hand][nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF][flopPotCommon];
+						++totalS[nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF][flopPotCommon];
 						if (j + 1 < player.getRiverAction().size())
-							++totalFE[nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF];
+							++totalFE[nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF][flopPotCommon];
 					}
 				}
 			}
@@ -1267,26 +1322,26 @@ public:
 						int size = normalizeBetSize(2, action.getSize(), totalpot, 0.04);
 						if (action.getType() == 'c')
 						{
-							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
-							++totalS[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
+							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF][flopPotCommon];
+							++totalS[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF][flopPotCommon];
 							if (j + 1 < player.getRiverAction().size())
-								++totalFE[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
+								++totalFE[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF][flopPotCommon];
 						}
 
 						if (action.getType() == 'r')
 						{
-							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
-							++totalS[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
+							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon];
+							++totalS[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon];
 							if (j + 1 < player.getRiverAction().size())
-								++totalFE[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
+								++totalFE[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon];
 						}
 
 						if (action.getType() == 'x')
 						{
-							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF];
-							++totalS[nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF];
+							++probabilityHS[HAND_STRENGTH_NUM - 1][nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF][flopPotCommon];
+							++totalS[nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF][flopPotCommon];
 							if (j + 1 < player.getRiverAction().size())
-								++totalFE[nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF];
+								++totalFE[nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF][flopPotCommon];
 						}
 					}
 
@@ -1294,7 +1349,7 @@ public:
 					{
 						if (player.getRiverAction().size() == 1)
 						{
-							++probabilityFE[0][nPotSize][nStackSize][4][2][nVPIP][nPFR][nAF];
+							++probabilityFE[0][nPotSize][nStackSize][4][2][nVPIP][nPFR][nAF][flopPotCommon];
 						}
 						else
 						{
@@ -1302,18 +1357,18 @@ public:
 							int size = normalizeBetSize(2, action.getSize(), totalpot, 0.04);
 							if (action.getType() == 'c')
 							{
-								++probabilityFE[0][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF];
+								++probabilityFE[0][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF][flopPotCommon];
 							}
 
 							if (action.getType() == 'r')
 							{
 								if (size > mSize) size = mSize;
-								++probabilityFE[0][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
+								++probabilityFE[0][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon];
 							}
 
 							if (action.getType() == 'x')
 							{
-								++probabilityFE[0][nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF];
+								++probabilityFE[0][nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF][flopPotCommon];
 							}
 						}
 					}
@@ -1324,18 +1379,18 @@ public:
 
 	double getProbabilityHS(int v[])
 	{
-		return (double)probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]] / (double)totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
+		return (double)probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]] / (double)totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 	}
 
 	double getProbabilityFE(int v[])
 	{
-		return (double)probabilityFE[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]] / (double)totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
+		return (double)probabilityFE[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]] / (double)totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 	}
 
 	double getNormProbabilityHS(int v[])
 	{
 		//normalize!!
-		return (double)probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]] / (double)totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
+		return (double)probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]] / (double)totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 	}
 private:
 	int v[node_number];

@@ -787,6 +787,7 @@ public:
 		nums[6] = PLAYER_VPIP_NUM;
 		nums[7] = PLAYER_PFR_NUM;
 		nums[8] = PLAYER_AF_NUM;
+		nums[9] = FLOP_POT_SIZE_NUM;
 
 		memset(totalS, 0, sizeof(totalS));
 		memset(probabilityHS, 0, sizeof(probabilityHS));
@@ -827,16 +828,16 @@ public:
 		int res = 0;
 		int total = 0;
 
-		total += totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
-		res += probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
+		total += totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
+		res += probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 		
 		if (x <= total) return (double) res / (double) total;
 
 		for (int i = 0; i < PLAYER_STACK_SIZE_NUM; ++i)
 		{
 			if (v[2] == i) continue;
-			total += totalS[v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]];
-			res += probabilityHS[v[0]][v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]];
+			total += totalS[v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
+			res += probabilityHS[v[0]][v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 		}
 		printf("Total %d\n", total);
 		if (x <= total) return (double) res / (double) total;
@@ -847,7 +848,7 @@ public:
 
 	double getProbabilityHS(int v[])
 	{
-		return (double)probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]] / (double)totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
+		return (double)probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]] / (double)totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 	}
 
 	double getProbabilityFE(int v[], int x)
@@ -855,15 +856,15 @@ public:
 		int res = 0;
 		int total = 0;
 
-		total += totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
-		res += probabilityFE[0][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
+		total += totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
+		res += probabilityFE[0][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 
 		if (x <= total) return (double) res / (double) total;
 		for (int i = 0; i < PLAYER_STACK_SIZE_NUM; ++i)
 		{
 			if (i == v[1]) continue;
-			total += totalFE[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
-			res += probabilityFE[0][i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
+			total += totalFE[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
+			res += probabilityFE[0][i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 		}
 		if (x <= total) return (double) res / (double) total;
 
@@ -878,17 +879,18 @@ public:
 		return getProbabilityFE(v, x);
 	}
 
-	double getProbabilityFE(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, int x)
+	double getProbabilityFE(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, double flop_potcommon, int x)
 	{
 		int v[8];
 		v[0] = 0;
-		v[1] = normalizePotSize(2, potcommon, bblind);
+		v[1] = normalizePotSize(3, potcommon, bblind);
 		v[2] = normalizeStackSize(stackSize, bblind);
-		v[3] = normalizeBetSize(2, betsize, potcommon, bblind);
+		v[3] = normalizeBetSize(3, betsize, potcommon, bblind);
 		v[4] = line;
 		v[5] = normalizeVPIP(VPIP);
 		v[6] = normalizePFR(PFR);
 		v[7] = normalizeAF(AF);
+		v[8] = normalizePotSize(2, potcommon, bblind);
 
 
 		if (line == 5)
@@ -897,7 +899,7 @@ public:
 		return getProbabilityFE(v, x);
 	}
 
-	PlayerRange getRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x)
+	PlayerRange getRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, double flop_potcommon, vector<Card>& cards, Hand own, int x)
 	{
 		PlayerRange res;
 		int v[8];
@@ -908,6 +910,7 @@ public:
 		v[5] = normalizeVPIP(VPIP);
 		v[6] = normalizePFR(PFR);
 		v[7] = normalizeAF(AF);
+		v[8] = normalizePotSize(2, flop_potcommon, bblind);
 
 		double HS[10];
 		for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
@@ -938,11 +941,11 @@ public:
 
 		return res;
 	}
-	PlayerRange getCallRaiseRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x)
+	PlayerRange getCallRaiseRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, double flop_potcommon, vector<Card>& cards, Hand own, int x)
 	{
 		PlayerRange res;
 
-		int nBetSize = normalizeBetSize(2, betsize, potcommon, bblind);
+		int nBetSize = normalizeBetSize(3, betsize, potcommon, bblind);
 
 		int v[8];
 		v[1] = normalizePotSize(3, potcommon, bblind);
@@ -952,6 +955,7 @@ public:
 		v[5] = normalizeVPIP(VPIP);
 		v[6] = normalizePFR(PFR);
 		v[7] = normalizeAF(AF);
+		v[8] = normalizePotSize(2, flop_potcommon, bblind);
 
 		PlayerRange callingRange = getRange(v, cards, own, x);
 		PlayerRange raiseRangeTotal;
@@ -1056,6 +1060,7 @@ public:
 		nums[6] = PLAYER_VPIP_NUM;
 		nums[7] = PLAYER_PFR_NUM;
 		nums[8] = PLAYER_AF_NUM;
+		nums[9] = FLOP_POT_SIZE_NUM;
 
 		memset(totalS, 0, sizeof(totalS));
 		memset(probabilityHS, 0, sizeof(probabilityHS));
@@ -1088,16 +1093,16 @@ public:
 		int res = 0;
 		int total = 0;
 
-		total += totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
-		res += probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
+		total += totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
+		res += probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 		
 		if (x <= total) return (double) res / (double) total;
 
 		for (int i = 0; i < PLAYER_STACK_SIZE_NUM; ++i)
 		{
 			if (v[2] == i) continue;
-			total += totalS[v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]];
-			res += probabilityHS[v[0]][v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]];
+			total += totalS[v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
+			res += probabilityHS[v[0]][v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 		}
 		printf("Total %d\n", total);
 		if (x <= total) return (double) res / (double) total;
@@ -1109,13 +1114,14 @@ public:
 	{
 		int v[8];
 		v[0] = 0;
-		v[1] = normalizePotSize(2, potcommon, bblind);
+		v[1] = normalizePotSize(4, potcommon, bblind);
 		v[2] = normalizeStackSize(stackSize, bblind);
-		v[3] = normalizeBetSize(2, betsize, potcommon, bblind);
+		v[3] = normalizeBetSize(4, betsize, potcommon, bblind);
 		v[4] = line;
 		v[5] = normalizeVPIP(VPIP);
 		v[6] = normalizePFR(PFR);
 		v[7] = normalizeAF(AF);
+		v[8] = normalizePotSize(2, potcommon, bblind);
 
 		if (line == 5)
 			return getProbabilityFE2(v, x);
@@ -1134,6 +1140,7 @@ public:
 		v[5] = normalizeVPIP(VPIP);
 		v[6] = normalizePFR(PFR);
 		v[7] = normalizeAF(AF);
+		v[8] = normalizePotSize(2, potcommon, bblind);
 
 		double HS[10];
 		for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
@@ -1178,6 +1185,7 @@ public:
 		v[5] = normalizeVPIP(VPIP);
 		v[6] = normalizePFR(PFR);
 		v[7] = normalizeAF(AF);
+		v[8] = normalizePotSize(2, potcommon, bblind);
 
 		PlayerRange callingRange = getRange(v, cards, own, x);
 		PlayerRange raiseRangeTotal;
@@ -1201,7 +1209,7 @@ public:
 
 	double getProbabilityHS(int v[])
 	{
-		return (double)probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]] / (double)totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
+		return (double)probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]] / (double)totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 	}
 
 	double getProbabilityFE(int v[], int x)
@@ -1209,15 +1217,15 @@ public:
 		int res = 0;
 		int total = 0;
 
-		total += totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
-		res += probabilityFE[0][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
+		total += totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
+		res += probabilityFE[0][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 
 		if (x <= total) return (double) res / (double) total;
 		for (int i = 0; i < PLAYER_STACK_SIZE_NUM; ++i)
 		{
 			if (i == v[1]) continue;
-			total += totalFE[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
-			res += probabilityFE[0][i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
+			total += totalFE[i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
+			res += probabilityFE[0][i][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 		}
 		if (x <= total) return (double) res / (double) total;
 
@@ -1235,18 +1243,18 @@ public:
 	double getNormProbabilityHS(int v[])
 	{
 		//normalize!!
-		return (double)probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]] / (double)totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
+		return (double)probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]] / (double)totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 	}
 
 	double getNormProbabilityFE(int v[])
 	{
 		//normalize!!
-		return (double)probabilityFE[0][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]] / (double)totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]];
+		return (double)probabilityFE[0][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]] / (double)totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 	}
 
 	void printRange(int v[])
 	{
-		cout << "Total situations = " << totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]] << endl;
+		cout << "Total situations = " << totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]] << endl;
 		for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
 		{
 			v[0] = i;
