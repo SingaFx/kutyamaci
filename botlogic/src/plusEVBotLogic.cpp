@@ -194,15 +194,35 @@ void PlusEVBotLogic::extendGameInfo(CurrentGameInfo& gameInfo)
 		if (database->isUser(name))
 		{
 			gameInfo.getOpponentsInfo()[i].setHandnr(database->getHandnr(name));
-			if (gameInfo.getOpponentsInfo()[i].getHandnr() < 5)
+			if (gameInfo.getOpponentsInfo()[i].getHandnr() < 15)
 			{
 				gameInfo.getOpponentsInfo()[i] = setStandardPlayerType(gameInfo.getOpponentsInfo()[i], gameInfo.getBblind());
 			}
 			else
 			{
+				double PFR = database->getPFR(name);
 				gameInfo.getOpponentsInfo()[i].setVPIP(database->getVPIP(name));
-				gameInfo.getOpponentsInfo()[i].setPFR(database->getPFR(name));
-				gameInfo.getOpponentsInfo()[i].setAF(database->getAF(name));
+				gameInfo.getOpponentsInfo()[i].setPFR(PFR);
+				double AF = database->getAF(name);
+				if (AF > -1)
+				{
+					gameInfo.getOpponentsInfo()[i].setAF(AF);
+				}
+				else
+				{
+					if (PFR < 10)
+					{
+						gameInfo.getOpponentsInfo()[i].setAF(0);
+					}
+					else if (PFR < 30)
+					{
+						gameInfo.getOpponentsInfo()[i].setAF(3.5);
+					}
+					else
+					{
+						gameInfo.getOpponentsInfo()[i].setAF(5);
+					}
+				}
 			}
 		}
 		else

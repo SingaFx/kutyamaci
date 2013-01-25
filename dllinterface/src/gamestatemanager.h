@@ -14,6 +14,7 @@ class GameStateManager
 private:
 
 	double handNumber;
+	double myStackSize;
 
     int dealerPosition;
     int bettingRound;

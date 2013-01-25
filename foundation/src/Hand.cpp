@@ -80,3 +80,8 @@ bool Hand::valid()
 {
 	return card1.valid() && card2.valid() && !(card1 == card2);
 }
+
+bool Hand::isPocket()
+{
+	return card1.getRank() == card2.getRank();
+}

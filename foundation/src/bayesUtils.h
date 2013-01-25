@@ -334,7 +334,7 @@ static double getBetsize(int street, int betsize, double potcommon, double bblin
 		}
 		else if (betsize == 4)
 		{
-			return 24 * bblind;;
+			return 21 * bblind;;
 		}
 		else if (betsize == 5)
 		{

@@ -106,7 +106,7 @@ public:
 
 	void setValid(bool valid)
 	{
-		this->valid;
+		this->valid = valid;
 	}
 	bool getValid()
 	{

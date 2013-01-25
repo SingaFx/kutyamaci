@@ -440,9 +440,23 @@ bool isEqual(double d1, double d2)
 
 double getBalanceByPos(int idx)
 {    
+	GameStateManager& gameStateManager = GameStateManager::getGameStateManager();
+
     char buffer[20];
     sprintf(buffer, "balance%d", idx);
+
     double balance = gws(buffer);
+	if (idx == 0)
+	{
+		if (balance > 0)
+		{
+			
+		}
+		else
+		{
+		}
+	}
+
     return balance;
 }
 
@@ -647,6 +661,7 @@ void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
 					logger.logExp("DETECTED : Call, currentplayer info set " + currentPlayerInfo.getName(), DLL_INTERFACE_LOGGER);
 					currentPlayerInfo.setLine(0);
 					currentPlayerInfo.setBetsize(maxRaise);
+					currentPlayerInfo.setActualStacksize(getBalanceByPos(idx) / bblind);
 
 					if (idx > 0)
 					{
@@ -788,9 +803,9 @@ double AnyVPIP(int index)
 	}
 
 	string name = gamestateManager.getPlayerNameByPos(idx);
+	
+	logger.logExp("DETECTED Query " + name,DLL_DECISION_LOGGER);
 	if (name == "") return 20;
-
-	logger.logExp("Query " + name,DLL_DECISION_LOGGER);
 
 	double VPIP = 0;
 
@@ -1180,7 +1195,7 @@ double process_state(holdem_state* pstate)
                     CurrentPlayerInfo currentPlayerInfo;
                         
                     currentPlayerInfo.setStacksize(gamestateManager.getInitialBalanceByPos(idx) / bblind);
-                    currentPlayerInfo.setActualStacksize(getBalanceByPos(idx) / bblind);
+					currentPlayerInfo.setActualStacksize(getBalanceByPos(idx) / bblind);
                     currentPlayerInfo.setBetsize(currentBet);
                     currentPlayerInfo.setName(gamestateManager.getPlayerNameByPos(idx));
                     currentPlayerInfo.setPoz(relativePositions[idx]);

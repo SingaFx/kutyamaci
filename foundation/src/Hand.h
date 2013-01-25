@@ -29,6 +29,7 @@ public:
 
 	string toString();
 	bool valid();
+	bool isPocket();
 };
 
 #endif HAND_H

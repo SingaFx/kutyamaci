@@ -31,6 +31,7 @@ public:
 
 	string toString();
 	bool valid();
+	bool isBroadway();
 };
 
 #endif

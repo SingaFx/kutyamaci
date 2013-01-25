@@ -165,6 +165,8 @@ public:
 		int pass = getPASS(name);
 		int aggr = getAGGR(name);
 
+		if (pass == 0) return -2;
+
 		double af = (double)aggr/pass;
 		return af;
 	}
