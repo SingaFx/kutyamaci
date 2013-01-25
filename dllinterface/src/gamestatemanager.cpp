@@ -14,7 +14,7 @@ GameStateManager::GameStateManager()
 	, currentGameInfo(0)
 	, handNumber(-1)
 	, cacheAvalaible(false)
-	, myStackSize(5)
+	, myStackSize(5.0)
 {
 }
 

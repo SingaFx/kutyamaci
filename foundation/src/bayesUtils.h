@@ -222,72 +222,87 @@ static int normalizePotSize(int street, double potcommon, double bblind)
 			return 0;
 		}
 
-		if (potcommon <= 15 * bblind) //emelt pot
+		if (potcommon <= 13 * bblind)  //limped pot
 		{
 			return 1;
 		}
 
-		if (potcommon <= 35 * bblind)
+		if (potcommon <= 17 * bblind) //emelt pot
 		{
 			return 2;
 		}
 
-		if (potcommon <= 50 * bblind)
+		if (potcommon <= 35 * bblind)
 		{
 			return 3;
 		}
 
-		return 4;
+		if (potcommon <= 50 * bblind)
+		{
+			return 4;
+		}
+
+		return 5;
 	}
 
 	if (street == 3)
+	{
+		if (potcommon <= 5 * bblind)
+		{
+			return 0;
+		}
+
+		if (potcommon <= 10 * bblind)
+		{
+			return 1;
+		}
+
+		if (potcommon <= 30 * bblind)
+		{
+			return 2;
+		}
+
+		if (potcommon <= 70 * bblind)
+		{
+			return 3;
+		}
+
+		if (potcommon <= 100 * bblind)
+		{
+			return 4;
+		}
+
+		return 5;
+	}
+
+	if (street == 4)
 	{
 		if (potcommon <= 10 * bblind)
 		{
 			return 0;
 		}
 
-		if (potcommon <= 30 * bblind)
-		{
-			return 1;
-		}
-
-		if (potcommon <= 70 * bblind)
-		{
-			return 2;
-		}
-
-		if (potcommon <= 100 * bblind)
-		{
-			return 3;
-		}
-
-		return 4;
-	}
-
-	if (street == 4)
-	{
 		if (potcommon <= 20 * bblind)
 		{
-			return 0;
+			return 1;
 		}
 
 		if (potcommon <= 40 * bblind)
 		{
-			return 1;
+			return 2;
 		}
 
 		if (potcommon <= 80 * bblind)
 		{
-			return 2;
+			return 3;
 		}
 
 		if (potcommon <= 120 * bblind)
 		{
-			return 3;
+			return 4;
 		}
 
-		return 4;
+		return 5;
 	}
 
 	return 0;

@@ -102,7 +102,7 @@ double BayesDecision::calculateEQ(vector<PlayerRange>& ranges, vector<Card>& boa
 	logger.logExp("Calculating EQ...", BOT_LOGIC);
 	double eq = calc.calculate(result, board, 15000) / 100;
 	logger.logExp("Calculated original EQ", eq, BOT_LOGIC);
-	eq -= 0.03;
+	eq -= 0.05;
 
 	return eq;
 }
@@ -517,6 +517,20 @@ double maxOpponentStack(CurrentGameInfo& game)
 	return maxStackSize;
 }
 
+double maxOpponentTotalStack(CurrentGameInfo& game)
+{
+	double maxbet = game.getBiggestBet();
+	double maxStackSize = 0;
+	for (int i = 0; i < game.getOpponentsInfo().size(); ++i)
+	{
+		CurrentPlayerInfo player = game.getOpponentsInfo()[i];
+		double actualStack = player.getActualStacksize() + player.getBetsize();
+		if (maxStackSize < actualStack) maxStackSize = actualStack;  
+	}
+
+	return maxStackSize;
+}
+
 bool BayesDecision::committed(CurrentGameInfo& game)
 {
 	Logger& logger = Logger::getLogger(BOT_LOGIC);
@@ -638,8 +652,16 @@ double BayesDecision::calculateEVRaise(CurrentGameInfo& gameInfo, vector<PlayerR
 	logger.logExp("===================Calculating EV of raise with betsize ", betsize, BOT_LOGIC);
 
 	double stacksize = gameInfo.getHero().getActualStacksize() + gameInfo.getHero().getBetsize();
-	stacksize *= gameInfo.getBblind();
-	if (stacksize < betsize) betsize = stacksize;
+	double maxOpponentS = maxOpponentTotalStack(gameInfo);
+	double effectiv = (stacksize < maxOpponentS ? stacksize : maxOpponentS);
+
+	effectiv *= gameInfo.getBblind();
+	if (betsize > 0.4 * effectiv)
+	{
+		betsize = effectiv;
+		allIn = true;
+	}
+
 
 	logger.logExp("Hero's stacksize : ", stacksize, BOT_LOGIC);
 

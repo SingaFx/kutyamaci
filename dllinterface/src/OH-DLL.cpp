@@ -440,6 +440,7 @@ bool isEqual(double d1, double d2)
 
 double getBalanceByPos(int idx)
 {    
+	Logger& logger = Logger::getLogger(BOT_LOGIC);
 	GameStateManager& gameStateManager = GameStateManager::getGameStateManager();
 
     char buffer[20];
@@ -448,8 +449,9 @@ double getBalanceByPos(int idx)
     double balance = gws(buffer);
 	if (idx == 0)
 	{
-		if (balance > 0)
+		if (balance > 0.01)
 		{
+			logger.logExp("Setting hero balance : ", balance, BOT_LOGIC);
 			gameStateManager.setMyStackSize(balance);
 		}
 		else
@@ -913,6 +915,7 @@ double process_query(const char* pquery)
 		calculateRelativPositions(relativPositions, gamestateManager.getDealerPosition());
 
 		gamestateManager.getCurrentPlayerInfo(0).setPoz(relativPositions[0]);
+		gamestateManager.getCurrentPlayerInfo(0).setActualStacksize(getBalanceByPos(0) / cgi->getBblind());
 		cgi->setHero(gamestateManager.getCurrentPlayerInfo(0));
 
 		action = botLogic->makeDecision(*cgi, ranges);
