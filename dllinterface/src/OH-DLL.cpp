@@ -880,6 +880,8 @@ double process_query(const char* pquery)
 		return 0;
 	}
 
+	logger.logExp("[-> hand number] : ", gamestateManager.getHandNumber(), BOT_LOGIC);
+
 	double playersplayingbits = gws("playersplayingbits");
 
     detectChecksAndUpdateRanges(0); // here we can just detect whom are  already made a check

@@ -197,6 +197,15 @@ class Evaluator
 		return (dist1 > dist2) ? ((dist1 > dist3) ? dist1 : dist3) : ((dist2 > dist3) ? dist2 : dist3);
 	}
 
+	static int flopMinDistance(Card &b1, Card &b2, Card &b3)
+	{
+		int dist1 = abs(b1.getRank() - b2.getRank());
+		int dist2 = abs(b1.getRank() - b3.getRank());
+		int dist3 = abs(b2.getRank() - b3.getRank());
+
+		return (dist1 < dist2) ? ((dist1 < dist3) ? dist1 : dist3) : ((dist2 < dist3) ? dist2 : dist3);
+	}
+
 	static bool flopVeryConnectedBoard(Card &b1, Card &b2, Card &b3)
 	{
 		if (!flopSingleBoard(b1,b2,b3))
@@ -211,6 +220,14 @@ class Evaluator
 			return false;
 
 		return flopHiLoDistance(b1,b2,b3) <= 4;
+	}
+
+	static bool flopLessConnectedBoard(Card &b1, Card &b2, Card &b3)
+	{
+		if (!flopSingleBoard(b1,b2,b3))
+			return false;
+
+		return flopMinDistance(b1,b2,b3) <= 2;
 	}
 
 	static bool flopTwoUnderCards(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3)
@@ -300,6 +317,14 @@ class Evaluator
 	static bool flopDangerousBoard(Card &b1, Card &b2, Card b3)
 	{
 		 return flopMonotoneBoard(b1,b2,b3) || flopVeryConnectedBoard(b1,b2,b3) || (flopConnectedBoard(b1,b2,b3) && flopTwoToneBoard(b1,b2,b3));
+	}
+
+	static bool flopSemiDangerousBoard(Card &b1, Card &b2, Card b3)
+	{
+		if (flopDangerousBoard(b1,b2,b3))
+			return false;
+
+		return flopLessConnectedBoard(b1,b2,b3) && flopTwoToneBoard(b1,b2,b3);
 	}
 
 	static bool flopOESD(vector<Card> &cards)
@@ -2307,6 +2332,10 @@ public:
 		if (v.size() == 3)
 		{
 			if (flopDangerousBoard(v[0],v[1],v[2]))
+			{
+				return 2;
+			}
+			else if (flopSemiDangerousBoard(v[0],v[1],v[2]))
 			{
 				return 1;
 			}

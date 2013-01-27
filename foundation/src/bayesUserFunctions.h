@@ -5,6 +5,7 @@
 
 #include "bayesFunctions.h"
 #include "rangeFunctions.h"
+#include "logger.h"
 
 using namespace std;
 
@@ -374,7 +375,9 @@ public:
 			raiseRangeTotal = RangeUtils::addRange(raiseRangeTotal, raiseRange);
 		}
 
-		callingRange = RangeUtils::addRange(raiseRangeTotal, callingRange);
+		raiseRangeTotal = raiseRangeTotal.normalize();
+
+		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, 0.6);
 		callingRange = callingRange.normalize();
 
 		return callingRange;
@@ -716,7 +719,9 @@ public:
 			raiseRangeTotal = RangeUtils::addRange(raiseRangeTotal, raiseRange);
 		}
 
-		callingRange = RangeUtils::addRange(raiseRangeTotal, callingRange);
+		raiseRangeTotal = raiseRangeTotal.normalize();
+
+		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, 0.6);
 		callingRange = callingRange.normalize();
 
 		return callingRange;
@@ -724,6 +729,8 @@ public:
 
 	PlayerRange getRaiseRange(double VPIP, double PFR, double AF, double stackSize, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x)
 	{
+		Logger& logger = Logger::getLogger(BOT_LOGIC);
+
 		int nBetSize = normalizeBetSize(2, betsize, potcommon, bblind);
 
 		int v[8];
@@ -745,6 +752,12 @@ public:
 			v[3] = i;
 			PlayerRange raiseRange = getRange(v, cards, own, x);
 			raiseRangeTotal = RangeUtils::addRange(raiseRangeTotal, raiseRange);
+		}
+
+		if (raiseRangeTotal.range.size() == 0)
+		{
+			logger.logExp("ERROR in raiseRangeTotal\n", BOT_LOGIC);
+			return raiseRangeTotal;
 		}
 
 		raiseRangeTotal = raiseRangeTotal.normalize();
@@ -957,7 +970,7 @@ public:
 
 	double getProbabilityFE(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, double flop_potcommon, int x)
 	{
-		int v[8];
+		int v[9];
 		v[0] = 0;
 		v[1] = normalizePotSize(3, potcommon, bblind);
 		v[2] = normalizeStackSize(stackSize, bblind);
@@ -978,7 +991,7 @@ public:
 	PlayerRange getRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, double flop_potcommon, vector<Card>& cards, Hand own, int x)
 	{
 		PlayerRange res;
-		int v[8];
+		int v[9];
 		v[1] = normalizePotSize(3, potcommon, bblind);
 		v[2] = normalizeStackSize(stackSize, bblind);
 		v[3] = normalizeBetSize(3, betsize, potcommon, bblind);
@@ -1023,7 +1036,7 @@ public:
 
 		int nBetSize = normalizeBetSize(3, betsize, potcommon, bblind);
 
-		int v[8];
+		int v[9];
 		v[1] = normalizePotSize(3, potcommon, bblind);
 		v[2] = normalizeStackSize(stackSize, bblind);
 		v[3] = nBetSize;
@@ -1048,7 +1061,9 @@ public:
 			raiseRangeTotal = RangeUtils::addRange(raiseRangeTotal, raiseRange);
 		}
 
-		callingRange = RangeUtils::addRange(raiseRangeTotal, callingRange);
+		raiseRangeTotal = raiseRangeTotal.normalize();
+
+		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, 0.6);
 		callingRange = callingRange.normalize();
 
 		return callingRange;
@@ -1058,7 +1073,7 @@ public:
 	{
 		int nBetSize = normalizeBetSize(3, betsize, potcommon, bblind);
 
-		int v[8];
+		int v[9];
 		v[1] = normalizePotSize(3, potcommon, bblind);
 		v[2] = normalizeStackSize(stackSize, bblind);
 		v[3] = nBetSize;
@@ -1331,8 +1346,9 @@ public:
 			raiseRangeTotal = RangeUtils::addRange(raiseRangeTotal, raiseRange);
 		}
 
-		callingRange = RangeUtils::addRange(raiseRangeTotal, callingRange);
+		raiseRangeTotal = raiseRangeTotal.normalize();
 
+		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, 0.6);
 		callingRange = callingRange.normalize();
 
 		return callingRange;

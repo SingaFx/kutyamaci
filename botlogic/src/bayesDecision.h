@@ -10,8 +10,7 @@ class BayesDecision
 private:
 public:
 	//static double calculateEV(
-	static double calculateEQ(vector<PlayerRange>&, vector<Card>&, Hand&);
-	static double calculateEQ(PlayerRange&, vector<Card>&, Hand&);
+	static double calculateEQ(vector<PlayerRange>&, vector<Card>&, Hand&, CurrentGameInfo&);
 	static PlayerRange getCallRaiseRange(double, PlayerRange&, CurrentGameInfo&, BayesUserPreflop&, BayesUserFlop&, BayesUserTurn&, BayesUserRiver&);
 
 	static char calculateDecision(CurrentGameInfo&, vector<PlayerRange>&, BayesUserPreflop&, BayesUserFlop&, BayesUserTurn&, BayesUserRiver&);
@@ -30,6 +29,8 @@ public:
 	static bool committed(CurrentGameInfo&);
 	static double nrOfPlayersWithMaxBetSize(CurrentGameInfo&);
 	static vector<double> getRaiseSizes(CurrentGameInfo&);
+
+	//IMPLEMENT IMPLIED ODDS
 
 	static vector<double> getFoldEquities(double, CurrentGameInfo&, vector<PlayerRange>&, BayesUserPreflop&, BayesUserFlop&, BayesUserTurn&, BayesUserRiver&);
 	static double calculateEVRaise(CurrentGameInfo&, vector<PlayerRange>&, vector<double>& , double, bool);

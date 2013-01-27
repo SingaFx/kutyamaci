@@ -1,4 +1,5 @@
 #include "Action.h"
+#include <sstream>
 
 Action::Action()
 {
@@ -32,8 +33,10 @@ const double Action::getSize()
 
 std::string Action::toString()
 {
-	std::string res = "";
-	res += type;
+	std::stringstream stream;
+	
+	stream << type << " " << size;
 
-	return res;
+
+	return stream.str();
 }

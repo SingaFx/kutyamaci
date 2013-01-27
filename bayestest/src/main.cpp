@@ -224,9 +224,25 @@ int main()
 		}
 
 		{
-			double FE = flop.getProbabilityFE(40, 10, 1, 76.75*0.04, 1, 0.48, 0.04, 6.75 * 0.04, 50);
-			printf("FLOP FE = %lf\n", FE);
+			//1, 150*0.04, 1, 0.48, 0.04, 6.75 * 0.04, 50
+			double FE = flop.getProbabilityFE(20, 18, 2.5, 150 * 0.04, 1, 6*0.04, 0.04, 10 * 0.04, 25);
+			printf("river FE = %lf\n", FE);
 		}
+
+		{
+			
+			int v[9];
+			v[0] = 0;
+			v[1] = normalizePotSize(3, 21 * 0.04, 0.04);
+			v[2] = normalizeStackSize(150 * 0.04, 0.04);
+			v[3] = 0; //normalizeBetSize(3, 0, 21 * 0.04, 0.04);
+			v[4] = 2;
+			v[5] = normalizeVPIP(50);
+			v[6] = normalizePFR(5);
+			v[7] = normalizeAF(0.5);
+			v[8] = normalizePotSize(2, 9 * 0.04, 0.04);
+		}
+
 
 		/*
 		int v[8];

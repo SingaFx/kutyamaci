@@ -376,6 +376,9 @@ public:
 	//create range from HS
 	static PlayerRange createRange(int n, double HS[], std::vector<Card>& v, Hand own)
 	{
+
+		//BOARD TYPE?
+
 		char map[4];
 		map[0] = 's';
 		map[1] = 'h';
@@ -494,9 +497,47 @@ public:
 			}
 		}
 
-		res = res.normalize();
+		//res = res.normalize();
 		return res;
 	}
+
+	static PlayerRange addRange(PlayerRange& r1, PlayerRange& r2, double weight)
+	{
+		PlayerRange res;
+
+		set<pair<Hand, double> >::iterator it1, iter;
+		for (it1 = r2.range.begin(); it1 != r2.range.end(); it1++)
+		{
+
+			iter = r1.range.lower_bound(make_pair(it1->first, 0.0));
+			if (iter->first == it1->first)
+			{
+				double prob = it1->second * weight + iter->second * (1 - weight);
+				res.range.insert(make_pair(it1->first, prob));
+			}
+			else
+			{
+				res.range.insert(make_pair(it1->first, it1->second));
+			}
+		}
+
+		for (it1 = r1.range.begin(); it1 != r1.range.end(); it1++)
+		{
+			iter = res.range.lower_bound(make_pair(it1->first, 0.0));
+			if (iter->first == it1->first)
+			{
+
+			}
+			else
+			{
+				res.range.insert(make_pair(it1->first, it1->second));
+			}
+		}
+
+		//res = res.normalize();
+		return res;
+	}
+
 	//FE randomizalas a FOLD szerint
 	static double randomizeFE(double FE, double FOLD)
 	{
