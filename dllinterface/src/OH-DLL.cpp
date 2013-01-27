@@ -441,7 +441,7 @@ bool isBitSet(int toTest, int bitNumber)
 
 bool isEqual(double d1, double d2)
 {
-    double eps = 0.1;
+    double eps = 0.01;
     return ( d1 - eps < d2 ) && ( d2 - eps < d1);
 }
 
