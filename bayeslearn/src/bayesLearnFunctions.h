@@ -568,7 +568,7 @@ public:
 
 							if (action.getType() == 'r')
 							{
-								if (size > mSize) size = mSize;
+								//if (size > mSize) size = mSize;
 								++probabilityFE[0][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF];
 							}
 
@@ -878,6 +878,7 @@ public:
 					{
 						++probabilityHS[hand][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF][flopPotCommon];
 						++totalS[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF][flopPotCommon];
+
 						if (j + 1 < player.getTurnAction().size())
 							++totalFE[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF][flopPotCommon];
 					}
@@ -887,6 +888,7 @@ public:
 						if (size > mSize) size = mSize;
 						++probabilityHS[hand][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon];
 						++totalS[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon];
+
 						if (j + 1 < player.getTurnAction().size())
 							++totalFE[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon];
 					}
@@ -953,7 +955,7 @@ public:
 
 							if (action.getType() == 'r')
 							{
-								if (size > mSize) size = mSize;
+								//if (size > mSize) size = mSize;
 								++probabilityFE[0][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon];
 							}
 
@@ -1273,7 +1275,7 @@ public:
 				for (int j = 0; j < player.getRiverAction().size(); ++j)
 				{
 					Action action = player.getRiverAction()[j];
-					int size = normalizeBetSize(1, action.getSize(), 0, 0.04);
+					int size = normalizeBetSize(2, action.getSize(), 0, 0.04);
 					if (action.getType() == 'c')
 					{
 						++probabilityHS[hand][nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF][flopPotCommon];
@@ -1363,7 +1365,6 @@ public:
 
 							if (action.getType() == 'r')
 							{
-								if (size > mSize) size = mSize;
 								++probabilityFE[0][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon];
 							}
 

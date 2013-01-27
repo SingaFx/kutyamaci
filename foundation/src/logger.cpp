@@ -1,32 +1,45 @@
 
 #include "logger.h"
+#include <sstream>
+#include <time.h>
 
 const string Logger::DLL_INTERFACE_OUTPUT_FILENAME = "dllinterface.log";
 const string Logger::HAND_HISTORY_PARSER_OUTPUT_FILENAME = "handhistoryparser.log";
 const string Logger::BOT_LOGIC_OUTPUT_FILENAME = "botlogic.log";
 const string Logger::DLL_DECISION_OUTPUT_FILENAME = "dlldecision.log";
+const string Logger::RANGE_LOGGER_OUTPUT_FILENAME = "rangeLogger.log";
 
 ofstream* Logger::dllInterfaceLogger_ = 0;
 ofstream* Logger::handHistoryParserLogger_ = 0;
 ofstream* Logger::botLogicLogger_ = 0;
 ofstream* Logger::dllDecisionLogger_ = 0;
+ofstream* Logger::rangeLogger_ = 0;
 ofstream* Logger::outfile_ = 0;
 
 Logger* Logger::logger_ = 0;
 // --------------------------------------------------
 Logger::Logger()
 {
+	srand(time(NULL));
+	int random = rand() % 1000000;
+	stringstream s;
+	s << random;
+
     dllInterfaceLogger_ = new ofstream();
-    dllInterfaceLogger_->open(DLL_INTERFACE_OUTPUT_FILENAME.c_str());
+
+    dllInterfaceLogger_->open((DLL_INTERFACE_OUTPUT_FILENAME + s.str()).c_str());
 
     handHistoryParserLogger_ = new ofstream();
-    handHistoryParserLogger_->open(HAND_HISTORY_PARSER_OUTPUT_FILENAME.c_str());
+	handHistoryParserLogger_->open((HAND_HISTORY_PARSER_OUTPUT_FILENAME + s.str()).c_str());
 
 	botLogicLogger_ = new ofstream();
-	botLogicLogger_->open(BOT_LOGIC_OUTPUT_FILENAME.c_str());
+	botLogicLogger_->open((BOT_LOGIC_OUTPUT_FILENAME.c_str() + s.str()).c_str());
 
 	dllDecisionLogger_ = new ofstream();
-	dllDecisionLogger_->open(DLL_DECISION_OUTPUT_FILENAME.c_str());
+	dllDecisionLogger_->open((DLL_DECISION_OUTPUT_FILENAME.c_str() + s.str()).c_str());
+
+	rangeLogger_ = new ofstream();
+	rangeLogger_->open((RANGE_LOGGER_OUTPUT_FILENAME.c_str() + s.str()).c_str());
 }
 
 // --------------------------------------------------
@@ -80,6 +93,11 @@ ofstream* Logger::getStream(LOGGER_TYPE lt)
 	case DLL_DECISION_LOGGER:
 		{
 			currentStream = dllDecisionLogger_;
+		}
+		break;
+	case RANGE_LOGGER:
+		{
+			currentStream = rangeLogger_;
 		}
 		break;
 	}

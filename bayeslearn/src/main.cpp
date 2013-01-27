@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
 		flop = new BayesLearnFlop();
 		turn = new BayesLearnTurn();
 		river = new BayesLearnRiver();
-		parseHands("f:\\pokerbot\\hh.txt");
+		parseHands("d:\\pokerbot\\hh.txt");
 		//parseHands("..\\tests\\resource\\bayes\\testhh.txt");
 
 		preflop->write("preflopBayes");

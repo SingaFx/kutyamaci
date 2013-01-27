@@ -179,6 +179,56 @@ int main()
 		int poz;
 
 		/*
+		{
+			PlayerRange oldRange;
+			oldRange.range.insert(make_pair(Hand(Card('K','d'), Card('A','s')), 0.5));
+			oldRange.range.insert(make_pair(Hand(Card('J','s'), Card('J','c')), 0.3));
+			oldRange.range.insert(make_pair(Hand(Card('5','c'), Card('9','d')), 0.2));
+
+			vector<Card> board;
+			board.push_back(Card('A','c'));
+			board.push_back(Card('2','s'));
+			board.push_back(Card('3','d'));
+			board.push_back(Card('4','d'));
+
+			Hand own(Card('2','c'), Card('T','s'));
+
+			double HS[9];
+			memset(HS, 0, sizeof(HS));
+			HS[0] = 0.3;
+			//HS[1] = 0.1;
+			//HS[2] = 0.1;
+			//HS[3] = 0.1;
+			HS[4] = 0.7;
+			//HS[5] = 0.1; 
+			//HS[6] = 0.1;
+			//HS[7] = 0.1;
+			//HS[8] = 0.1;
+			
+			PlayerRange turnRange = RangeUtils::createRange(8, HS, board, own);
+			//turnRange.printRange();
+
+			PlayerRange newRange = RangeUtils::mergeRange(oldRange, turnRange, board, own);
+			newRange.printRange();
+		}*/
+
+
+		{
+			double FE = river.getProbabilityFE(20, 15, 2.5, 182.5*0.04, 1, 7 * 0.04, 0.04, 24.75*0.04, 11*0.04, 0);
+			printf("FE = %lf\n", FE);
+		}
+
+		{
+			double FE = preflop.getProbabilityFE(20, 15, 213.25*0.04, -1, 1, 0.16, 0.04, 0, 0);
+			printf("FE = %lf\n", FE);
+		}
+
+		{
+			double FE = flop.getProbabilityFE(40, 10, 1, 76.75*0.04, 1, 0.48, 0.04, 6.75 * 0.04, 50);
+			printf("FLOP FE = %lf\n", FE);
+		}
+
+		/*
 		int v[8];
 
 		nStackSize = normalizeStackSize(110.75*0.04, 0.04); //150
@@ -270,24 +320,26 @@ int main()
 		printf("BOTLOGIC TESTS\n");
 		*/
 
+		/*
 		{
 			vector<Card> board;
-			board.push_back(Card('A', 's'));
-			board.push_back(Card('2', 'h'));
-			board.push_back(Card('Q', 'h'));
-			board.push_back(Card('2', 'd'));
 			board.push_back(Card('Q', 'c'));
+			board.push_back(Card('T', 'h'));
+			board.push_back(Card('T', 'c'));
+			board.push_back(Card('J', 'c'));
 
-			Hand own(Card('6', 'c'), Card('7','d'));
+			Hand own(Card('J', 'h'), Card('4','c'));
 
-			printf("FLOP RANGE\N");
-			PlayerRange riverRange = flop.getRange(40, 10, 1, 55.25 * 0.04, 2, 0, 0.04, 6.75 * 0.04, board, own, 0);
-			riverRange.printRange();
+			printf("TURN RANGE\n");
+			PlayerRange turnRange = turn.getRange(20, 15, 3.5, 174*0.04, 2, 0, 0.04, 15.75*0.04, 6.75*0.04, board, own, 50);
+			turnRange.printRange();
+			double FE = turn.getProbabilityFE(20, 15, 3.5, 174*0.04, 2, 0, 0.04, 15.75*0.04, 6.75*0.04, 50);
+			printf("FE = %lf\n", FE);
 		}
 
 
 		{
-			double FE = preflop.getProbabilityFE(20, 15, 213.25*0.04, -1, 1, 0.16, 0.04, 0, 0);
+			double FE = river.getProbabilityFE(40, 10, 1, 74*0.04, 2, 0, 0.04, 50*0.04, 5*0.04, 10);
 			printf("FE = %lf\n", FE);
 		}
 
@@ -297,7 +349,7 @@ int main()
 		}
 
 		{
-			double FE = flop.getProbabilityFE(40, 10, 1,76.75*0.04, 1, 0.48, 0.04, 6.75 * 0.04, 50);
+			double FE = flop.getProbabilityFE(40, 10, 1, 76.75*0.04, 1, 0.48, 0.04, 6.75 * 0.04, 50);
 			printf("FLOP FE = %lf\n", FE);
 		}
 
@@ -313,9 +365,10 @@ int main()
 			Hand own(Card('6', 'c'), Card('7','d'));
 
 			printf("RIVER RANGE\N");
-			PlayerRange riverRange = river.getRange(40, 10, 1, 49 * 0.04, 2, 0, 0.04, 6.75 * 0.04, board, own, 0);
-			riverRange.printRange();
+			//PlayerRange riverRange = river.getRange(40, 10, 1, 49 * 0.04, 2, 0, 0.04, 6.75 * 0.04, 4 * 0.04, board, own, 0);
+			//riverRange.printRange();
 		}
+		*/
 
 		/*
 		CurrentPlayerInfo info;

@@ -28,8 +28,10 @@ public:
     bool operator < (const Hand& h) const;
 
 	string toString();
+	string toString() const;
 	bool valid();
 	bool isPocket();
+	bool isAK();
 };
 
 #endif HAND_H

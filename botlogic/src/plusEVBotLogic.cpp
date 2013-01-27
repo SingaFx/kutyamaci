@@ -89,7 +89,7 @@ PlayerRange PlusEVBotLogic::calculateRange(int id, CurrentGameInfo& gameInfo, Pl
 
 		ostringstream os;
 		os << "Turn range query; Input : VPIP : " << player.getVPIP() << " PFR : " << player.getPFR() << "AF : " << player.getAF() << " StackSize : " << player.getStacksize() << " line : " << player.getLine() << " betsize : " <<
-			player.getBetsize() << " bblind : " << gameInfo.getBblind() << " Potcommon : " << gameInfo.getPotcommon() << endl;
+			player.getBetsize() << " bblind : " << gameInfo.getBblind() << " Potcommon : " << gameInfo.getPotcommon() << "Flop pot size : "<<  gameInfo.getFlopPotSize() <<  endl;
 
 		/*
 		os << "Old range : " << oldPlayerRange.totalPercentage() << "; New range : " << res.totalPercentage();
@@ -112,7 +112,7 @@ PlayerRange PlusEVBotLogic::calculateRange(int id, CurrentGameInfo& gameInfo, Pl
 
 		ostringstream os;
 		os << "River range query; Input : VPIP : " << player.getVPIP() << " PFR : " << player.getPFR() << "AF : " << player.getAF() << " StackSize : " << player.getStacksize() << " line : " << player.getLine() << " betsize : " <<
-			player.getBetsize() << " bblind : " << gameInfo.getBblind() << " Potcommon : " << gameInfo.getPotcommon() << endl;
+			player.getBetsize() << " bblind : " << gameInfo.getBblind() << " Potcommon : " << gameInfo.getPotcommon() << "Flop pot size : "<<  gameInfo.getFlopPotSize() << endl;
 
 		/*
 		os << "Old range : " << oldPlayerRange.totalPercentage() << "; New range : " << res.totalPercentage();
@@ -180,7 +180,7 @@ CurrentPlayerInfo PlusEVBotLogic::setStandardPlayerType(CurrentPlayerInfo& playe
 	{
 		result.setVPIP(20);
 		result.setPFR(15);
-		result.setAF(3.5);
+		result.setAF(2.5);
 	}
 
 	return result;
@@ -193,8 +193,9 @@ void PlusEVBotLogic::extendGameInfo(CurrentGameInfo& gameInfo)
 
 		if (database->isUser(name))
 		{
-			gameInfo.getOpponentsInfo()[i].setHandnr(database->getHandnr(name));
-			if (gameInfo.getOpponentsInfo()[i].getHandnr() < 15)
+			int handnr = database->getHandnr(name);
+			gameInfo.getOpponentsInfo()[i].setHandnr(handnr);
+			if (handnr < 30)
 			{
 				gameInfo.getOpponentsInfo()[i] = setStandardPlayerType(gameInfo.getOpponentsInfo()[i], gameInfo.getBblind());
 			}
@@ -216,7 +217,7 @@ void PlusEVBotLogic::extendGameInfo(CurrentGameInfo& gameInfo)
 					}
 					else if (PFR < 30)
 					{
-						gameInfo.getOpponentsInfo()[i].setAF(3.5);
+						gameInfo.getOpponentsInfo()[i].setAF(3);
 					}
 					else
 					{

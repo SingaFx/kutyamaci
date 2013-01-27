@@ -442,7 +442,7 @@ std::vector<HandHistory> HandHistoryUtils::importFromFile(FILE *f, int historyNu
 
 		res.push_back(handhistory);
 	}
-	printf("End parsing\n");
+	//printf("End parsing\n");
 	fclose(logfile);
 	return res;
 }

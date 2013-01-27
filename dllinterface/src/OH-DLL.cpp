@@ -522,11 +522,11 @@ void resetHand(holdem_state* pstate, Hand hand)
 
     GameStateManager& gameStateManager = GameStateManager::getGameStateManager();
     gameStateManager.resetState((int)dealerchair, hand);
-
+	scrape_cycle = 0;
     // setting up starting balances
     for (int idx = 0; idx <= 5; ++idx)
     {        
-        gameStateManager.setInitialBalance(idx, getBalanceByPos(idx));
+        gameStateManager.setInitialBalance(idx, 0);
     }
 }
 
@@ -908,13 +908,24 @@ double process_query(const char* pquery)
 	else
 	{
 		CurrentGameInfo* cgi = gamestateManager.getCurrentGameInfo();
-
+		vector<double> currentBets(6);
+		getCurrentBets(currentBets, cgi->getBblind());
+		
+		double potcommon = cgi->getPotcommon();
 		//HERO SHOULD BE THERE?
 		for (int idx = 1; idx <=5; ++idx)
 		{
 			if (isBitSet((int)playersplayingbits, idx) && gamestateManager.isCurrentPlayerInfoSet(idx))
 			{
 				cgi->addCurrentPlayerInfo(gamestateManager.getCurrentPlayerInfo(idx));
+			}
+		}
+		for (int idx = 1; idx <=5; ++idx)
+		{
+			if (!isBitSet((int)playersplayingbits, idx))
+			{
+				if (currentBets[idx] > 0)
+					potcommon += currentBets[idx] / cgi->getBblind(); 
 			}
 		}
 
@@ -929,7 +940,7 @@ double process_query(const char* pquery)
 	} 
 
 
-	WriteToDebugWindow();
+	//WriteToDebugWindow();
 
 	logger.logExp("Got action: " + action.toString(), DLL_DECISION_LOGGER);
 
@@ -1043,10 +1054,8 @@ bool validState(CurrentGameInfo* cgi, vector<double>& currentBets)
 
 double process_state(holdem_state* pstate)
 {
-    ++scrape_cycle;
-
     Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);
-    logger.logExp("[Processing state] : ", DLL_INTERFACE_LOGGER);
+	logger.logExp("[Processing state] : ", DLL_INTERFACE_LOGGER);
 
     BotManager& botManager = BotManager::getBotManager();
     AbstractBotLogic* botLogic = botManager.getPluggableBot();
@@ -1091,6 +1100,21 @@ double process_state(holdem_state* pstate)
 		playerRangeManager.resetRanges(gamestateManager);
 		refreshPlayersName(pstate);
     }
+
+	if (scrape_cycle == 1)
+	{
+		for (int idx = 0; idx < 6; ++idx)
+		{
+			if (currentBets[idx] > 0)
+			{
+				gamestateManager.setInitialBalance(idx, getBalanceByPos(idx) + currentBets[idx]);
+			}
+			else
+			{
+				gamestateManager.setInitialBalance(idx, getBalanceByPos(idx) + currentBets[idx]);
+			}
+		}
+	}
 
 	refreshPlayersName(pstate);
 
@@ -1282,9 +1306,9 @@ double process_state(holdem_state* pstate)
             logger.logExp(buffer, DLL_INTERFACE_LOGGER);
         }
     }
-	//SET HERO's things
-
-	WriteToDebugWindow();
+	
+	 ++scrape_cycle;
+	//WriteToDebugWindow();
 
 	return 0;
 }
@@ -1442,8 +1466,8 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReser
 	switch(ul_reason_for_call)
     {
 		case DLL_PROCESS_ATTACH:
-			inj_hModule = hModule;
-			CreateThread(0, NULL, ThreadProc, (LPVOID)L"Window Title", NULL, NULL);
+			//inj_hModule = hModule;
+			//CreateThread(0, NULL, ThreadProc, (LPVOID)L"Window Title", NULL, NULL);
 			break; 
 		case DLL_THREAD_ATTACH:
 			//inj_hModule = hModule;

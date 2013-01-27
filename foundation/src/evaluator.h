@@ -1637,7 +1637,7 @@ public:
 
 				Card kicker = h1;
 				Card pair = h2;
-				if (existsOnBoard(h1.getRank(),board))
+				if (existsOnBoard(h1.getRank(),board) && (!(existsOnBoard(h2.getRank(), board) || (h1.getRank() > h2.getRank()))))
 				{
 					kicker = h2;
 					pair = h1;
@@ -2245,7 +2245,7 @@ public:
 
 			Card pair = h2;
 			Card kicker = h1;
-			if (existsOnBoard(h1.getRank(),board))
+			if (existsOnBoard(h1.getRank(),board) && (!(existsOnBoard(h2.getRank(), board) || (h1.getRank() > h2.getRank()))))
 			{
 				kicker = h2;
 				pair = h1;

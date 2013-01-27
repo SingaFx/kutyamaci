@@ -83,6 +83,16 @@ string Card::toString()
 	return res;
 }
 
+string Card::toString() const
+{
+	string res;
+
+	res.push_back(rank);
+	res.push_back(suit);
+
+	return res;
+}
+
 bool Card::valid()
 {
 	return (suit == 's' || suit == 'h' || suit == 'd' || suit == 'c') && ((rank >= '2' && rank <= '9') || (rank == 'T' || rank == 'J' || rank == 'Q' || rank == 'K' || rank == 'A'));

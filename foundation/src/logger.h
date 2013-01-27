@@ -11,13 +11,13 @@ enum LOGGER_TYPE
     DLL_INTERFACE_LOGGER = 0,
     HAND_HISTORY_PARSER  = 1,
     BOT_LOGIC            = 2,
-	DLL_DECISION_LOGGER  = 3
+	DLL_DECISION_LOGGER  = 3,
+	RANGE_LOGGER  = 4
 } ;
 
 class Logger
 {
 public:
-
 	static Logger& getLogger(LOGGER_TYPE);
 
 	template <class T> void logExp(T exp, LOGGER_TYPE lt)
@@ -69,6 +69,7 @@ public:
     static const string HAND_HISTORY_PARSER_OUTPUT_FILENAME;
     static const string BOT_LOGIC_OUTPUT_FILENAME;
 	static const string DLL_DECISION_OUTPUT_FILENAME;
+	static const string RANGE_LOGGER_OUTPUT_FILENAME;
 
 private:
 
@@ -81,6 +82,7 @@ private:
     static ofstream* handHistoryParserLogger_;
 	static ofstream* botLogicLogger_;
 	static ofstream* dllDecisionLogger_;
+	static ofstream* rangeLogger_;
     static ofstream* outfile_;
 };
 
