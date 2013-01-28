@@ -408,8 +408,8 @@ double BayesDecision::modifyFEbyRelativePosition(CurrentGameInfo& gameInfo, doub
 		logger.logExp("Not in position\n", BOT_LOGIC);
 		if (gameInfo.getStreet() == 0)
 		{
-			if (gameInfo.getBiggestBet() > 1) FE = modifyValue(FE, -0.1);
-			else  FE = modifyValue(FE, -0.05);
+			if (gameInfo.getBiggestBet() > 1) FE = modifyValue(FE, -0.20);
+			else  FE = modifyValue(FE, -0.15);
 		}
 		if (gameInfo.getStreet() == 1)
 		{
@@ -462,7 +462,7 @@ double BayesDecision::modifyEQbyRelativePosition(CurrentGameInfo& gameInfo, vect
 		logger.logExp("Not in position\n", BOT_LOGIC);
 		if (gameInfo.getStreet() == 0)
 		{
-			EQ = modifyValue(EQ, -0.1);
+			//EQ = modifyValue(EQ, -0.1);
 		}
 		if (gameInfo.getStreet() == 1)
 		{
@@ -663,7 +663,7 @@ vector<double> BayesDecision::getFoldEquities(double betsize, CurrentGameInfo& g
 			akt = modifyFEbyPlayersInPlay(ranges.size(), akt);
 			akt = modifyFEbyRelativePosition(game, akt);
 			akt = modifyFEbyBoardType(game, game.getBoard(), akt);
-			akt = modifyValue(akt, -0.05);
+			akt = modifyValue(akt, -0.08);
 
 			result.push_back(akt);
 		}
@@ -679,7 +679,7 @@ vector<double> BayesDecision::getFoldEquities(double betsize, CurrentGameInfo& g
 			akt = modifyFEbyBetSize(2, player, betsize / game.getBblind(), game.getPotcommon(), akt, game.getBblind());
 			akt = modifyFEbyPlayersInPlay(ranges.size(), akt);
 			akt = modifyFEbyBoardType(game, game.getBoard(), akt);
-			akt = modifyValue(akt, -0.05);
+			akt = modifyValue(akt, -0.2);
 
 			result.push_back(akt);
 		}
@@ -753,6 +753,7 @@ double BayesDecision::calculateEVRaise(CurrentGameInfo& gameInfo, vector<PlayerR
 			{
 				chanceOfThis *= foldEquities[i];
 				CurrentPlayerInfo player  = gameInfo.getPlayerbyId(callRaiseRanges[i].getId());
+
 				pot += player.getBetsize() * gameInfo.getBblind();
 			}
 		}
@@ -763,11 +764,11 @@ double BayesDecision::calculateEVRaise(CurrentGameInfo& gameInfo, vector<PlayerR
 		if (nr > 0 && !allIn) eq = modifyEQbyRelativePosition(gameInfo, playersPlaying, eq);
 		logger.logExp("Modified EQ by relativ position : ", eq, BOT_LOGIC);
 		if (nr > 0 && !allIn) eq = modifyEQbyBetSize(gameInfo, betsize, gameInfo.getPotcommon(), eq, gameInfo.getBblind());
-		if (allIn) eq = modifyValue(eq, 0.05);
+		if (nr > 0 && allIn) eq = modifyValue(eq, 0.05);
 
 		//if (gameInfo.getStreet() == 0 && gameInfo.getAmountToCall() > 6 && !allIn) eq = modifyValue(eq, -0.07);
 
-		if (gameInfo.getHand().isPocket() && !gameInfo.getHand().getCard1().isBroadway() && !allIn) eq = modifyValue(eq, -0.2);
+		if (nr > 0 && gameInfo.getStreet() == 0 && gameInfo.getHand().isPocket() && !gameInfo.getHand().getCard1().isBroadway() && !allIn) eq = modifyValue(eq, -0.2);
 
 		// TODO : Include players who already folded ??
 		double thisEV = eq * (pot + totalCalls + heroCurrentBet) - (1 - eq) * (betsize - heroCurrentBet);
@@ -967,7 +968,8 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 		
 		//HMMM?
 		eq = modifyValue(eq, -0.05);
-		if (game.getAmountToCall() > 6) eq = modifyValue(eq, -0.15); 
+		if (game.getAmountToCall() > 6) eq = modifyValue(eq, -0.15);
+		if (!heroInPosition(game)) eq = modifyValue(eq, -0.1);
 		
 		EVCALL = eq * totalpot - (1 - eq) * (call);
 		EVCALL -= (totalpot + call) * 0.05;
@@ -1059,7 +1061,7 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 		double eq = calculateEQ(ranges, game.getBoard(), game.getHand(), game);
 
 		eq = modifyEQbyRelativePosition(game, game.getOpponentsInfo(), eq);
-		if (game.getBiggestBet() * game.getBblind() >= potcommon) eq = modifyValue(eq, -0.10); 
+		if (game.getBiggestBet() * game.getBblind() >= potcommon) eq = modifyValue(eq, -0.15); 
 		if (!heroInPosition(game) && str > 1 && str < 6)
 		{			
 			eq = modifyValue(eq, -0.10);
@@ -1138,7 +1140,7 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 		double eq = calculateEQ(ranges, game.getBoard(), game.getHand(), game);
 		eq = modifyEQbyRelativePosition(game, game.getOpponentsInfo(), eq);
 
-		if (game.getBiggestBet() * game.getBblind() > potcommon) eq = modifyValue(eq, -0.05); 
+		if (game.getBiggestBet() * game.getBblind() > potcommon) eq = modifyValue(eq, -0.1); 
 		
 		if (!heroInPosition(game) && str > 1 && str < 6)
 		{			
