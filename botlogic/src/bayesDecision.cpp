@@ -772,6 +772,7 @@ double BayesDecision::calculateEVRaise(CurrentGameInfo& gameInfo, vector<PlayerR
 		if (nr > 0 && gameInfo.getStreet() == 0 && gameInfo.getHand().isPocket() && !gameInfo.getHand().getCard1().isBroadway() && !allIn) eq = modifyValue(eq, -0.2);
 
 		// TODO : Include players who already folded ??
+		logger.logExp("Final EQ : ", eq, BOT_LOGIC);
 		double thisEV = eq * (pot + totalCalls + heroCurrentBet) - (1 - eq) * (betsize - heroCurrentBet);
 		thisEV -= (pot + totalCalls + betsize) * 0.05;
 
@@ -1073,6 +1074,7 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 		}
 
 
+
 		EVCALL = eq * totalpot - (1 - eq) * (call);
 		EVCALL -= (totalpot + call) * 0.05;
 
@@ -1233,6 +1235,11 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 	logger.logExp("DECIDED ACTION\n", LOGGER_TYPE::BOT_LOGIC);
 	if (EVRAISE > 0 || EVCALL > 0)
 	{
+		if (abs(EVRAISE - EVCALL) <= game.getBblind() && EVRAISE > 0)
+		{
+			EVRAISE = 100000;
+		}
+
 		if (EVRAISE > EVCALL)
 		{
 			if (EVRAISE == -100000)
