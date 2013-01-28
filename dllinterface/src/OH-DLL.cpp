@@ -914,14 +914,19 @@ double process_query(const char* pquery)
 		getCurrentBets(currentBets, cgi->getBblind());
 		
 		double potcommon = cgi->getPotcommon();
+
 		//HERO SHOULD BE THERE?
 		for (int idx = 1; idx <=5; ++idx)
 		{
 			if (isBitSet((int)playersplayingbits, idx) && gamestateManager.isCurrentPlayerInfoSet(idx))
 			{
-				cgi->addCurrentPlayerInfo(gamestateManager.getCurrentPlayerInfo(idx));
+				CurrentPlayerInfo& player = gamestateManager.getCurrentPlayerInfo(idx);
+				if (cgi->getStreet() == 0 && (player.getActualStacksize() + player.getBetsize() > player.getStacksize() + 0.01)) 
+					player.setActualStacksize(player.getStacksize() - player.getBetsize());
+				cgi->addCurrentPlayerInfo(player);
 			}
 		}
+
 		for (int idx = 1; idx <=5; ++idx)
 		{
 			if (!isBitSet((int)playersplayingbits, idx))
