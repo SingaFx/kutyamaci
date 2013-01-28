@@ -31,7 +31,7 @@ void basic()
 	int poz = 0;
 	double stacksize = 2;
 
-	//preflop.read("preflopBayes");
+	preflop.read("preflopBayes");
 	flop.read("flopBayes");
 	//turn.read("turnBayes");
 
@@ -219,8 +219,13 @@ int main()
 		}
 
 		{
-			double FE = preflop.getProbabilityFE(20, 15, 213.25*0.04, -1, 1, 0.16, 0.04, 0, 0);
+			double FE = preflop.getProbabilityFE(20, 15, 213.25*0.04, -2, 1, 0.16, 0.04, 0, 0);
 			printf("FE = %lf\n", FE);
+		}
+
+		{
+			PlayerRange range = preflop.getRange(20, 15, 213*0.04, 0, 0, 0.48, 0.04, 0, 0);
+			range.printRange();
 		}
 
 		{
