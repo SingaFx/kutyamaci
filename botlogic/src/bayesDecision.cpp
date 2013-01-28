@@ -244,7 +244,7 @@ double BayesDecision::modifyFEbyBetSize(int street, CurrentPlayerInfo& player, d
 	}
 	else
 	{
-		if (currentbet > potcommon * 0.5)
+		if (currentbet > potcommon * 0.3)
 		{
 			FE = modifyValue(FE, -0.3); //RAISE-re alapbol csokkentjuk
 			double ratio = betsize / currentbet;
@@ -358,11 +358,11 @@ double BayesDecision::modifyFEbyPlayersInPlay(int number, double FE)
 {
 	if (number == 2)
 	{
-		//FE = modifyValue(FE, 0.05);
+		FE = modifyValue(FE, 0.2);
 	}
 	else if (number > 2)
 	{
-		//FE = modifyValue(FE, 0.1);	
+		FE = modifyValue(FE, 0.25);	
 	}
 	return FE;
 }
@@ -628,7 +628,7 @@ vector<double> BayesDecision::getFoldEquities(double betsize, CurrentGameInfo& g
 			logger.logExp("Player's modified FE by betsize : ", akt, BOT_LOGIC);
 			akt = modifyFEbyRelativePosition(game, akt);
 			logger.logExp("Player's modified FE by relative position : ", akt, BOT_LOGIC);
-			akt = modifyValue(akt, -0.05);
+			akt = modifyValue(akt, -0.06);
 
 			result.push_back(akt);
 		}
@@ -647,6 +647,7 @@ vector<double> BayesDecision::getFoldEquities(double betsize, CurrentGameInfo& g
 			akt = modifyFEbyRelativePosition(game, akt);
 			akt = modifyFEbyBoardType(game, game.getBoard(), akt);
 			akt = modifyValue(akt, -0.05);
+			if (game.getPotcommon() >= 50 && ranges.size() < 2) akt = modifyValue(akt, -0.25);
 
 			result.push_back(akt);
 		}
@@ -976,7 +977,8 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 
 		// szetre call
 		if (EVRAISE < 0 && game.getHand().isPocket())
-		{
+		{	
+			logger.logExp("Calculate set call", BOT_LOGIC);
 			double maxstacksize = 0;
 			for (int i = 0; i < game.getOpponentsInfo().size(); ++i)
 			{
@@ -986,15 +988,18 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 					maxstacksize = player.getStacksize();
 				}
 			}
+			
+			logger.logExp("MaxStackSize= ", maxstacksize, BOT_LOGIC);
 			if (maxstacksize > game.getHero().getStacksize())
 			{
 				maxstacksize = game.getHero().getStacksize();
 			}
+			logger.logExp("MaxStackSizeHero= ", maxstacksize, BOT_LOGIC);
 			maxstacksize *= game.getBblind();
 
 			if (maxstacksize > call * 24)
 			{
-				EVCALL = 10000;
+				EVCALL = 100000;
 			}
 		}
 
@@ -1043,7 +1048,7 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 			vector<double> foldEquities = getFoldEquities(betsize, game, ranges, preflop, flop, turn, river);
 			double evraise = calculateEVRaise(game, aktRanges, foldEquities, betsize);
 
-			if (ranges.size() == 1 && betsize > potcommon && str <= 2 && !canCallAfterRaise(game, ranges[0], betsize, preflop, flop, turn, river))
+			if (ranges.size() == 1 && betsize > potcommon && str <= 2 && str != 0 && !canCallAfterRaise(game, ranges[0], betsize, preflop, flop, turn, river))
 				evraise = -100000;
 
 			if (evraise > EVRAISE)

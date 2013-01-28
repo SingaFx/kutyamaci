@@ -377,7 +377,7 @@ public:
 
 		raiseRangeTotal = raiseRangeTotal.normalize();
 
-		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, 0.6);
+		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, 0.7);
 		callingRange = callingRange.normalize();
 
 		return callingRange;
@@ -721,7 +721,7 @@ public:
 
 		raiseRangeTotal = raiseRangeTotal.normalize();
 
-		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, 0.6);
+		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, 0.7);
 		callingRange = callingRange.normalize();
 
 		return callingRange;
@@ -1063,7 +1063,7 @@ public:
 
 		raiseRangeTotal = raiseRangeTotal.normalize();
 
-		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, 0.6);
+		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, 0.7);
 		callingRange = callingRange.normalize();
 
 		return callingRange;
@@ -1348,7 +1348,7 @@ public:
 
 		raiseRangeTotal = raiseRangeTotal.normalize();
 
-		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, 0.6);
+		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, 0.7);
 		callingRange = callingRange.normalize();
 
 		return callingRange;
