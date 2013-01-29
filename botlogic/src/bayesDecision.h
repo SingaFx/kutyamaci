@@ -19,7 +19,7 @@ public:
 	static double modifyValue(double, double);
 
 	static double modifyFEbyBetSize(int, CurrentPlayerInfo&, double, double, double, double);
-	static double modifyEQbyBetSize(CurrentGameInfo&, double, double, double, double);
+	static double modifyEQbyBetSize(CurrentGameInfo&, double, double, double, double, int);
 	static double modifyEQbyRelativePosition(CurrentGameInfo&, vector<CurrentPlayerInfo>&, double EQ);
 	static double modifyFEbyPlayersInPlay(int, double);
 	static double modifyFEbyRelativePosition(CurrentGameInfo&, double);
