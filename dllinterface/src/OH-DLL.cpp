@@ -467,6 +467,8 @@ double getBalanceByPos(int idx)
 		}
 	}
 
+	if (balance < 0.01) balance = 100000;
+
     return balance;
 }
 
@@ -939,6 +941,7 @@ double process_query(const char* pquery)
 		vector<int> relativPositions;
 		calculateRelativPositions(relativPositions, gamestateManager.getDealerPosition());
 
+		//OTHER PLAYERS TOO MAYBE?
 		gamestateManager.getCurrentPlayerInfo(0).setPoz(relativPositions[0]);
 		gamestateManager.getCurrentPlayerInfo(0).setActualStacksize(getBalanceByPos(0) / cgi->getBblind());
 		cgi->setHero(gamestateManager.getCurrentPlayerInfo(0));
@@ -1106,10 +1109,7 @@ double process_state(holdem_state* pstate)
 
 		playerRangeManager.resetRanges(gamestateManager);
 		refreshPlayersName(pstate);
-    }
 
-	if (scrape_cycle == 1)
-	{
 		for (int idx = 0; idx < 6; ++idx)
 		{
 			if (currentBets[idx] > 0)
@@ -1118,10 +1118,16 @@ double process_state(holdem_state* pstate)
 			}
 			else
 			{
-				gamestateManager.setInitialBalance(idx, getBalanceByPos(idx) + currentBets[idx]);
+				gamestateManager.setInitialBalance(idx, getBalanceByPos(idx));
 			}
 		}
+    }
+
+	/*
+	if (scrape_cycle == 0)
+	{
 	}
+	*/
 
 	refreshPlayersName(pstate);
 
@@ -1189,6 +1195,9 @@ double process_state(holdem_state* pstate)
                     {
                         currentPlayerInfo.setLine(1);
                         gamestateManager.setMaxRaise(currentBet);
+						//BIG HACK!!!!
+						Sleep(3000);
+						currentPlayerInfo.setActualStacksize(getBalanceByPos(idx) / bblind);
                     }
                     else
                     {
@@ -1256,6 +1265,8 @@ double process_state(holdem_state* pstate)
                     {
                         currentPlayerInfo.setLine(1);
                         gamestateManager.setMaxRaise(currentBet);
+						Sleep(3000);
+						currentPlayerInfo.setActualStacksize(getBalanceByPos(idx) / bblind);
                     }
                     else
                     {

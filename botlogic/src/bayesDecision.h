@@ -21,7 +21,7 @@ public:
 	static double modifyFEbyBetSize(int, CurrentPlayerInfo&, double, double, double, double);
 	static double modifyEQbyBetSize(CurrentGameInfo&, double, double, double, double, int);
 	static double modifyEQbyRelativePosition(CurrentGameInfo&, vector<CurrentPlayerInfo>&, double EQ);
-	static double modifyFEbyPlayersInPlay(int, double);
+	static double modifyFEbyPlayersInPlay(CurrentGameInfo&, int, double);
 	static double modifyFEbyRelativePosition(CurrentGameInfo&, double);
 	static double modifyFEbyBoardType(CurrentGameInfo&, vector<Card>& board, double);
 	

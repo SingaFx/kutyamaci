@@ -149,6 +149,12 @@ Action PlusEVBotLogic::makeDecision(CurrentGameInfo& gameInfo, vector<PlayerRang
 	logger.logExp("game street: ", gameInfo.getStreet(), LOGGER_TYPE::BOT_LOGIC);
 	if (gameInfo.getStreet() == 0 && preflopOpenRaise(gameInfo))
 	{
+		bool isolation = false;
+		if (gameInfo.getOpponentsInfo().size() == 1 && gameInfo.getOpponentsInfo()[0].getPoz() == 1 && gameInfo.getOpponentsInfo()[0].getBetsize() < gameInfo.getBblind() + 0.01)
+		{
+			return Action('r', 4 * gameInfo.getBblind());
+		}
+
 		logger.logExp("PREFLOP game street: ", gameInfo.getStreet(), LOGGER_TYPE::BOT_LOGIC);
 		return Action('n', 0);
 	}
@@ -230,6 +236,15 @@ void PlusEVBotLogic::extendGameInfo(CurrentGameInfo& gameInfo)
 		{
 			gameInfo.getOpponentsInfo()[i] = setStandardPlayerType(gameInfo.getOpponentsInfo()[i], gameInfo.getBblind());
 		}
+
+		/*
+		if (gameInfo.getStreet() > 0 && gameInfo.getOpponentsInfo()[i].getVPIP() > 35 && gameInfo.getOpponentsInfo()[i].getPFR() > 35 && 
+			(abs(gameInfo.getOpponentsInfo()[i].getVPIP() - gameInfo.getOpponentsInfo()[i].getPFR()) < 10))
+		{
+			gameInfo.getOpponentsInfo()[i].setVPIP(20);
+			gameInfo.getOpponentsInfo()[i].setPFR(18);
+		}
+		*/
 	}
 }
 
