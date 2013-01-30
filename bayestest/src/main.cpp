@@ -23,6 +23,14 @@ void testRiverFE()
 		   FE = river.getProbabilityFE(  20,       18,       3,         125*0.04,            2,              0,             0.04,             2.75,                 0.75,            35);
 	printf("river 3bet pot reg ellen triple barrel pozibol                  = %lf\n", FE);
 
+	//                                  VPIP,     PFR,       AF,        stacksize,          line,         betsize,         bblind,         potcommon,          flop potcommon
+		   FE = river.getProbabilityFE(  40,       10,       1,         125*0.04,            5,              0,             0.04,             2.75,                 0.75,            35);
+	printf("river 3bet pot fish ellen triple barrel pozin kivul             = %lf\n", FE);
+
+	//                                  VPIP,     PFR,       AF,        stacksize,          line,         betsize,         bblind,         potcommon,          flop potcommon
+		   FE = river.getProbabilityFE(  40,       10,       1,         125*0.04,            2,              0,             0.04,             2.75,                 0.75,            35);
+	printf("river 3bet pot fish ellen triple barrel pozibol                 = %lf\n", FE);
+
 	printf("--------------------------------end of river tests------------------------------\n");
 }
 
@@ -110,19 +118,19 @@ void testFlopFE()
 	printf("flop emelt pot shortstack fish pozin kivul cbet                 = %lf\n", FE);
 
 	//                                  VPIP,     PFR,       AF,        stacksize,          line,         betsize,         bblind,         potcommon,         
-           FE = flop.getProbabilityFE(  20,        18,        3,           4,                  1,             0.2,           0.04,              0.3,                 35);
+           FE = flop.getProbabilityFE(  20,        18,        3,           4,                  1,             0.2,           0.04,             0.3,                 35);
 	printf("flop emelt pot regular raise cbet                               = %lf\n", FE);
 
 	//                                  VPIP,     PFR,       AF,        stacksize,          line,         betsize,         bblind,         potcommon,         
-           FE = flop.getProbabilityFE(  20,        18,        3,           4,                  1,             0.3,           0.04,              0.3,                 35);
+           FE = flop.getProbabilityFE(  20,        18,        3,           4,                  1,             0.3,           0.04,             0.3,                 35);
 	printf("flop emelt pot regular raise cbet  (pot meretu cbet)            = %lf\n", FE);
 
 	//                                  VPIP,     PFR,       AF,        stacksize,          line,         betsize,         bblind,         potcommon,         
-           FE = flop.getProbabilityFE(  40,        10,        1,           4,                  1,             0.2,           0.04,              0.3,                 35);
+           FE = flop.getProbabilityFE(  40,        10,        1,           4,                  1,             0.2,           0.04,             0.3,                 35);
 	printf("flop emelt pot fish    raise cbet                               = %lf\n", FE);
 
 	//                                  VPIP,     PFR,       AF,        stacksize,          line,         betsize,         bblind,         potcommon,         
-           FE = flop.getProbabilityFE(  40,        10,        1,           4,                  1,             0.3,           0.04,              0.3,                 35);
+           FE = flop.getProbabilityFE(  40,        10,        1,           4,                  1,             0.3,           0.04,             0.3,                 35);
 	printf("flop emelt pot fish    raise cbet  (pot meretu cbet)            = %lf\n", FE);
 
 
@@ -165,6 +173,21 @@ void testFlopFE()
 
 }
 
+void testPreflopFE()
+{
+	printf("\n-----------------------------preflop tests----------------------------------\n\n");
+
+	//                                   VPIP      PFR     stacksize      poz          line          betsize          bblind         
+	double FE = preflop.getProbabilityFE(20,       18,        4,          -1,            1,           0.12,           0.04,            0,             35);
+	printf("preflop 3bet CO regular ellen                                   = %lf\n", FE);
+
+	//                                   VPIP      PFR     stacksize      poz          line          betsize          bblind         
+		   FE = preflop.getProbabilityFE(40,       15,        4,          -1,            1,           0.12,           0.04,            0,             35);
+	printf("preflop 3bet CO fish    ellen                                   = %lf\n", FE);
+
+	printf("--------------------------end of preflop tests------------------------------\n");
+}
+
 // 8/5 pre shove 100bb
 void testPreflopRange1()
 {
@@ -202,7 +225,7 @@ int main()
 		turn.read("turnBayes");
 		river.read("riverBayes");
 
-
+		testPreflopFE();
 		testFlopFE();
 		testTurnFE();
 		testRiverFE();
