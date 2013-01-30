@@ -1457,19 +1457,19 @@ public:
 				if (h1.getRank() > standAloneCard.getRank())
 				{
 					if (h1.getRank() >= 11)
-						return 1;
+						return 0;
 					if (h1.getRank() >= 8)
-						return 2;
-					return 3;
+						return 1;
+					return 2;
 				}
 				return 3;
 			}
 
 			if (standAloneCard.getRank() >= 12)
-				return 1;
+				return 0;
 			if (standAloneCard.getRank() >= 8)
-				return 2;
-			return 3;
+				return 1;
+			return 0;
 		}
 		else if (turnFlush(cards))
 		{
@@ -1484,14 +1484,14 @@ public:
 			if (turnOneCardNutFlush(h1,h2,board))
 			{
 				if (turnOneCardStrBoard(board))
-					return 1;
+					return 0;
 				return 0;
 			}
 
 			if (suitedCard.getRank() >= 11)
-				return 3;
+				return 2;
 
-			return 4;
+			return 3;
 		}
 		else if (turnStraight(cards))
 		{
@@ -1501,20 +1501,20 @@ public:
 			if (turnOneCardStr(h1,h2,board))
 			{
 				if (turnOneCardLowStr(h1, h2, board))
-					return 3;
+					return 2;
 				if (!turnDoubleBoard(board))
 				{
 					if (!turnThreeToneBoard(board))
 					{
 						if (turnOneCardNutStraight(h1,h2,board))
 							return 0;
-						return 1;
+						return 0;
 					}
 
 					if (turnOneCardNutFlushDraw(h1,h2,board))
-						return 1;
+						return 0;
 
-					return 2;
+					return 1;
 				}
 
 				return 2;
@@ -1523,22 +1523,22 @@ public:
 			if (turnLowTwoCardStraight(h1,h2,board))
 			{
 				if (turnDoubleBoard(board))
-					return 2;
+					return 1;
 
 				if (!turnThreeToneBoard(board))
-					return 1;
+					return 0;
 
 				if (turnOneCardNutFlushDraw(h1,h2,board))
-					return 1;
+					return 0;
 
-				return 2;
+				return 1;
 			}
 
 			if (turnDoubleBoard(board))
 			{
 				if (turnThreeToneBoard(board))
-					return 2;
-				return 1;
+					return 1;
+				return 0;
 			}
 
 			if (!turnThreeToneBoard(board))
@@ -1562,7 +1562,7 @@ public:
 				}
 				if (turnDangerousBoard(b1,b2,b3,b4))
 				{
-					return 1;
+					return 0;
 				}
 				return 0;
 			}
@@ -1580,19 +1580,19 @@ public:
 					}
 					if (turnDangerousBoard(b1,b2,b3,b4))
 					{
-						return 1;
+						return 0;
 					}
 					return 0;
 				}
 				if (kicker.getRank() >= 10)
 				{
-					return 1;
+					return 0;
 				}
 				if (turnDangerousBoard(b1,b2,b3,b4))
 				{
-					return 2;
+					return 1;
 				}
-				return 1;
+				return 0;
 			}
 			return 4;
 		}
@@ -1606,9 +1606,9 @@ public:
 						return 1;
 
 					if (h1.getRank() >= 8)
-						return 2;
+						return 1;
 
-					return 3;
+					return 2;
 				}
 
 				if (h1.getRank() == h2.getRank() && h1.getRank() > board[0].getRank())
@@ -1629,7 +1629,7 @@ public:
 						return 0;
 
 					if (turnDangerousBoard(b1,b2,b3,b4))
-						return 1;
+						return 0;
 
 					return 0;
 				}
@@ -1641,9 +1641,9 @@ public:
 					return 0;
 
 				if (turnDangerousBoard(b1,b2,b3,b4))
-					return 2;
+					return 1;
 
-				return 1;
+				return 0;
 			}
 
 			if (turnDoubleBoard(board))
@@ -1655,20 +1655,20 @@ public:
 						if (h1.getRank() >= 12)
 						{
 							if (turnOneCardNutFlushDraw(h1,h2,board))
-								return 2;
+								return 1;
 							if (turnDangerousBoard(b1,b2,b3,b4))
-								return 2;
+								return 1;
 							return 1;
 						}
 						if (h1.getRank() >= 8)
 						{
 							if (turnOneCardNutFlushDraw(h1,h2,board))
-								return 2;
+								return 1;
 							if (turnDangerousBoard(b1,b2,b3,b4))
-								return 3;
-							return 2;
+								return 2;
+							return 1;
 						}
-						return 3;
+						return 2;
 					}
 					return 3;
 				}
@@ -1690,12 +1690,15 @@ public:
 							if (turnStrongFlushDraw(h1,h2,board))
 								return 1;
 							if (turnDangerousBoard(b1,b2,b3,b4))
-								return 2;
+								return 1;
 							return 1;
 						}
 						if (kicker.getRank() >= 10)
-							return 2;
-						return 3;
+							return 1;
+
+						if (turnDangerousBoard(b1,b2,b3,b4))
+							return 3;
+						return 2;
 					}
 					if (kicker.getRank() >= 10)
 					{
@@ -1738,10 +1741,12 @@ public:
 						if (turnOneCardNutFlushDraw(h1,h2,board))
 							return 1;
 						if (turnDangerousBoard(b1,b2,b3,b4))
-							return 2;
+							return 1;
 						return 1;
 					}
-					return 2;
+					if (turnDangerousBoard(b1,b2,b3,b4))
+						return 2;
+					return 1;
 				}
 				if (h1.getRank() > board[2].getRank())
 					return 3;
@@ -1763,14 +1768,14 @@ public:
 					if (turnStrongFlushDraw(h1,h2,board) || (turnStrongOESD(h1,h2,b1,b2,b3,b4) && turnSuitedNumber(b1,b2,b3,b4) < 3))
 						return 1;
 					if (turnDangerousBoard(b1,b2,b3,b4))
-						return 2;
+						return 1;
 					return 1;
 				}
 				if (kicker.getRank() >= 10)
 				{
 					if (turnStrongFlushDraw(h1,h2,board) || (turnStrongOESD(h1,h2,b1,b2,b3,b4) && turnSuitedNumber(b1,b2,b3,b4) < 3))
 						return 1;
-					return 2;
+					return 1;
 				}
 				if (turnStrongFlushDraw(h1,h2,board) || (turnStrongOESD(h1,h2,b1,b2,b3,b4) && turnSuitedNumber(b1,b2,b3,b4) < 3))
 					return 2;
@@ -1849,7 +1854,7 @@ public:
 			if (turnStraightFlush(createVector(h1,b1,b2,b3,b4,b5)) || turnStraightFlush(createVector(h2,b1,b2,b3,b4,b5)))
 			{
 				if (riverOneCardLowStrFlush(h1,h2,b1,b2,b3,b4,b5))
-					return 1;
+					return 0;
 
 				return 0;
 			}
@@ -1886,10 +1891,10 @@ public:
 				if ((h1.getRank() == h2.getRank()) && (h1.getRank() > pair.getRank()))
 				{
 					if (h1.getRank() >= 12)
+						return 0;
+					if (h1.getRank() >= 8)
 						return 1;
-					if (h1.getRank() >= 88)
-						return 2;
-					return 3;
+					return 2;
 				}
 
 				return 4;
@@ -1961,10 +1966,10 @@ public:
 				if (h1.getRank() > highStandAloneCard.getRank())
 				{
 					if (h1.getRank() >= 11)
-						return 1;
+						return 0;
 					if (h1.getRank() >= 8)
-						return 2;
-					return 3;
+						return 1;
+					return 2;
 				}
 				return 3;
 			}
@@ -1972,10 +1977,10 @@ public:
 			if (h1.getRank() == highStandAloneCard.getRank() || h2.getRank() == highStandAloneCard.getRank())
 			{
 				if (highStandAloneCard.getRank() >= 12)
-					return 1;
+					return 0;
 				if (highStandAloneCard.getRank() >= 8)
-					return 2;
-				return 3;
+					return 1;
+				return 2;
 			}
 			return 3;
 		}
@@ -2003,16 +2008,16 @@ public:
 			}
 
 			if (riverTripleBoard(board))
-				return 4;
+				return 3;
 
 			if (riverDoublePairedBoard(board))
-				return 3;
+				return 2;
 
 			if (riverSuitedNumber(b1,b2,b3,b4,b5) == 3 && !riverDoubleBoard(board))
 				return 0;
 
 			if (riverSuitedNumber(b1,b2,b3,b4,b5) == 3 && riverDoubleBoard(board))
-				return 1;
+				return 0;
 
 			char suit = board[1].getSuit();
 			if ((board[1].getSuit() != board[2].getSuit()) && (board[2].getSuit() == board[3].getSuit()))
@@ -2024,13 +2029,13 @@ public:
 				if (riverDoubleBoard(board))
 					return 1;
 				if (riverPossibleOneCardStrFlush(board))
-					return 1;
+					return 0;
 				return 0;
 			}
 
 			if (suitedCard.getRank() >= 11)
-				return 3;
-			return 4;
+				return 2;
+			return 3;
 		}
 		else if (riverStraight(cards))
 		{
@@ -2052,7 +2057,7 @@ public:
 					}
 
 					if (riverSuitedNumber(b1,b2,b3,b4,b5) == 3)
-						return 2;
+						return 1;
 					if (str.getRank() == 14)
 						return 0;
 					return 1;
@@ -2064,49 +2069,49 @@ public:
 			}
 
 			if (riverTripleBoard(board))
-				return 4;
-			if (riverDoublePairedBoard(board))
 				return 3;
+			if (riverDoublePairedBoard(board))
+				return 2;
 
 			if (riverOneCardStr(h1,h2,board))
 			{
 				if (riverOneCardLowStr(h1, h2, board))
-					return 3;
+					return 2;
 				if (!riverDoubleBoard(board))
 				{
 					if (riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) < 3)
 					{
 						if (riverOneCardNutStraight(h1,h2,board))
 							return 0;
-						return 1;
+						return 0;
 					}
 
 					if (riverOneCardNutStraight(h1,h2,board))
 							return 1;
-					return 2;
+					return 1;
 				}
 
 				if (riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) == 3)
-					return 3;
-				return 2;
+					return 2;
+				return 1;
 			}
 
 			if (riverTwoCardLowStr(h1,h2,board))
 			{
 				if (riverDoubleBoard(board))
-					return 2;
-
-				if (riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) < 3)
 					return 1;
 
-				return 2;
+				if (riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) < 3)
+					return 0;
+
+				return 1;
 			}
 
 			if (riverDoubleBoard(board))
 			{
 				if (riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) == 3)
-					return 2;
-				return 1;
+					return 1;
+				return 0;
 			}
 
 			if (riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) < 3)
@@ -2124,9 +2129,9 @@ public:
 				if (riverFuckedUpBoard(board))
 					return 3;
 				if (riverVeryDangerousBoard(board))
-					return 2;
-				if (riverDangerousBoard(board))
 					return 1;
+				if (riverDangerousBoard(board))
+					return 0;
 				return 0;
 			}
 
@@ -2143,6 +2148,17 @@ public:
 				if (riverFuckedUpBoard(board))
 					return 3;
 				if (riverVeryDangerousBoard(board))
+					return 1;
+				if (riverDangerousBoard(board))
+					return 0;
+				return 0;
+			}
+
+			if (kicker.getRank() >= 10)
+			{
+				if (riverFuckedUpBoard(board))
+					return 4;
+				if (riverVeryDangerousBoard(board))
 					return 2;
 				if (riverDangerousBoard(board))
 					return 1;
@@ -2152,9 +2168,9 @@ public:
 			if (riverFuckedUpBoard(board))
 				return 4;
 			if (riverVeryDangerousBoard(board))
-				return 3;
-			if (riverDangerousBoard(board))
 				return 2;
+			if (riverDangerousBoard(board))
+				return 1;
 			return 1;
 		}
 		else if (riverTwoPair(cards))
@@ -2219,17 +2235,17 @@ public:
 				if ((h1.getRank() == board[4].getRank()) || (h2.getRank() == board[4].getRank()))
 				{
 					if (riverVeryDangerousBoard(board))
-						return 2;
-					if (riverDangerousBoard(board))
 						return 1;
+					if (riverDangerousBoard(board))
+						return 0;
 					return 0;
 				}
 
 				if (riverVeryDangerousBoard(board))
-					return 2;
+					return 1;
 				if (riverDangerousBoard(board))
-					return 2;
-				return 1;
+					return 1;
+				return 0;
 			}
 
 			if (h1.getRank() == h2.getRank())
@@ -2239,20 +2255,20 @@ public:
 					if (h1.getRank() >= 12)
 					{
 						if (riverVeryDangerousBoard(board))
-							return 2;
+							return 1;
 						if (riverDangerousBoard(board))
-							return 2;
+							return 1;
 						return 1;
 					}
 					if (h1.getRank() >= 8)
 					{
 						if (riverVeryDangerousBoard(board))
-							return 3;
+							return 1;
 						if (riverDangerousBoard(board))
-							return 3;
-						return 2;
+							return 1;
+						return 1;
 					}
-					return 3;
+					return 2;
 				}
 				return 3;
 			}
@@ -2272,21 +2288,21 @@ public:
 					if ((kicker.getRank() == 14) || ((pair.getRank() == 14) && (kicker.getRank() == 13)))
 					{
 						if (riverVeryDangerousBoard(board))
-							return 2;
+							return 1;
 						if (riverDangerousBoard(board))
-							return 2;
+							return 1;
 						return 1;
 					}
 					if (kicker.getRank() >= 10)
-						return 2;
+						return 1;
 					return 3;
 				}
 				if (kicker.getRank() >= 10)
 				{
 					if (riverVeryDangerousBoard(board))
-						return 3;
+						return 2;
 					if (riverDangerousBoard(board))
-						return 3;
+						return 2;
 					return 2;
 				}
 			}
@@ -2308,17 +2324,19 @@ public:
 					if (h1.getRank() >= 11)
 					{
 						if (riverVeryDangerousBoard(board))
-							return 2;
+							return 1;
 						if (riverDangerousBoard(board))
-							return 2;
+							return 1;
 						return 1;
 					}
 					if (riverVeryDangerousBoard(board))
-						return 3;
-					return 2;
+						return 2;
+					if (riverDangerousBoard(board))
+						return 2;
+					return 1;
 				}
 				if (h1.getRank() > board[3].getRank())
-					return 3;
+					return 2;
 				return 4;
 			}
 
@@ -2335,20 +2353,20 @@ public:
 				if ((kicker.getRank() == 14) || (pair.getRank() == 14 && kicker.getRank() == 13))
 				{
 					if (riverVeryDangerousBoard(board))
-						return 2;
+						return 1;
 					if (riverDangerousBoard(board))
-						return 2;
+						return 1;
 					return 1;
 				}
 				if (kicker.getRank() >= 10)
 				{
-					return 2;
+					return 1;
 				}
 
 				if (riverVeryDangerousBoard(board))
-					return 3;
+					return 2;
 				if (riverDangerousBoard(board))
-					return 3;
+					return 2;
 				return 2;
 			}
 

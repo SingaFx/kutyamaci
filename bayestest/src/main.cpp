@@ -230,6 +230,42 @@ void testBoardType()
 	printf("--------------------------------------end of board type testing---------------------------------------\n");
 }
 
+void testBoardType2()
+{
+	printf("\n--------------------------------------board type testing--------------------------------------------\n");
+
+	vector<Card> board;
+	board.push_back(Card('2','c'));
+	board.push_back(Card('T','c'));
+	board.push_back(Card('3','d'));
+	board.push_back(Card('2','d'));
+	board.push_back(Card('Q','d'));
+
+	int boardType = Evaluator::boardType(board);
+
+	printf("2c TC 3d 2d Qd board type                        = %d\n", boardType);
+
+	printf("--------------------------------------end of board type testing---------------------------------------\n");
+}
+
+void testBoardType3()
+{
+	printf("\n--------------------------------------board type testing--------------------------------------------\n");
+
+	vector<Card> board;
+	board.push_back(Card('6','c'));
+	board.push_back(Card('Q','d'));
+	board.push_back(Card('A','h'));
+	board.push_back(Card('9','h'));
+	board.push_back(Card('T','h'));
+
+	int boardType = Evaluator::boardType(board);
+
+	printf("6c Qd Ah 9h Th board type                        = %d\n", boardType);
+
+	printf("--------------------------------------end of board type testing---------------------------------------\n");
+}
+
 void testRiverRange1()
 {
 	printf("\n--------------------------------------River regular AI call range 3bet pot on 8s3c8c4s3h--------------------------------------------\n");
@@ -271,6 +307,8 @@ void testEvaluator1()
 	printf("--------------------------------------end of River JJ on 8s3c8c4s3h---------------------------------------\n");
 }
 
+
+
 int main()
 {
     try
@@ -290,6 +328,8 @@ int main()
 		testRiverFE();
 
 		testBoardType();
+		testBoardType2();
+		testBoardType3();
 
 		testEvaluator1();
 
