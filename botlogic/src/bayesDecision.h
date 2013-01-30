@@ -20,7 +20,7 @@ public:
 	//IMPLEMENT IMPLIED ODDS
 
 	static vector<double> getFoldEquities(double, CurrentGameInfo&, vector<PlayerRange>&, BayesUserPreflop&, BayesUserFlop&, BayesUserTurn&, BayesUserRiver&);
-	static double calculateEVRaise(CurrentGameInfo&, vector<PlayerRange>&, vector<double>& , double, bool);
+	static double calculateEVRaise(CurrentGameInfo&, vector<PlayerRange>&, vector<double>& , double, bool&, bool);
 	static double calculateEVCall(CurrentGameInfo&, vector<PlayerRange>&);
 	static bool canCallAfterRaise(CurrentGameInfo&, PlayerRange&, double, BayesUserPreflop&, BayesUserFlop&, BayesUserTurn&, BayesUserRiver&);
 public:

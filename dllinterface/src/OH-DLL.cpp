@@ -911,6 +911,11 @@ double process_query(const char* pquery)
 	}
 	else
 	{
+		if (gamestateManager.isBluff())
+		{
+
+		}
+
 		CurrentGameInfo* cgi = gamestateManager.getCurrentGameInfo();
 		vector<double> currentBets(6);
 		getCurrentBets(currentBets, cgi->getBblind());
@@ -947,6 +952,11 @@ double process_query(const char* pquery)
 		cgi->setHero(gamestateManager.getCurrentPlayerInfo(0));
 
 		action = botLogic->makeDecision(*cgi, ranges);
+
+		if (action.isBluff())
+		{
+			gamestateManager.setBluff(true);
+		}
 	} 
 
 	//WriteToDebugWindow();
@@ -1104,6 +1114,8 @@ double process_state(holdem_state* pstate)
 	if (gamestateManager.IsHandReset(cgi->getHandNumber()))
     {
 		gamestateManager.setCache(false);
+		gamestateManager.setBluff(false);
+		//update database
 		logger.logExp("HandReset Cache = false", DLL_DECISION_LOGGER);
 		gamestateManager.setHandNumber(cgi->getHandNumber());
         resetHand(pstate, cgi->getHand());

@@ -32,6 +32,7 @@ private:
 
 	Action actionCache;
 	bool cacheAvalaible;
+	bool bluff;
 
     int nextPosition(int position);
 
@@ -91,4 +92,7 @@ public:
 
 	void setMyStackSize(double);
 	double getMyStackSize();
+
+	void setBluff(bool);
+	bool isBluff();
 };
