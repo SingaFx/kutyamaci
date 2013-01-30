@@ -60,7 +60,8 @@ public:
                     char ch[1000];
 				    char DefChar = ' ';
 				    WideCharToMultiByte(CP_ACP,0,ffd.cFileName,-1,ch,1000,&DefChar,NULL);
-				    if (regex_match(ch, fileName)) {
+				    
+					if (regex_match(ch, fileName)) {
                         string s = folder + "\\";
 				        string s2 = ch;
 
@@ -68,17 +69,19 @@ public:
 
                         if (S.find(akt) == S.end())
                         {
+							logger.logExp("Worker starting", LOGGER_TYPE::HAND_HISTORY_PARSER);
                             S.insert(akt);
                             Worker w(akt, this, this->updateMutex);
                             boost::thread workerThread(w);
                         }
                     }
 				}
+				Sleep(2000);
 			}
 			while (FindNextFile(hFind, &ffd) != 0);
 
-		FindClose(hFind);
-		Sleep(10000);
+			FindClose(hFind);
+			Sleep(10000);
 		}
 	}
 

@@ -107,11 +107,12 @@ double EqCalculator::evaluate(vector<Hand> &sample, vector<Card> &board)
 {
 	string hands = sampleToString(sample);
 	string sboard = boardToString(board);
+	string dead = "";
 
 	double results[10];
-	HoldemCalculator calc;
 
-	calc.CalculateMC(hands.c_str(), sboard.c_str(), "", 1, results);
+	HoldemCalculator calc;
+	calc.CalculateMC(hands.c_str(), sboard.c_str(), dead.c_str(), 1, results);
 
 	return results[0];
 }

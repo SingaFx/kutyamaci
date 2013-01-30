@@ -142,7 +142,6 @@ PlayerRange PlusEVBotLogic::calculateRange(int id, CurrentGameInfo& gameInfo, Pl
 	res.setValid(true);
 	return res;
 }
-
 Action PlusEVBotLogic::makeDecision(CurrentGameInfo& gameInfo, vector<PlayerRange>& ranges)
 {
 	Logger& logger = logger.getLogger(BOT_LOGIC);
@@ -236,18 +235,8 @@ void PlusEVBotLogic::extendGameInfo(CurrentGameInfo& gameInfo)
 		{
 			gameInfo.getOpponentsInfo()[i] = setStandardPlayerType(gameInfo.getOpponentsInfo()[i], gameInfo.getBblind());
 		}
-
-		/*
-		if (gameInfo.getStreet() > 0 && gameInfo.getOpponentsInfo()[i].getVPIP() > 35 && gameInfo.getOpponentsInfo()[i].getPFR() > 35 && 
-			(abs(gameInfo.getOpponentsInfo()[i].getVPIP() - gameInfo.getOpponentsInfo()[i].getPFR()) < 10))
-		{
-			gameInfo.getOpponentsInfo()[i].setVPIP(20);
-			gameInfo.getOpponentsInfo()[i].setPFR(18);
-		}
-		*/
 	}
 }
-
 bool PlusEVBotLogic::preflopOpenRaise(CurrentGameInfo& gameInfo)
 {
 	for (int i = 0; i < gameInfo.getOpponentsInfo().size(); ++i)

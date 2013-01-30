@@ -856,7 +856,6 @@ double process_query(const char* pquery)
 	if (strcmp(pquery,"dll$swag") && strcmp(pquery,"dll$srai") && strcmp(pquery,"dll$call") && strcmp(pquery,"dll$prefold"))
 		return 0;
     
-
 	int total = 0;
 	while (process_state(NULL)==-1)
 	{
@@ -864,6 +863,7 @@ double process_query(const char* pquery)
 	}
 	//LET THE OLD BOT DECIDE
 	if (process_state(NULL) == -1) return -1;
+
 
 	if(pquery == NULL)
     {
@@ -949,13 +949,13 @@ double process_query(const char* pquery)
 		action = botLogic->makeDecision(*cgi, ranges);
 	} 
 
-
 	//WriteToDebugWindow();
 
 	logger.logExp("Got action: " + action.toString(), DLL_DECISION_LOGGER);
 
     if(strcmp(pquery,"dll$swag") == 0)
     {
+		
 		double result = 0.0;
 		if (action.getType() == 'n')
 		{
@@ -977,6 +977,7 @@ double process_query(const char* pquery)
 		gamestateManager.setAction(action);
 		gamestateManager.setCache(true);
 		//logger.logExp("Action is cached\n");
+		if (action.getType() == 'r') Sleep(1000);
 
 		return result;
     }
