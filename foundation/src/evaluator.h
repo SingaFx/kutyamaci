@@ -950,7 +950,9 @@ class Evaluator
 			vector<Card> temp = board;
 			temp.erase(temp.begin() + i);
 			if (turnOneCardStrBoard(temp))
+			{
 				return true;
+			}
 		}
 
 		return false;
@@ -1442,7 +1444,7 @@ public:
 			{
 				if ((board[3].getRank() == h1.getRank()) || (board[3].getRank() == h2.getRank()))
 					return 0;
-				return 2;
+				return 1;
 			}
 
 			Card standAloneCard = (board[0].getRank() == board[1].getRank()) ? board[3] : board[0];
@@ -1598,6 +1600,17 @@ public:
 		{
 			if (turnDoublePairedBoard(board))
 			{
+				if (h1.getRank() == h2.getRank() && h1.getRank() > board[3].getRank())
+				{
+					if (h1.getRank() >= 12)
+						return 1;
+
+					if (h1.getRank() >= 8)
+						return 2;
+
+					return 3;
+				}
+
 				if (h1.getRank() == h2.getRank() && h1.getRank() > board[0].getRank())
 					return 3;
 				if ((h1.getRank() == 14) || (h2.getRank() == 14))
@@ -1906,14 +1919,14 @@ public:
 				if ((bigpair.getRank() == h1.getRank()) || (bigpair.getRank() == h2.getRank()))
 					return 0;
 				if ((lowpair.getRank() == h1.getRank()) || (lowpair.getRank() == h2.getRank()))
-					return 2;
+					return 1;
 
 				if ((h1.getRank() == h2.getRank()) && (h1.getRank() == standAloneCard.getRank()))
 				{
 					if (h1.getRank() > bigpair.getRank())
 						return 0;
 					if (h1.getRank() > lowpair.getRank())
-						return 2;
+						return 1;
 					return 3;
 				}
 
@@ -2149,8 +2162,49 @@ public:
 			if (riverDoublePairedBoard(board))
 			{
 				Card lowpair = board[0];
+				Card highpair = board[4];
 				if (board[0].getRank() != board[1].getRank())
 					lowpair = board[1];
+				if (board[4].getRank() != board[3].getRank())
+					highpair = board[3];
+
+				if (h1.getRank() == h2.getRank() && h1.getRank() > highpair.getRank())
+				{
+					if (h1.getRank() >= 12)
+						return 1;
+
+					if (h1.getRank() >= 8)
+						return 2;
+
+					return 3;
+				}
+
+				if ((existsOnBoard(h1.getRank(),board) && h1.getRank() > highpair.getRank()) || (existsOnBoard(h2.getRank(),board) && h2.getRank() > highpair.getRank()))
+				{
+					Card pair = h1;
+					Card kicker = h2;
+					if (existsOnBoard(h2.getRank(),board))
+					{
+						pair = h2;
+						kicker = h1;
+					}
+
+					if (pair.getRank() >= 10)
+					{
+						if (kicker.getRank() == 14 || (kicker.getRank() == 13 && pair.getRank() == 14))
+							return 1;
+
+						if (kicker.getRank() >= 10)
+							return 2;
+
+						return 3;
+					}
+
+					if (kicker.getRank() >= 10)
+						return 2;
+
+					return 3;
+				}
 
 				if ((h1.getRank() == h2.getRank() && h1.getRank() > lowpair.getRank()) || (existsOnBoard(h1.getRank(),board) && h1.getRank() > lowpair.getRank()) || (existsOnBoard(h2.getRank(),board) && h2.getRank() > lowpair.getRank()))
 					return 3;
@@ -2323,6 +2377,7 @@ public:
 	static int boardType(vector<Card>& board)
 	{
 		vector<Card> v = board;
+		sort(v.begin(),v.end(),compareCards);
 		
 		for (int i = 0; i < v.size(); ++i)
 		{

@@ -212,6 +212,65 @@ void testPreflopRange2()
 	printf("--------------------------------------end of 8/5 pre call range---------------------------------------\n");
 }
 
+void testBoardType()
+{
+	printf("\n--------------------------------------board type testing--------------------------------------------\n");
+
+	vector<Card> board;
+	board.push_back(Card('8','c'));
+	board.push_back(Card('A','s'));
+	board.push_back(Card('T','c'));
+	board.push_back(Card('8','s'));
+	board.push_back(Card('5','d'));
+
+	int boardType = Evaluator::boardType(board);
+
+	printf("8c As Tc 8s 5d board type                        = %d\n", boardType);
+
+	printf("--------------------------------------end of board type testing---------------------------------------\n");
+}
+
+void testRiverRange1()
+{
+	printf("\n--------------------------------------River regular AI call range 3bet pot on 8s3c8c4s3h--------------------------------------------\n");
+
+	vector<Card> board;
+	board.push_back(Card('8','s'));
+	board.push_back(Card('3','c'));
+	board.push_back(Card('8','c'));
+	board.push_back(Card('4','s'));
+	board.push_back(Card('3','h'));
+
+	Hand hand;
+	hand.setHand(Card('Q','c'),Card('Q','s'));
+
+	//PlayerRange range = river.getRange(20, 15, 2.5, 111.5*0.04, 5, 0, 0.04, 68.5*0.04, 18.25*0.04, board, hand, 35); 
+	PlayerRange range = river.getCallRaiseRange(20, 15, 2.5, 111.5*0.04, 0, 1.82, 0.04, 2.74, 0.73, board, hand, 35); 
+
+	range.printRange();
+
+	printf("--------------------------------------end of River regular AI call range 3bet pot on 8s3c8c4s3h---------------------------------------\n");
+}
+
+void testEvaluator1()
+{
+	printf("\n--------------------------------------River JJ on 8s3c8c4s3h--------------------------------------------\n");
+
+	vector<Card> board;
+	board.push_back(Card('8','s'));
+	board.push_back(Card('3','c'));
+	board.push_back(Card('8','c'));
+	board.push_back(Card('4','s'));
+	board.push_back(Card('3','h'));
+
+	Hand hand;
+	hand.setHand(Card('J','c'),Card('J','s'));
+
+	printf("handstrength : %d", Evaluator::cardStrength(hand.getCard1(), hand.getCard2(), board));
+
+	printf("--------------------------------------end of River JJ on 8s3c8c4s3h---------------------------------------\n");
+}
+
 int main()
 {
     try
@@ -229,6 +288,12 @@ int main()
 		testFlopFE();
 		testTurnFE();
 		testRiverFE();
+
+		testBoardType();
+
+		testEvaluator1();
+
+		//testRiverRange1();
 
 		//testPreflopRange1();
 		//testPreflopRange2();
