@@ -81,7 +81,7 @@ public:
 			while (FindNextFile(hFind, &ffd) != 0);
 
 			FindClose(hFind);
-			Sleep(10000);
+			Sleep(5000);
 		}
 	}
 

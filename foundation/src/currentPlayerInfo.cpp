@@ -11,6 +11,7 @@ CurrentPlayerInfo::CurrentPlayerInfo(double stacksize, double actualStacksize, d
 	, name(name)
 	, poz(poz)
 	, line(line)
+	, VPIP(0)
 {
 }
 

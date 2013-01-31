@@ -532,6 +532,22 @@ void resetHand(holdem_state* pstate, Hand hand)
     }
 }
 
+void correctStackSizes(CurrentPlayerInfo& player, double currentBet, int idx)
+{
+	GameStateManager& gamestateManager = GameStateManager::getGameStateManager();
+	double bblind = gamestateManager.getCurrentGameInfo()->getBblind();
+
+	double actualStack = player.getActualStacksize();
+	double detectedActualStack = getBalanceByPos(idx) / bblind;
+	if (abs(actualStack - detectedActualStack) < 0.01)
+	{
+		detectedActualStack -= currentBet; 
+		detectedActualStack += player.getBetsize();
+	}
+	player.setBetsize(currentBet);
+	player.setActualStacksize(detectedActualStack);
+}
+
 void detectMissedChecksAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
 {
 	if (old_cgi == NULL)
@@ -672,8 +688,17 @@ void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
 				{
 					logger.logExp("DETECTED : Call, currentplayer info set " + currentPlayerInfo.getName(), DLL_INTERFACE_LOGGER);
 					currentPlayerInfo.setLine(0);
-					currentPlayerInfo.setBetsize(maxRaise);
-					currentPlayerInfo.setActualStacksize(getBalanceByPos(idx) / bblind);
+					correctStackSizes(currentPlayerInfo, maxRaise, idx);
+
+					if (gamestateManager.getCurrentGameInfo()->getStreet() == 0)
+					{
+						if (abs(currentPlayerInfo.getBetsize()-1) < 0.01 && currentPlayerInfo.getPoz() != 2)
+						{
+							currentPlayerInfo.setVPIP(40);
+							currentPlayerInfo.setPFR(10);
+							currentPlayerInfo.setAF(1);
+						}
+					}
 
 					if (idx > 0)
 					{
@@ -795,15 +820,10 @@ void refreshStackSizes(vector<double>& currentBets)
 double AnyVPIP(int index)
 {
 	Logger& logger = Logger::getLogger(DLL_DECISION_LOGGER);
-	//logger.logExp("
-
-	BotManager& botManager = BotManager::getBotManager();
-	AbstractBotLogic* botLogic = botManager.getPluggableBot();
-
-	Database database("127.0.0.1", "root", "root", "kutya");
-	
 	
 	GameStateManager& gamestateManager = GameStateManager::getGameStateManager();
+
+	Database* database = gamestateManager.getDatabase();
 
 	vector<int> relativePositions;
     calculateRelativPositions(relativePositions, gamestateManager.getDealerPosition());
@@ -821,9 +841,9 @@ double AnyVPIP(int index)
 
 	double VPIP = 0;
 
-	if (database.isUser(name))
+	if (database->isUser(name))
 	{
-		VPIP = database.getVPIP(name);
+		VPIP = database->getVPIP(name);
 		logger.logExp("VPIP got: ", VPIP,DLL_DECISION_LOGGER);
 	}
 	else
@@ -833,7 +853,6 @@ double AnyVPIP(int index)
 
 	return VPIP;
 }
-
 
 double process_state(holdem_state* pstate);
 
@@ -911,6 +930,18 @@ double process_query(const char* pquery)
 	}
 	else
 	{
+		vector<int> postflopRelatives;
+		calculateRelativPositions(postflopRelatives, gamestateManager.getDealerPosition(), true);
+
+		// wait for hero's balance when the action before was raise and we are oop against 1 opponent
+		if (ranges.size() == 1 && gamestateManager.getAction().getType() == 'r')
+		{
+			logger.logExp("Waiting for hero's balance", DLL_DECISION_LOGGER);
+			Sleep(3000);
+			process_state(NULL);
+		}
+
+		// TODO : implement advanced bluffing here
 		if (gamestateManager.isBluff())
 		{
 
@@ -928,6 +959,8 @@ double process_query(const char* pquery)
 			if (isBitSet((int)playersplayingbits, idx) && gamestateManager.isCurrentPlayerInfoSet(idx))
 			{
 				CurrentPlayerInfo& player = gamestateManager.getCurrentPlayerInfo(idx);
+				
+				player.setStacksize(gamestateManager.getInitialBalanceByPos(idx) / cgi->getBblind());
 				if (cgi->getStreet() == 0 && (player.getActualStacksize() + player.getBetsize() > player.getStacksize() + 0.01)) 
 					player.setActualStacksize(player.getStacksize() - player.getBetsize());
 				cgi->addCurrentPlayerInfo(player);
@@ -987,7 +1020,7 @@ double process_query(const char* pquery)
 		gamestateManager.setAction(action);
 		gamestateManager.setCache(true);
 		//logger.logExp("Action is cached\n");
-		if (action.getType() == 'r') Sleep(1000);
+		//if (action.getType() == 'r') Sleep(1000);
 
 		return result;
     }
@@ -1122,7 +1155,10 @@ double process_state(holdem_state* pstate)
 
 		playerRangeManager.resetRanges(gamestateManager);
 		refreshPlayersName(pstate);
+    }
 
+	if (cgi->getStreet() == 0)
+	{
 		for (int idx = 0; idx < 6; ++idx)
 		{
 			if (currentBets[idx] > 0)
@@ -1134,13 +1170,7 @@ double process_state(holdem_state* pstate)
 				gamestateManager.setInitialBalance(idx, getBalanceByPos(idx));
 			}
 		}
-    }
-
-	/*
-	if (scrape_cycle == 0)
-	{
 	}
-	*/
 
 	refreshPlayersName(pstate);
 
@@ -1148,6 +1178,13 @@ double process_state(holdem_state* pstate)
     if (cgi->getStreet() > gamestateManager.getBettingRound())
     {
 		logger.logExp("betround Cache = false", DLL_DECISION_LOGGER);
+
+		//Opponent Number == 1!!
+		if (gamestateManager.getAction().getType() == 'r')
+		{
+			Sleep(3000);
+		}
+
 		gamestateManager.setCache(false);
         detectMissedCallsAndUpdatePlayerRanges(old_cgi);
 		detectMissedChecksAndUpdatePlayerRanges(old_cgi);
@@ -1196,21 +1233,26 @@ double process_state(holdem_state* pstate)
 
 					double bblind = cgi->getBblind();
 
-                    currentPlayerInfo.setActualStacksize(getBalanceByPos(idx) / bblind);
-                    currentPlayerInfo.setBetsize(currentBet);
-
                     double maxRaise = gamestateManager.getMaxRaise();
                     if (isEqual(currentBet, maxRaise))
                     {
                         currentPlayerInfo.setLine(0);
+						correctStackSizes(currentPlayerInfo, currentBet, idx);
+						if (gamestateManager.getCurrentGameInfo()->getStreet() == 0)
+						{
+							if (abs(currentPlayerInfo.getBetsize()-1) < 0.01)
+							{
+								currentPlayerInfo.setVPIP(40);
+								currentPlayerInfo.setPFR(10);
+								currentPlayerInfo.setAF(1);
+							}
+						}
                     }
                     else if (currentBet > maxRaise)
                     {
                         currentPlayerInfo.setLine(1);
                         gamestateManager.setMaxRaise(currentBet);
-						//BIG HACK!!!!
-						Sleep(3000);
-						currentPlayerInfo.setActualStacksize(getBalanceByPos(idx) / bblind);
+						correctStackSizes(currentPlayerInfo, currentBet, idx);
                     }
                     else
                     {
@@ -1263,8 +1305,6 @@ double process_state(holdem_state* pstate)
                     CurrentPlayerInfo currentPlayerInfo;
                         
                     currentPlayerInfo.setStacksize(gamestateManager.getInitialBalanceByPos(idx) / bblind);
-					currentPlayerInfo.setActualStacksize(getBalanceByPos(idx) / bblind);
-                    currentPlayerInfo.setBetsize(currentBet);
                     currentPlayerInfo.setName(gamestateManager.getPlayerNameByPos(idx));
                     currentPlayerInfo.setPoz(relativePositions[idx]);
 					currentPlayerInfo.setId(idx);
@@ -1273,13 +1313,22 @@ double process_state(holdem_state* pstate)
                     if (isEqual(currentBet, maxRaise))
                     {
                         currentPlayerInfo.setLine(0);
+						correctStackSizes(currentPlayerInfo, currentBet, idx);
+						if (gamestateManager.getCurrentGameInfo()->getStreet() == 0 && currentPlayerInfo.getPoz() != 2)
+						{
+							if (abs(currentPlayerInfo.getBetsize()-1) < 0.01)
+							{
+								currentPlayerInfo.setVPIP(40);
+								currentPlayerInfo.setPFR(10);
+								currentPlayerInfo.setAF(1);
+							}
+						}
                     }
                     else if (currentBet > maxRaise)
                     {
                         currentPlayerInfo.setLine(1);
                         gamestateManager.setMaxRaise(currentBet);
-						Sleep(3000);
-						currentPlayerInfo.setActualStacksize(getBalanceByPos(idx) / bblind);
+						correctStackSizes(currentPlayerInfo, currentBet, idx);
                     }
                     else
                     {
@@ -1309,10 +1358,8 @@ double process_state(holdem_state* pstate)
 							logger.logExp("Given range set to false6\n", BOT_LOGIC);
 						}
 
-
 						PlayerRange updatedRange = botLogic->calculateRange(idx, *cgi, pr);
 						updatedRange.setId(idx);
-
 						
 						if (!updatedRange.getValid())
 						{

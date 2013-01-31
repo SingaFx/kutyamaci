@@ -721,7 +721,30 @@ public:
 
 		raiseRangeTotal = raiseRangeTotal.normalize();
 
-		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, 0.7);
+		double weight = 0;
+
+		if (AF <= 1)
+		{
+			weight = 0.9;
+		}
+		else if (AF <= 2)
+		{
+			weight = 0.8;
+		}
+		else if (AF <= 3)
+		{
+			weight = 0.7;
+		}
+		else if (AF <= 5)
+		{
+			weight = 0.65;
+		}
+		else
+		{
+			weight = 0.55;
+		}
+
+		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, weight);
 		callingRange = callingRange.normalize();
 
 		return callingRange;
@@ -1063,7 +1086,30 @@ public:
 
 		raiseRangeTotal = raiseRangeTotal.normalize();
 
-		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, 0.7);
+		double weight = 0;
+
+		if (AF <= 1)
+		{
+			weight = 0.9;
+		}
+		else if (AF <= 2)
+		{
+			weight = 0.85;
+		}
+		else if (AF <= 3)
+		{
+			weight = 0.75;
+		}
+		else if (AF <= 5)
+		{
+			weight = 0.7;
+		}
+		else
+		{
+			weight = 0.6;
+		}
+
+		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, weight);
 		callingRange = callingRange.normalize();
 
 		return callingRange;
@@ -1348,7 +1394,30 @@ public:
 
 		raiseRangeTotal = raiseRangeTotal.normalize();
 
-		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, 0.7);
+		double weight = 0;
+
+		if (AF <= 1)
+		{
+			weight = 0.99;
+		}
+		else if (AF <= 2)
+		{
+			weight = 0.99;
+		}
+		else if (AF <= 3)
+		{
+			weight = 0.95;
+		}
+		else if (AF <= 5)
+		{
+			weight = 0.9;
+		}
+		else
+		{
+			weight = 0.9;
+		}
+
+		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, weight);
 		callingRange = callingRange.normalize();
 
 		return callingRange;
