@@ -1,12 +1,45 @@
 <?xml version="1.0"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <xs:complexType name="handhistory_t">
+  <xs:complexType name="preflopaction_type">
     <xs:sequence>
-      <xs:element name="id" type="xs:string"/>      
+      <xs:element name="playername" type="xs:string"/>
+      <xs:element name="action" type="xs:string"/>
+      <xs:element name="size" type="xs:double"/>
+      <xs:element name="raisesto" type="xs:double"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="seat_type">
+    <xs:sequence>
+      <xs:element name="position" type="xs:integer"/>
+      <xs:element name="playername" type="xs:string"/>
+      <xs:element name="balance" type="xs:double"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="handhistory_type">
+    <xs:sequence>
+      <xs:element name="id" type="xs:string"/>
+      <xs:element name="table" type="xs:string"/>
+      <xs:element name="user" type="xs:string"/>
+      <xs:element name="dealer" type="xs:integer"/>
+      <xs:element name="nrplayers" type="xs:integer"/>
+      <xs:element name="seat" type="seat_type" maxOccurs="unbounded"/>
+      <xs:element name="smallblind" type="xs:string"/>
+      <xs:element name="bigblind" type="xs:string"/>
+      <xs:element name="holecard1" type="xs:string"/>
+      <xs:element name="holecard2" type="xs:string"/>
+      <xs:element name="preflopaction" type="preflopaction_type" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
 
-  <xs:element name="handhistory" type="handhistory_t"/>
+  <xs:complexType name ="handhistory_container_type">
+    <xs:sequence>
+      <xs:element name="handhistory" type="handhistory_type" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>  
+  
+  <xs:element name="handhistory_container" type="handhistory_container_type"/>
 
 </xs:schema>

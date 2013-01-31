@@ -1,6 +1,8 @@
 #include "BwinPartyParser.h"
 
 #include <boost/regex.hpp>
+#include<boost/algorithm/string.hpp>
+#include<boost/algorithm/string/replace.hpp>
 #include "HandHistoryUtils.h"
 #include "logger.h"
 
@@ -24,6 +26,7 @@ BwinPartyParser::BwinPartyParser(int parserType, ifstream& fileHandle)
  , TURN("^\\*{2} Dealing Turn \\*{2} \\[ (.)(.) \\]")
  , RIVER("^\\*{2} Dealing River \\*{2} \\[ (.)(.) \\]")
  , SHOWDOWN("^(.*) shows \\[ (.)(.), (.)(.) \\]")
+ , MUCK("^(.*) doesn't show \\[ (.)(.), (.)(.) \\]")
  , BUTTON("^Seat ([[:digit:]]*) is the button")
  , FILE("^Supersonic_[[:digit:]]*\.txt")
 {
@@ -45,7 +48,7 @@ vector<HandHistory> BwinPartyParser::parse()
     vector<HandHistory> result;
 	HandHistory actualhand;
 	PlayerHistory actualPlayerHistory;
-	string actualPlayer;
+	string actualPlayer, playerName;
 
     string line;
 
@@ -70,6 +73,7 @@ vector<HandHistory> BwinPartyParser::parse()
 	boost::regex turn(TURN);
 	boost::regex river(RIVER);
 	boost::regex showdown(SHOWDOWN);
+    boost::regex muck(MUCK);
 	boost::regex button(BUTTON);
 
     bool foundFirstHandEnd = false;
@@ -121,6 +125,7 @@ vector<HandHistory> BwinPartyParser::parse()
 		else if (regex_search(line, what, player, flags))
 		{
 			actualPlayer = string(what[2].first, what[2].second);
+            actualPlayer = boost::algorithm::erase_all_copy(actualPlayer, " " );
 			if ( !HandHistoryUtils::playerExists(actualhand, actualPlayer) )
 			{
 				actualPlayerHistory.setPlayerName(actualPlayer);
@@ -139,48 +144,54 @@ vector<HandHistory> BwinPartyParser::parse()
 		{
 			Action tempAction;
             tempAction.setAction('c', atof(string(what[2].first,what[2].second).c_str()));
-			string player_name = string(what[1].first,what[1].second);
-			HandHistoryUtils::addActiontoPlayer(actualhand, tempAction, player_name, round);
+			playerName = string(what[1].first,what[1].second);
+            playerName = boost::algorithm::erase_all_copy(playerName, " " );
+			HandHistoryUtils::addActiontoPlayer(actualhand, tempAction, playerName, round);
 		}
 		// Found a fold action
 		else if (regex_search(line, what, fold, flags))
 		{
 			Action tempAction;
             tempAction.setAction('f', 0);
-			string player_name = string(what[1].first,what[1].second);
-			HandHistoryUtils::addActiontoPlayer(actualhand, tempAction, player_name, round);
+			playerName = string(what[1].first,what[1].second);
+            playerName = boost::algorithm::erase_all_copy(playerName, " " );
+			HandHistoryUtils::addActiontoPlayer(actualhand, tempAction, playerName, round);
 		}
 		// Found a bet action
 		else if (regex_search(line, what, bet, flags))
 		{
 			Action tempAction;
             tempAction.setAction('r', atof(string(what[2].first,what[2].second).c_str()));
-			string player_name = string(what[1].first,what[1].second);
-			HandHistoryUtils::addActiontoPlayer(actualhand, tempAction, player_name, round);
+			playerName = string(what[1].first,what[1].second);
+            playerName = boost::algorithm::erase_all_copy(playerName, " " );
+			HandHistoryUtils::addActiontoPlayer(actualhand, tempAction, playerName, round);
 		}
 		// Found a check action
 		else if (regex_search(line, what, check, flags))
 		{
 			Action tempAction;
             tempAction.setAction('x', 0);
-			string player_name = string(what[1].first,what[1].second);
-			HandHistoryUtils::addActiontoPlayer(actualhand, tempAction, player_name, round);
+			playerName = string(what[1].first,what[1].second);
+            playerName = boost::algorithm::erase_all_copy(playerName, " " );
+			HandHistoryUtils::addActiontoPlayer(actualhand, tempAction, playerName, round);
 		}
 		// Found a raise action
 		else if (regex_search(line, what, raise, flags))
 		{
 			Action tempAction;
             tempAction.setAction('r', atof(string(what[2].first,what[2].second).c_str()));
-			string player_name = string(what[1].first,what[1].second);
-			HandHistoryUtils::addActiontoPlayer(actualhand, tempAction, player_name, round);
+			playerName = string(what[1].first,what[1].second);
+            playerName = boost::algorithm::erase_all_copy(playerName, " " );
+			HandHistoryUtils::addActiontoPlayer(actualhand, tempAction, playerName, round);
 		}
         // Found an allin action
 		else if (regex_search(line, what, allin, flags))
 		{
 			Action tempAction;
             tempAction.setAction('r', atof(string(what[2].first,what[2].second).c_str()));
-			string player_name = string(what[1].first,what[1].second);
-			HandHistoryUtils::addActiontoPlayer(actualhand, tempAction, player_name, round);
+			playerName = string(what[1].first,what[1].second);
+            playerName = boost::algorithm::erase_all_copy(playerName, " " );
+			HandHistoryUtils::addActiontoPlayer(actualhand, tempAction, playerName, round);
 		}
 		// Found dealing flop
 		else if (regex_search(line, what, flop, flags))
@@ -224,7 +235,7 @@ vector<HandHistory> BwinPartyParser::parse()
 			buttonSeat = atoi(string(what[1].first,what[1].second).c_str());
 		}
 		// Found a player's hands at showdown
-		if (regex_search(line, what, showdown, flags))
+		else if (regex_search(line, what, showdown, flags))
 		{
 			Hand tempHand;
             char c1r, c1s, c2r, c2s;
@@ -233,7 +244,23 @@ vector<HandHistory> BwinPartyParser::parse()
             c2r = string(what[4].first,what[4].second).c_str()[0];;
             c2s = string(what[5].first,what[5].second).c_str()[0];
             tempHand.setHand(Card(c1r, c1s), Card(c2r, c2s));
-            HandHistoryUtils::setPlayersHand(actualhand, string(what[1].first,what[1].second), tempHand);
+            playerName = string(what[1].first,what[1].second);
+            playerName = boost::algorithm::erase_all_copy(playerName, " " );
+            HandHistoryUtils::setPlayersHand(actualhand, playerName, tempHand);
+		}
+        // Found a player's mucked hands at showdown
+        else if (regex_search(line, what, muck, flags))
+		{
+			Hand tempHand;
+            char c1r, c1s, c2r, c2s;
+            c1r = string(what[2].first,what[2].second).c_str()[0];
+            c1s = string(what[3].first,what[3].second).c_str()[0];
+            c2r = string(what[4].first,what[4].second).c_str()[0];;
+            c2s = string(what[5].first,what[5].second).c_str()[0];
+            tempHand.setHand(Card(c1r, c1s), Card(c2r, c2s));
+            playerName = string(what[1].first,what[1].second);
+            playerName = boost::algorithm::erase_all_copy(playerName, " " );
+            HandHistoryUtils::setPlayersHand(actualhand, playerName, tempHand);
 		}
 	}
 
