@@ -307,7 +307,32 @@ void testEvaluator1()
 	printf("--------------------------------------end of River JJ on 8s3c8c4s3h---------------------------------------\n");
 }
 
+void testEQCalculator()
+{
+	printf("\n--------------------------------------EQ calculation --------------------------------------------\n");
 
+	PlayerRange range1, range2;
+	range1.range.insert(make_pair(Hand(Card('A','d'),Card('J','h')), 1));
+	range2.range.insert(make_pair(Hand(Card('Q','d'),Card('J','d')), 1));
+
+	vector<PlayerRange> ranges;
+	ranges.push_back(range1);
+	ranges.push_back(range2);
+
+	vector<Card> board;
+	board.push_back(Card('8','d'));
+	board.push_back(Card('T','d'));
+	board.push_back(Card('2','d'));
+	board.push_back(Card('6','d'));
+
+	EqCalculator calculator;
+
+	double eq = calculator.calculate(ranges, board, 10000);
+
+	printf("EQ of AdJh vs QdJd on 8dTd2d6d                  = %lf\n", eq);
+
+	printf("--------------------------------------end of EQ calculation---------------------------------------\n");
+}
 
 int main()
 {
@@ -317,7 +342,7 @@ int main()
 		//PlusEVBotLogic botlogic;
 		//BayesDecision decision;
 
-		preflop.read("preflopBayes");
+		/*preflop.read("preflopBayes");
 		flop.read("flopBayes");
 		turn.read("turnBayes");
 		river.read("riverBayes");
@@ -331,7 +356,9 @@ int main()
 		testBoardType2();
 		testBoardType3();
 
-		testEvaluator1();
+		testEvaluator1();*/
+
+		testEQCalculator();
 
 		//testRiverRange1();
 
