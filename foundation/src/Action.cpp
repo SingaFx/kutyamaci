@@ -31,6 +31,16 @@ const double Action::getSize()
     return size;
 };
 
+void Action::setBluff(bool bluff)
+{
+	this->bluff = bluff;
+}
+
+bool Action::isBluff()
+{
+	return bluff;
+}
+
 std::string Action::toString()
 {
 	std::stringstream stream;

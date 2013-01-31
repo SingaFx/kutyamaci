@@ -41,6 +41,18 @@ HoldemCalculator::HoldemCalculator(void)
 ///////////////////////////////////////////////////////////////////////////////
 HoldemCalculator::~HoldemCalculator(void)
 {
+	if (m_pResults)
+	{
+		delete m_pResults;
+	}
+
+	for (int i = 0; i < m_dists.size(); ++i)
+	{
+		if (m_dists[i])
+		{
+			delete m_dists[i];
+		}
+	}
 }
 
 
@@ -95,10 +107,11 @@ int HoldemCalculator::CalculateEE(const char* hands, const char* board, const ch
 ///////////////////////////////////////////////////////////////////////////////
 void HoldemCalculator::PreCalculate(const char* hands, const char* board, const char* dead, int numberOfTrials, double* results)
 {
+	/*
 	TRACE("\n\n************************************************************\n"
 		  "* CALCULATING MATCHUP: Board = [%s]\n"
 		  "************************************************************\n",
-		 (board && strlen(board) > 0) ? board : "PREFLOP" );
+		(board && strlen(board) > 0) ? board : "PREFLOP" ); */
 
 	Reset();
 	Store(hands, board, dead, numberOfTrials, results);
@@ -202,7 +215,7 @@ int HoldemCalculator::CreateHandDistributions(const char* hands)
 			StdDeck_CardMask_OR(staticPlayerCards, staticPlayerCards, theHand);
 			//m_hands[index] = theHand;
 			m_numberOfSpecificHands++;
-		}
+		}	
 	}
 
 	// Add the static/known player cards to the dead mask
@@ -210,6 +223,8 @@ int HoldemCalculator::CreateHandDistributions(const char* hands)
 
 	// Iterate over the supplied player hands, focusing on ranged/random hands.
 	// We already handled specific/known hands above.
+	
+
 	iter = playerHandsColl.begin();
 	for (int index = 0; iter != end; iter++, index++)
 	{
@@ -220,6 +235,7 @@ int HoldemCalculator::CreateHandDistributions(const char* hands)
 			m_numberOfRangedHands++;
 		}
 	}
+	
 
 	// Lastly, we strdup'd a bunch of string above. Free them.
 	

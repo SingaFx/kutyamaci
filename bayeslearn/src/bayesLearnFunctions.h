@@ -1418,40 +1418,13 @@ public:
 							if (action.getType() == 'r')
 							{
 								++probabilityFE[0][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon];
-								
-								/*
-								if (action.getSize() > 60 * 0.04 && nPotSize > 5)
-								{printf("Situation= %d %d %d %d %d %d %d %d\n", nPotSize, nStackSize, size, 1, nVPIP, nPFR, nAF, flopPotCommon);
-								printf("Total= %d\n", probabilityFE[0][nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon]);
-									printf("============FOLDED=========================================\n");
-									printf("%s\n", player.getPlayerName().c_str());
-									for (int k = 0; k < player.getRiverAction().size(); ++k)
-									{
-										printf("%s\n", player.getRiverAction()[k].toString().c_str());
-									}
-								}
-								*/
 							}
-							/*
+							
 							if (action.getType() == 'x')
 							{
-								if (nVPIP == 3 && nPotSize == 6 && flopPotCommon < 3)
-								{
-									printf("============FOLDED=========================================\n");
-									printf("Situation= %d %d %d %d %d %d %d %d\n", nPotSize, nStackSize, size, 1, nVPIP, nPFR, nAF, flopPotCommon);
-									printf("%s\n", player.getPlayerName().c_str());
-									printf("Total= %d\n", totalFE[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon]);
-									printf("Potcommon= %lf Balance= %lf\n", totalpot, player.getBalance());
-									for (int k = 0; k < player.getRiverAction().size(); ++k)
-									{
-										printf("%s\n", player.getRiverAction()[k].toString().c_str());
-									}
-									printf("Board: %s%s%s%s%s\n", handhistory.getFlopCard1().toString().c_str(), 
-										handhistory.getFlopCard2().toString().c_str(), handhistory.getFlopCard3().toString().c_str(), handhistory.getTurnCard().toString().c_str(), handhistory.getRiverCard().toString().c_str());
-								}
 								++probabilityFE[0][nPotSize][nStackSize][0][2][nVPIP][nPFR][nAF][flopPotCommon];
 							}
-							*/
+							
 						}
 					}
 				}

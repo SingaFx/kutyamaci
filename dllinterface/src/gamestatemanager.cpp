@@ -15,6 +15,7 @@ GameStateManager::GameStateManager()
 	, handNumber(-1)
 	, cacheAvalaible(false)
 	, myStackSize(5.0)
+	, bluff(false)
 {
 }
 
@@ -234,4 +235,13 @@ void GameStateManager::setMyStackSize(double stackSize)
 double GameStateManager::getMyStackSize()
 {
 	return myStackSize;
+}
+
+void GameStateManager::setBluff(bool bluff)
+{
+	this->bluff = bluff;
+}
+bool GameStateManager::isBluff()
+{
+	return bluff;
 }

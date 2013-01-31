@@ -9,6 +9,7 @@ private:
 
     char type;
 	double size;
+	bool bluff;
 public:
 
     Action();
@@ -17,6 +18,9 @@ public:
     void setAction(char, double);
     const char getType();
     const double getSize();
+
+	void setBluff(bool);
+	bool isBluff();
 
 	std::string toString();
 };

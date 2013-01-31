@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 	po::notify(vm);
 
 	////TODO:command line arguments for this!
-	database = new Database("127.0.0.1", "root", "root", "kutya");
+	database = new Database("192.168.1.100", "root", "root", "kutya");
 	printf("%s\n", database->query("show tables").c_str());
 
 	if (vm.count("live"))

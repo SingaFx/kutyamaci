@@ -467,6 +467,8 @@ double getBalanceByPos(int idx)
 		}
 	}
 
+	if (balance < 0.01) balance = 100000;
+
     return balance;
 }
 
@@ -854,7 +856,6 @@ double process_query(const char* pquery)
 	if (strcmp(pquery,"dll$swag") && strcmp(pquery,"dll$srai") && strcmp(pquery,"dll$call") && strcmp(pquery,"dll$prefold"))
 		return 0;
     
-
 	int total = 0;
 	while (process_state(NULL)==-1)
 	{
@@ -862,6 +863,7 @@ double process_query(const char* pquery)
 	}
 	//LET THE OLD BOT DECIDE
 	if (process_state(NULL) == -1) return -1;
+
 
 	if(pquery == NULL)
     {
@@ -909,6 +911,11 @@ double process_query(const char* pquery)
 	}
 	else
 	{
+		if (gamestateManager.isBluff())
+		{
+
+		}
+
 		CurrentGameInfo* cgi = gamestateManager.getCurrentGameInfo();
 		vector<double> currentBets(6);
 		getCurrentBets(currentBets, cgi->getBblind());
@@ -939,13 +946,18 @@ double process_query(const char* pquery)
 		vector<int> relativPositions;
 		calculateRelativPositions(relativPositions, gamestateManager.getDealerPosition());
 
+		//OTHER PLAYERS TOO MAYBE?
 		gamestateManager.getCurrentPlayerInfo(0).setPoz(relativPositions[0]);
 		gamestateManager.getCurrentPlayerInfo(0).setActualStacksize(getBalanceByPos(0) / cgi->getBblind());
 		cgi->setHero(gamestateManager.getCurrentPlayerInfo(0));
 
 		action = botLogic->makeDecision(*cgi, ranges);
-	} 
 
+		if (action.isBluff())
+		{
+			gamestateManager.setBluff(true);
+		}
+	} 
 
 	//WriteToDebugWindow();
 
@@ -953,6 +965,7 @@ double process_query(const char* pquery)
 
     if(strcmp(pquery,"dll$swag") == 0)
     {
+		
 		double result = 0.0;
 		if (action.getType() == 'n')
 		{
@@ -974,6 +987,7 @@ double process_query(const char* pquery)
 		gamestateManager.setAction(action);
 		gamestateManager.setCache(true);
 		//logger.logExp("Action is cached\n");
+		if (action.getType() == 'r') Sleep(1000);
 
 		return result;
     }
@@ -1100,16 +1114,15 @@ double process_state(holdem_state* pstate)
 	if (gamestateManager.IsHandReset(cgi->getHandNumber()))
     {
 		gamestateManager.setCache(false);
+		gamestateManager.setBluff(false);
+		//update database
 		logger.logExp("HandReset Cache = false", DLL_DECISION_LOGGER);
 		gamestateManager.setHandNumber(cgi->getHandNumber());
         resetHand(pstate, cgi->getHand());
 
 		playerRangeManager.resetRanges(gamestateManager);
 		refreshPlayersName(pstate);
-    }
 
-	if (scrape_cycle == 1)
-	{
 		for (int idx = 0; idx < 6; ++idx)
 		{
 			if (currentBets[idx] > 0)
@@ -1118,10 +1131,16 @@ double process_state(holdem_state* pstate)
 			}
 			else
 			{
-				gamestateManager.setInitialBalance(idx, getBalanceByPos(idx) + currentBets[idx]);
+				gamestateManager.setInitialBalance(idx, getBalanceByPos(idx));
 			}
 		}
+    }
+
+	/*
+	if (scrape_cycle == 0)
+	{
 	}
+	*/
 
 	refreshPlayersName(pstate);
 
@@ -1189,6 +1208,9 @@ double process_state(holdem_state* pstate)
                     {
                         currentPlayerInfo.setLine(1);
                         gamestateManager.setMaxRaise(currentBet);
+						//BIG HACK!!!!
+						Sleep(3000);
+						currentPlayerInfo.setActualStacksize(getBalanceByPos(idx) / bblind);
                     }
                     else
                     {
@@ -1256,6 +1278,8 @@ double process_state(holdem_state* pstate)
                     {
                         currentPlayerInfo.setLine(1);
                         gamestateManager.setMaxRaise(currentBet);
+						Sleep(3000);
+						currentPlayerInfo.setActualStacksize(getBalanceByPos(idx) / bblind);
                     }
                     else
                     {
