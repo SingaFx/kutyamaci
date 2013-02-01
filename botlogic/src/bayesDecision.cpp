@@ -405,6 +405,8 @@ double manipulateEQRaiseAllIn(double EQ, double betsize, CurrentGameInfo& game)
 	}
 	
 
+	//PREFLOP PLAY
+
 	if (game.getStreet() == 0)
 	{
 	}
@@ -450,14 +452,14 @@ double manipulateEQCall(double EQ, CurrentGameInfo& game)
 	else if (game.getStreet() == 1)
 	{		
 		int str = Evaluator::cardStrength(game.getHand().getCard1(), game.getHand().getCard2(), game.getBoard());
-		if (str > 1 && str < 6 && !heroInPosition(game))
+		if (str > 2 && str < 6 && !heroInPosition(game) && game.getBiggestBet() > 0.1 * game.getPotcommon())
 		{	
 			logger.logExp("\t\t\tModifying Call: str > 1 && str < 7 -10%", BOT_LOGIC);
 			EQ = modifyValue(EQ, -0.10);
 		}
 		
 		//OOP EQ--
-		if (!heroInPosition(game)) 
+		if (!heroInPosition(game) && game.getBiggestBet() > 0.1 * game.getPotcommon()) 
 		{
 			logger.logExp("\t\t\tModifying Call: Not ins position EQ -10%", BOT_LOGIC);
 			EQ = modifyValue(EQ, -0.15);
@@ -466,8 +468,8 @@ double manipulateEQCall(double EQ, CurrentGameInfo& game)
 		//EQ CHECK
 		if (abs(game.getAmountToCall() - 0) < 0.01)
 		{
-			EQ = modifyValue(EQ, -0.1);
-			logger.logExp("\t\t\tModifying Check: EQ -10%", BOT_LOGIC);
+			EQ = modifyValue(EQ, -0.05);
+			logger.logExp("\t\t\tModifying Check: EQ -5%", BOT_LOGIC);
 		}
 	}
 	else if (game.getStreet() == 2)
@@ -477,16 +479,16 @@ double manipulateEQCall(double EQ, CurrentGameInfo& game)
 		logger.logExp("\t\t\tModifying Call: DEFAULT EQ -5%", BOT_LOGIC);
 
 		int str = Evaluator::cardStrength(game.getHand().getCard1(), game.getHand().getCard2(), game.getBoard());
-		if (str > 2 && str < 6 && !heroInPosition(game))
+		if (str > 2 && str < 6 && !heroInPosition(game) && game.getBiggestBet() > 0.1 * game.getPotcommon())
 		{	
 			logger.logExp("\t\t\tModifying Call: str > 1 && str < 7 -10%", BOT_LOGIC);
 			EQ = modifyValue(EQ, -0.10);
 		}
 
 		//OOP EQ--
-		if (!heroInPosition(game)) 
+		if (!heroInPosition(game) && game.getBiggestBet() > 0.1 * game.getPotcommon()) 
 		{
-			logger.logExp("\t\t\tModifying Call: Not ins position EQ -10%", BOT_LOGIC);
+			logger.logExp("\t\t\tModifying Call: Not ins position EQ -5%", BOT_LOGIC);
 			EQ = modifyValue(EQ, -0.05);
 		}
 
@@ -496,8 +498,11 @@ double manipulateEQCall(double EQ, CurrentGameInfo& game)
 	else if (game.getStreet() == 3)
 	{
 		int str = Evaluator::cardStrength(game.getHand().getCard1(), game.getHand().getCard2(), game.getBoard());
-		if (game.getPotcommon() < 20 && game.getBiggestBet() > 1) EQ = modifyValue(EQ, 0.05);
-		if (game.getPotcommon() < 30 & str == 1 && game.getBiggestBet() > 1) EQ = modifyValue(EQ, 0.05);
+
+		if (game.getPotcommon() * 0.1 > game.getBiggestBet()) EQ = modifyValue(EQ, 0.1);
+
+		if (game.getPotcommon() < 20 && game.getBiggestBet() > 1 && game.getBiggestBet() < game.getPotcommon()) EQ = modifyValue(EQ, 0.05);
+		if (game.getPotcommon() < 30 & str == 1 && game.getBiggestBet() > 1 && game.getBiggestBet() < game.getPotcommon()) EQ = modifyValue(EQ, 0.05);
 	}
 
 	return EQ;
@@ -525,7 +530,7 @@ double manipulateFE(double FE, double betsize, CurrentGameInfo& game, CurrentPla
 	}
 	else if (game.getStreet() == 1)
 	{
-		FE = modifyValue(FE, -0.1);
+		if (game.getOpponentsInfo().size() > 2) FE = modifyValue(FE, -0.1);
 		logger.logExp("\t\t\tModifying FE: DEFAULT -10%", BOT_LOGIC);
 		if (boardType == 1)
 		{
