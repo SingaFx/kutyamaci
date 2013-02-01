@@ -348,13 +348,13 @@ double manipulateEQRaise(double EQ, double betsize, CurrentGameInfo& game)
 	}
 	else if (game.getStreet() == 1)
 	{
-		if (!heroInPosition(game))
+		if (!heroInPosition(game) && currentbet >= 3)
 		{
 			logger.logExp("\t\t\tModifying Raise: OOP EQ -7%", BOT_LOGIC);
 			EQ = modifyValue(EQ, -0.07);
 		}
 
-		if (!heroInPosition(game) && currentbet < 4 && game.getPotcommon() > 20)
+		if (!heroInPosition(game) && currentbet < 3 && game.getPotcommon() > 20)
 		{
 			logger.logExp("\t\t\tModifying Raise: OOP EQ -5%", BOT_LOGIC);
 			EQ = modifyValue(EQ, -0.05);
@@ -376,10 +376,11 @@ double manipulateEQRaise(double EQ, double betsize, CurrentGameInfo& game)
 		}
 
 		//EQ++ when bet
-		if (currentbet < 2 && game.getPotcommon() < 25) 
+		if (currentbet < 2 && game.getPotcommon() < 50) 
 		{
-			//logger.logExp("\t\t\tModifying Raise: BET EQ +5%", BOT_LOGIC);
-			//EQ = modifyValue(EQ, 0.05);
+			logger.logExp("\t\t\tModifying Raise: BET EQ +5%", BOT_LOGIC);
+			EQ = modifyValue(EQ, 0.05);
+			if (!heroInPosition(game) && game.getOpponentsInfo().size() == 1) EQ = modifyValue(EQ, 0.05);
 		}
 
 		if (currentbet > 2)
@@ -490,8 +491,8 @@ double manipulateEQCall(double EQ, CurrentGameInfo& game)
 		//EQ CHECK
 		if (abs(game.getAmountToCall() - 0) < 0.01)
 		{
-			EQ = modifyValue(EQ, -0.05);
-			logger.logExp("\t\t\tModifying Check: EQ -5%", BOT_LOGIC);
+			EQ = modifyValue(EQ, -0.10);
+			logger.logExp("\t\t\tModifying Check: EQ -10%", BOT_LOGIC);
 		}
 	}
 	else if (game.getStreet() == 2)
@@ -514,6 +515,12 @@ double manipulateEQCall(double EQ, CurrentGameInfo& game)
 			EQ = modifyValue(EQ, -0.05);
 		}
 
+		if (!heroInPosition(game) && abs(game.getAmountToCall() - 0) < 0.01)
+		{
+			EQ = modifyValue(EQ, -0.10);
+			logger.logExp("\t\t\tModifying Check: EQ -5%", BOT_LOGIC);
+		}
+
 		double currentbet = game.getBiggestBet();
 		double potcommon = game.getPotcommon();
 	}
@@ -525,6 +532,12 @@ double manipulateEQCall(double EQ, CurrentGameInfo& game)
 
 		if (game.getPotcommon() < 20 && game.getBiggestBet() > 1 && game.getBiggestBet() < game.getPotcommon()) EQ = modifyValue(EQ, 0.05);
 		if (game.getPotcommon() < 30 & str == 1 && game.getBiggestBet() > 1 && game.getBiggestBet() < game.getPotcommon()) EQ = modifyValue(EQ, 0.05);
+
+		if (abs(game.getAmountToCall() - 0) < 0.01)
+		{
+			EQ = modifyValue(EQ, -0.05);
+			logger.logExp("\t\t\tModifying Check: EQ -5%", BOT_LOGIC);
+		}
 	}
 
 	return EQ;
@@ -552,7 +565,7 @@ double manipulateFE(double FE, double betsize, CurrentGameInfo& game, CurrentPla
 	}
 	else if (game.getStreet() == 1)
 	{
-		if (game.getOpponentsInfo().size() > 2) FE = modifyValue(FE, -0.1);
+		FE = modifyValue(FE, -0.1);
 		logger.logExp("\t\t\tModifying FE: DEFAULT -10%", BOT_LOGIC);
 		if (boardType == 1)
 		{
