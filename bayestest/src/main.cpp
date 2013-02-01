@@ -313,7 +313,7 @@ void testEQCalculator()
 
 	PlayerRange range1, range2;
 	range1.range.insert(make_pair(Hand(Card('A','d'),Card('J','h')), 1));
-	range2.range.insert(make_pair(Hand(Card('Q','d'),Card('J','d')), 1));
+	range2.range.insert(make_pair(Hand(Card('A','c'),Card('T','s')), 1));
 
 	vector<PlayerRange> ranges;
 	ranges.push_back(range1);

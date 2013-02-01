@@ -1124,6 +1124,9 @@ class Evaluator
 
 	static bool riverDangerousBoard(vector<Card> &board)
 	{
+		if (riverVeryDangerousBoard(board))
+			return false;
+
 		return riverSuitedNumber(board[0], board[1], board[2], board[3], board[4]) == 3 || riverPossibleStraights(board) >= 2;
 	}
 
@@ -1489,19 +1492,19 @@ public:
 			}
 
 			if (suitedCard.getRank() >= 11)
-				return 2;
+				return 1;
 
 			return 3;
 		}
 		else if (turnStraight(cards))
 		{
 			if (turnMonotoneBoard(board))
-				return 4;
+				return 3;
 
 			if (turnOneCardStr(h1,h2,board))
 			{
 				if (turnOneCardLowStr(h1, h2, board))
-					return 2;
+					return 1;
 				if (!turnDoubleBoard(board))
 				{
 					if (!turnThreeToneBoard(board))
@@ -1552,7 +1555,7 @@ public:
 		else if (turnThreeofaKind(cards))
 		{
 			if (turnVeryDangerousBoard(board))
-				return 3;
+				return 2;
 			// szet
 			if (turnSingleBoard(board))
 			{
@@ -1623,7 +1626,7 @@ public:
 				if ((h1.getRank() == board[3].getRank()) || (h2.getRank() == board[3].getRank()))
 				{
 					if (turnVeryDangerousBoard(board))
-						return 3;
+						return 2;
 
 					if (turnStrongFlushDraw(h1,h2,board))
 						return 0;
@@ -1635,7 +1638,7 @@ public:
 				}
 
 				if (turnVeryDangerousBoard(board))
-					return 3;
+					return 2;
 
 				if (turnStrongFlushDraw(h1,h2,board))
 					return 0;
