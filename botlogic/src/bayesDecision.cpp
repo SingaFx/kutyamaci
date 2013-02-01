@@ -462,10 +462,10 @@ double manipulateEQCall(double EQ, CurrentGameInfo& game)
 		}
 		
 		//OOP EQ--
-		if (!heroInPosition(game) && game.getBiggestBet() > 0.1 * game.getPotcommon()) 
+		if (!heroInPosition(game) && game.getBiggestBet() > 0.2 * game.getPotcommon()) 
 		{
 			logger.logExp("\t\t\tModifying Call: Not in position EQ -10%", BOT_LOGIC);
-			EQ = modifyValue(EQ, -0.10);
+			EQ = modifyValue(EQ, -0.07);
 		}
 	}
 	else if (game.getStreet() == 2)
@@ -482,7 +482,7 @@ double manipulateEQCall(double EQ, CurrentGameInfo& game)
 		}
 
 		//OOP EQ--
-		if (!heroInPosition(game) && game.getBiggestBet() > 0.1 * game.getPotcommon()) 
+		if (!heroInPosition(game) && game.getBiggestBet() > 0.2 * game.getPotcommon()) 
 		{
 			logger.logExp("\t\t\tModifying Call: Not ins position EQ -5%", BOT_LOGIC);
 			EQ = modifyValue(EQ, -0.05);
@@ -493,6 +493,7 @@ double manipulateEQCall(double EQ, CurrentGameInfo& game)
 		int str = Evaluator::cardStrength(game.getHand().getCard1(), game.getHand().getCard2(), game.getBoard());
 
 		if (game.getPotcommon() * 0.1 > game.getBiggestBet()) EQ = modifyValue(EQ, 0.1);
+		EQ = modifyValue(EQ, 0.02);
 	}
 
 	return EQ;
