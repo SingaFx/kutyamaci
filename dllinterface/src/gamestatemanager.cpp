@@ -17,10 +17,12 @@ GameStateManager::GameStateManager()
 	, myStackSize(5.0)
 	, bluff(false)
 {
+	database = new Database("127.0.0.1", "root", "root", "kutya");
 }
 
 GameStateManager::~GameStateManager()
 {
+	//delete database?
 }
 
 GameStateManager& GameStateManager::getGameStateManager()
@@ -62,6 +64,7 @@ void GameStateManager::resetState(int dealerPos, Hand hand)
 		players[idx] = string("");
         isCurrentPlayerInfosSet[idx] = false;
         balance[idx] = 0.0;
+		getCurrentPlayerInfo(idx).setVPIP(0);
     }
 
     // button position
@@ -244,4 +247,9 @@ void GameStateManager::setBluff(bool bluff)
 bool GameStateManager::isBluff()
 {
 	return bluff;
+}
+
+Database* GameStateManager::getDatabase()
+{
+	return database;
 }

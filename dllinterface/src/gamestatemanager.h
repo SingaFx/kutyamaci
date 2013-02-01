@@ -6,6 +6,7 @@
 #include <string>
 #include "currentPlayerInfo.h"
 #include "currentGameInfo.h"
+#include "database.h"
 
 using namespace std;
 
@@ -33,6 +34,9 @@ private:
 	Action actionCache;
 	bool cacheAvalaible;
 	bool bluff;
+
+	Database* database;
+
 
     int nextPosition(int position);
 
@@ -95,4 +99,6 @@ public:
 
 	void setBluff(bool);
 	bool isBluff();
+
+	Database* getDatabase();
 };

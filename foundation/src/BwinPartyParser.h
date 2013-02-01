@@ -41,6 +41,7 @@ public:
     const char* TURN;
     const char* RIVER;
     const char* SHOWDOWN;
+    const char* MUCK;
     const char* BUTTON;
     const char* FILE;
 };

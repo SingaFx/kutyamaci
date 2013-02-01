@@ -108,3 +108,30 @@ bool Hand::isAK()
 
 	return false;
 }
+
+bool Hand::isAQ()
+{
+	char cardRank1 = card1.getRank();
+	char cardRank2 = card2.getRank();
+
+	if ((cardRank1 == 'A' && cardRank2 == 'Q') || (cardRank1 == 'Q' && cardRank2 == 'A'))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool Hand::isOOP3Bet()
+{
+	if (isAK() || isAQ() || (isPocket() && card1.isBroadway())) return true;
+
+	return false;
+}
+
+bool Hand::is100BBStackOff()
+{
+	if (isAK() || (isPocket() && (card1.getRank() == 'Q' || card1.getRank() == 'K' || card1.getRank() == 'A'))) return true;
+
+	return false;
+}

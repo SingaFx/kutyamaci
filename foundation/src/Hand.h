@@ -32,6 +32,9 @@ public:
 	bool valid();
 	bool isPocket();
 	bool isAK();
+	bool isAQ();
+	bool isOOP3Bet();
+	bool is100BBStackOff();
 };
 
 #endif HAND_H
