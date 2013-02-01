@@ -1158,9 +1158,11 @@ double process_state(holdem_state* pstate)
 
 		playerRangeManager.resetRanges(gamestateManager);
 		refreshPlayersName(pstate);
+
+		Sleep(3000);
     }
 
-	if (cgi->getStreet() == 0)
+	if (scrape_cycle == 1)
 	{
 		for (int idx = 0; idx < 6; ++idx)
 		{
@@ -1260,6 +1262,7 @@ double process_state(holdem_state* pstate)
                     {
                         currentPlayerInfo.setLine(1);
                         gamestateManager.setMaxRaise(currentBet);
+						Sleep(3000);
 						correctStackSizes(currentPlayerInfo, currentBet, idx);
                     }
                     else
@@ -1335,6 +1338,7 @@ double process_state(holdem_state* pstate)
                     else if (currentBet > maxRaise)
                     {
                         currentPlayerInfo.setLine(1);
+						Sleep(3000);
                         gamestateManager.setMaxRaise(currentBet);
 						correctStackSizes(currentPlayerInfo, currentBet, idx);
                     }
