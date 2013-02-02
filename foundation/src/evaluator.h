@@ -211,7 +211,7 @@ class Evaluator
 		if (!flopSingleBoard(b1,b2,b3))
 			return false;
 
-		return flopHiLoDistance(b1,b2,b3) == 2;
+		return flopHiLoDistance(b1,b2,b3) <= 3;
 	}
 
 	static bool flopConnectedBoard(Card &b1, Card &b2, Card &b3)
@@ -2298,7 +2298,7 @@ public:
 					}
 					if (kicker.getRank() >= 10)
 						return 1;
-					return 3;
+					return 2;
 				}
 				if (kicker.getRank() >= 10)
 				{

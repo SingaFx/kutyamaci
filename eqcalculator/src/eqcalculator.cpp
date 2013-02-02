@@ -103,18 +103,59 @@ string EqCalculator::sampleToString(vector<Hand> &sample)
 	return res;
 }
 
+StdDeck_CardMask EqCalculator::cardToMask(Card card)
+{
+	char str[2];
+	str[0] = card.getRank();
+	str[1] = card.getSuit();
+
+	int cardindex = -1;
+	StdDeck_stringToCard(str, &cardindex);
+
+	return StdDeck_MASK(cardindex);
+}
+
 double EqCalculator::evaluate(vector<Hand> &sample, vector<Card> &board)
 {
-	string hands = sampleToString(sample);
-	string sboard = boardToString(board);
-	string dead = "";
+	StdDeck_CardMask boardmask;
+	StdDeck_CardMask_RESET(boardmask);
+	for (int i = 0; i < board.size(); ++i)
+		StdDeck_CardMask_OR(boardmask, boardmask, cardToMask(board[i]));
 
-	double results[10];
+	HandVal best = 0;
+	int nrofbests = 0;
+	int nrofwinners = 0;
 
-	HoldemCalculator calc;
-	calc.CalculateMC(hands.c_str(), sboard.c_str(), dead.c_str(), 1, results);
+	for (int i = 0; i < sample.size(); ++i)
+	{
+		StdDeck_CardMask temp;
+		StdDeck_CardMask_RESET(temp);
 
-	return results[0];
+		StdDeck_CardMask_OR(temp, temp, boardmask);
+		StdDeck_CardMask_OR(temp, temp, cardToMask(sample[i].getCard1()));
+		StdDeck_CardMask_OR(temp, temp, cardToMask(sample[i].getCard2()));
+
+		HandVal actual = StdDeck_StdRules_EVAL_N(temp, 7);
+
+		if (actual > best)
+		{
+			if (best > 0)
+			{
+				return 0;
+			}
+			else
+			{
+				best = actual;
+				nrofwinners = 1;
+			}
+		}
+		else if (actual == best)
+		{
+			nrofwinners++;
+		}
+	}
+
+	return 1.0/(double)nrofwinners;
 }
 
 Card EqCalculator::numberToCard(int x)

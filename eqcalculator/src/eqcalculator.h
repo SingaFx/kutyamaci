@@ -15,6 +15,7 @@ class EqCalculator
 	Card numberToCard(int x);
 	string sampleToString(vector<Hand> &sample);
 	string boardToString(vector<Card> &board);
+	StdDeck_CardMask cardToMask(Card);
 public:
 	EqCalculator();
 	double calculate(vector<PlayerRange> &range, vector<Card> &board, int nrtrials);

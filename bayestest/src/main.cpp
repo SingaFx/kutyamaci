@@ -307,6 +307,25 @@ void testEvaluator1()
 	printf("--------------------------------------end of River JJ on 8s3c8c4s3h---------------------------------------\n");
 }
 
+void testEvaluator2()
+{
+	printf("\n--------------------------------------River AT on 7d4s4hTs8c--------------------------------------------\n");
+
+	vector<Card> board;
+	board.push_back(Card('7','d'));
+	board.push_back(Card('4','s'));
+	board.push_back(Card('4','h'));
+	board.push_back(Card('T','s'));
+	board.push_back(Card('8','c'));
+
+	Hand hand;
+	hand.setHand(Card('2','c'),Card('T','c'));
+
+	printf("handstrength : %d", Evaluator::cardStrength(hand.getCard1(), hand.getCard2(), board));
+
+	printf("--------------------------------------end of River AT on 7d4s4hTs8c---------------------------------------\n");
+}
+
 void testEQCalculator()
 {
 	printf("\n--------------------------------------EQ calculation --------------------------------------------\n");
@@ -358,7 +377,9 @@ int main()
 
 		testEvaluator1();*/
 
-		testEQCalculator();
+		testEvaluator2();
+
+		//testEQCalculator();
 
 		//testRiverRange1();
 
