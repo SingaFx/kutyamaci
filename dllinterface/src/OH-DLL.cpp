@@ -585,6 +585,8 @@ void detectMissedChecksAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
 					currentPlayerInfo.setLine(2);
 					currentPlayerInfo.setBetsize(0);
 
+					if (gamestateManager.getCurrentGameInfo()->getStreet() == 0) currentPlayerInfo.setStacksize(gamestateManager.getInitialBalanceByPos(idx) / bblind);
+
 					old_cgi->addCurrentPlayerInfo(gamestateManager.getCurrentPlayerInfo(idx));
 					
 					PlayerRange& range = playerRangeManager.getPlayerRange(idx);
@@ -687,6 +689,7 @@ void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
 				if (!isEqual(maxRaise, currentPlayerInfo.getBetsize()))
 				{
 					logger.logExp("DETECTED : Call, currentplayer info set " + currentPlayerInfo.getName(), DLL_INTERFACE_LOGGER);
+					if (gamestateManager.getCurrentGameInfo()->getStreet() == 0) currentPlayerInfo.setStacksize(gamestateManager.getInitialBalanceByPos(idx) / bblind);
 					currentPlayerInfo.setLine(0);
 					correctStackSizes(currentPlayerInfo, maxRaise, idx);
 
@@ -764,7 +767,7 @@ void detectChecksAndUpdateRanges(int relativTo)
                 CurrentPlayerInfo& currentPlayerInfo = gamestateManager.getCurrentPlayerInfo(idx);
 			
 				if (currentPlayerInfo.getLine() == 2) continue;
-
+				if (gamestateManager.getCurrentGameInfo()->getStreet() == 0) currentPlayerInfo.setStacksize(gamestateManager.getInitialBalanceByPos(idx) / gamestateManager.getCurrentGameInfo()->getBblind());
 				logger.logExp("DETECTED : Check Boldifele " + currentPlayerInfo.getName(), DLL_INTERFACE_LOGGER);
                 currentPlayerInfo.setLine(2);
 			    currentPlayerInfo.setBetsize(0);
@@ -1155,9 +1158,11 @@ double process_state(holdem_state* pstate)
 
 		playerRangeManager.resetRanges(gamestateManager);
 		refreshPlayersName(pstate);
+
+		Sleep(3000);
     }
 
-	if (cgi->getStreet() == 0)
+	if (scrape_cycle == 1)
 	{
 		for (int idx = 0; idx < 6; ++idx)
 		{
@@ -1169,6 +1174,8 @@ double process_state(holdem_state* pstate)
 			{
 				gamestateManager.setInitialBalance(idx, getBalanceByPos(idx));
 			}
+
+			//logger.logExp("Initial balance set to: ", gamestateManager.getInitialBalanceByPos(idx), BOT_LOGIC);
 		}
 	}
 
@@ -1184,6 +1191,7 @@ double process_state(holdem_state* pstate)
 		{
 			Sleep(3000);
 		}
+		
 
 		gamestateManager.setCache(false);
         detectMissedCallsAndUpdatePlayerRanges(old_cgi);
@@ -1233,6 +1241,8 @@ double process_state(holdem_state* pstate)
 
 					double bblind = cgi->getBblind();
 
+					if (cgi->getStreet() == 0) currentPlayerInfo.setStacksize(gamestateManager.getInitialBalanceByPos(idx) / bblind);
+
                     double maxRaise = gamestateManager.getMaxRaise();
                     if (isEqual(currentBet, maxRaise))
                     {
@@ -1252,6 +1262,7 @@ double process_state(holdem_state* pstate)
                     {
                         currentPlayerInfo.setLine(1);
                         gamestateManager.setMaxRaise(currentBet);
+						Sleep(3000);
 						correctStackSizes(currentPlayerInfo, currentBet, idx);
                     }
                     else
@@ -1327,6 +1338,7 @@ double process_state(holdem_state* pstate)
                     else if (currentBet > maxRaise)
                     {
                         currentPlayerInfo.setLine(1);
+						Sleep(3000);
                         gamestateManager.setMaxRaise(currentBet);
 						correctStackSizes(currentPlayerInfo, currentBet, idx);
                     }

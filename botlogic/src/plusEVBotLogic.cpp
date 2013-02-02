@@ -200,7 +200,7 @@ void PlusEVBotLogic::extendGameInfo(CurrentGameInfo& gameInfo)
 		{
 			int handnr = database->getHandnr(name);
 			gameInfo.getOpponentsInfo()[i].setHandnr(handnr);
-			if (handnr < 30)
+			if (handnr < 15)
 			{
 				gameInfo.getOpponentsInfo()[i] = setStandardPlayerType(gameInfo.getOpponentsInfo()[i], gameInfo.getBblind());
 			}

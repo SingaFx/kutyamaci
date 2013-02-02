@@ -2,7 +2,7 @@
 
 // OpenScrape 2.0.0
 
-// 2013-01-26 17:10:21
+// 2013-02-01 15:17:38
 // 32 bits per pixel
 
 //
@@ -16,6 +16,7 @@ z$clientsize       480  323
 //
 
 s$activemethod              2
+s$balancenumbersonly        True
 s$buttonclickmethod         Single
 s$handresetmethod           6
 s$nchairs                   6
@@ -172,6 +173,7 @@ t0$o e 11 11 11 e
 t0$d e 11 11 7f
 t0$c e 11 11 a
 t0$e e 15 15 c
+t1$0 11 29 7f 25 22
 t1$6 1e 29 49 49 6
 t1$2 21 43 45 49 31
 t1$1 21 7f 1
@@ -203,6 +205,7 @@ t2$. 3
 t2$2 31 23 25 3d 19
 t2$. 3 3
 t2$3 33 29 29 3f 36
+t2$0 36 3a 7f 2e 2c
 t2$5 38 39 29 26 24
 t2$5 3b 39 29 2f 26
 t2$4 6 a 12 3f 3f 2

@@ -512,7 +512,7 @@ public:
 			iter = r1.range.lower_bound(make_pair(it1->first, 0.0));
 			if (iter->first == it1->first)
 			{
-				double prob = it1->second * weight + iter->second * (1 - weight);
+				double prob = it1->second * (1 - weight) + iter->second * weight;
 				res.range.insert(make_pair(it1->first, prob));
 			}
 			else
