@@ -1,4 +1,4 @@
-##2013-01-23 20:12:50##
+##2013-02-02 13:14:43##
 
 ##notes##
 
@@ -28,8 +28,7 @@ dll$swag == -1 ?
 		 :((f$BetSize/sblind)^0)*sblind
 	:0
 :dll$srai ? 
-		dll$swag > 0.4 * f$ActualStack ? f$TotalBalance
-		 :((dll$swag/sblind)^0)*sblind
+		dll$swag
 	:0
 
 ##f$srai##
@@ -39,14 +38,19 @@ dll$srai == -1 ? f$mySrai : dll$srai
 
 
 ##f$call##
-dll$call == -1 ? f$myCall : dll$call
+dll$srai == 1 
+||
+(dll$call == -1 ? f$myCall : dll$call)
 
 ##f$prefold##
+br == 1 ? 
 (f$PositionEP ? !islist01 :
 f$PositionMP ? !islist02 :
-f$PositionCO ? !islist03 :
-f$PositionBU ? !islist04 : 
-f$PositionSB ? !islist03 : 0)
+f$PositionCO ? !islist05 :
+f$PositionBU ? !islist04 :
+f$PositionSB ? 0
+: 0)
+:0
 
 ##f$rebuy##
 
@@ -97,23 +101,26 @@ nopponentsseated < 3 || nopponentsdealt < 2 ? -2
 
 ##list01##
 AA  KK  QQ  JJ  TT  99  88  77  
-AKs AQs KQs 
-KA  QA  QK  
+AKs AQs AJs KQs 
+KA  QA  
+
 
 ##list02##
-AA  KK  QQ  JJ  TT  99  88  77  66  55  
+AA  KK  QQ  JJ  TT  99  88  77  
 AKs AQs AJs KQs KJs QJs 
-KA  QA  QK  JA  
+KA  QA  QK  
+
 
 ##list03##
 AA  KK  QQ  JJ  TT  99  88  77  66  55  44  33  22  
 AKs AQs AJs ATs A9s A8s A7s A6s A5s A4s A3s A2s KQs KJs KTs K9s K8s QJs QTs Q9s Q8s JTs J9s J8s T9s T8s 98s 
 KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  9A  
 
+
 ##list04##
 AA  KK  QQ  JJ  TT  99  88  77  66  55  44  33  22  
-AKs AQs AJs ATs A9s A8s A7s A6s A5s A4s A3s A2s KQs KJs KTs K9s K8s K7s K6s K5s K4s K3s K2s QJs QTs Q9s Q8s Q7s Q6s Q5s Q4s Q3s Q2s JTs J9s J8s J7s J6s J5s J4s J3s J2s T9s T8s T7s T6s T5s T4s 98s 97s 96s 95s 94s 87s 86s 85s 84s 76s 75s 74s 65s 64s 54s 
-KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  9A  9K  9Q  9J  9T  8A  8K  8Q  8J  8T  89  7A  7K  7Q  7J  7T  79  78  6A  6K  6Q  6J  67  5A  56  4A  45  3A  2A  
+AKs AQs AJs ATs A9s A8s A7s A6s A5s A4s A3s A2s KQs KJs KTs K9s K8s K7s K6s K5s K4s K3s K2s QJs QTs Q9s Q8s Q7s Q6s Q5s Q4s Q3s Q2s JTs J9s J8s J7s J6s J5s J4s J3s J2s T9s T8s T7s T6s T5s T4s T3s T2s 98s 97s 96s 95s 94s 93s 92s 87s 86s 85s 84s 83s 82s 76s 75s 74s 73s 72s 65s 64s 54s 
+KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  9A  9K  9Q  9J  9T  8A  8K  8Q  8J  8T  89  7A  7K  7Q  7J  7T  79  78  6A  6K  6Q  6J  6T  69  68  67  5A  5K  5Q  5J  56  4A  45  3A  2A  
 
 ##list12##
 AA  KK  QQ  JJ  TT  99  88  77  
@@ -127,8 +134,8 @@ KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ
 
 ##list14##
 AA  KK  QQ  JJ  TT  99  88  77  66  55  44  33  22  
-AKs AQs AJs ATs A9s A8s A7s A6s A5s A4s A3s A2s KQs KJs KTs K9s K8s K7s QJs QTs Q9s Q8s JTs J9s T9s 
-KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  
+AKs AQs AJs ATs A9s A8s A7s A6s A5s A4s A3s A2s KQs KJs KTs K9s K8s K7s QJs QTs Q9s Q8s Q7s JTs J9s J8s T9s T8s 98s 
+KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  9A  9K  9Q  9J  9T  
 
 ##list15##
 AA  KK  QQ  JJ  TT  99  
@@ -177,6 +184,8 @@ KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  9A  9K  9Q  9J  9T  8A  8K  89  7A  78  
 br == 1 ? 
   f$PreflopUnopened ? //OpenRaiseSize
     f$PositionBU && f$PreflopFirstIn ? 3 * bblind
+		 :f$PositionSB && f$PreflopFirstIn ? 3 * bblind
+		 :f$PositionCO && f$PreflopFirstIn && dll$BUVPIP < 21 ? 3 * bblind
     :f$PositionSB || f$PositionBB ? (5 + nopponentscalling) * bblind
     :(4 + nopponentscalling) * bblind //IsoSize
   :f$PreflopFacing1Raise ?  //3BET
@@ -197,13 +206,13 @@ br == 1 ?
   ncallbets <= 2 ? 
 		  f$IsFlopDryBoard ? 2/3 * pot + 2*ncallbets  * bblind
 			:3/4 * pot + 2*ncallbets  * bblind
-  : ncallbets * 3.5 * bblind
+  : 2 * ncallbets * 3.5 * bblind
 :br == 4 ?
 	 (f$RiverAIRange && f$StackSize < 5) ? f$TotalBalance
   :ncallbets <= 2 ?
 	  pot > 80 * bblind ? 1/2*pot + 2*ncallbets * bblind
 	  :3/4 * pot + 2*ncallbets * bblind
-  : ncallbets * 3.5 * bblind
+  : 2 * ncallbets * 3.5 * bblind
 :0
 
 ##f$OpponentIsSB##
@@ -370,8 +379,8 @@ f$PreflopFirstIn ?
 		f$PositionEP ? islist01 
   :f$PositionMP ? islist02 
   :f$PositionCO ? dll$BUVPIP < 21 ? islist05 : islist03 
-  :f$PositionBU ? islist04
-  :f$PositionSB ? dll$BBVPIP < 18 ? 1 : islist03
+  :f$PositionBU ? 1
+  :f$PositionSB ? dll$BBVPIP < 18 ? 1 : islist05
 	 :f$PositionBB ? islist12
   :0
 :f$Preflop1Limper ? 
@@ -748,7 +757,7 @@ currentbet == 0 && call <= 1/8 * potcommon ?
 :0
 
 ##f$PreflopCall##
-(ispair && f$EffectivStack >= 20 * call) ||
+(ispair && f$EffectivStack >= 20 * call && !f$PositionEP && !f$PositionMP) ||
 (call/(call + pot) <= 0.25 && islist30)
 
 ##f$OpponentHandStrength##
@@ -1028,7 +1037,7 @@ f$IsSecondPair && nsuitedcommon < 3 && nstraightfillcommon > 1
 f$IsStrongDrill && nsuitedcommon < 4 && nstraightfillcommon > 1
 
 ##f$ActualStack##
-balance < f$ActualOpponentBalance ? balance : f$ActualOpponentBalance
+f$TotalBalance < f$ActualOpponentBalance ? f$TotalBalance : f$ActualOpponentBalance
 
 ##f$ActualOpponentBalance##
 f$StackOpponent + call
