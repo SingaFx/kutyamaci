@@ -148,6 +148,27 @@ public:
 		return id;
 	}
 
+	void printHS(vector<Card> board)
+	{
+		double HS[10];
+		memset(HS, 0, sizeof(HS));
+
+		std::set<pair<Hand, double> >::iterator it;
+		double total = 0;
+		for (it = range.begin(); it != range.end(); ++it)
+		{
+			int str = Evaluator::cardStrength(it->first.getCard1(),  it->first.getCard2(), board);
+			HS[str] += it->second;
+			total += it->second;
+		}
+
+		for (int i = 0; i < 9; ++i)
+		{
+			printf("HS(%d) = %lf\n", i, HS[i]);
+		}
+
+		printf("Total = %lf\n", total);
+	}
 };
 class RangeUtils
 {
@@ -463,7 +484,6 @@ public:
 
 		return res;
 	}
-
 	static PlayerRange addRange(PlayerRange& r1, PlayerRange& r2)
 	{
 		PlayerRange res;
@@ -500,7 +520,6 @@ public:
 		//res = res.normalize();
 		return res;
 	}
-
 	static PlayerRange addRange(PlayerRange& r1, PlayerRange& r2, double weight)
 	{
 		PlayerRange res;

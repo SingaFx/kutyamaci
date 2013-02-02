@@ -1361,6 +1361,7 @@ public:
 
 		return res;
 	}
+
 	PlayerRange getCallRaiseRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, double flop_potcommon, vector<Card>& cards, Hand own, int x)
 	{
 		PlayerRange res;
@@ -1380,6 +1381,7 @@ public:
 		PlayerRange callingRange = getRange(v, cards, own, x);
 		PlayerRange raiseRangeTotal;
 
+		/*
 		v[4] = 1;
 		
 		int aktBetSize = nBetSize + 1;
@@ -1418,7 +1420,9 @@ public:
 		}
 
 		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, weight);
+		*/
 		callingRange = callingRange.normalize();
+
 
 		return callingRange;
 	}

@@ -122,6 +122,85 @@ bool Hand::isAQ()
 	return false;
 }
 
+bool Hand::isAJ()
+{
+	char cardRank1 = card1.getRank();
+	char cardRank2 = card2.getRank();
+
+	if ((cardRank1 == 'A' && cardRank2 == 'J') || (cardRank1 == 'J' && cardRank2 == 'A'))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool Hand::isKJ()
+{
+	char cardRank1 = card1.getRank();
+	char cardRank2 = card2.getRank();
+
+	if ((cardRank1 == 'K' && cardRank2 == 'J') || (cardRank1 == 'J' && cardRank2 == 'K'))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool Hand::isKQ()
+{
+	char cardRank1 = card1.getRank();
+	char cardRank2 = card2.getRank();
+
+	if ((cardRank1 == 'K' && cardRank2 == 'Q') || (cardRank1 == 'Q' && cardRank2 == 'K'))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool Hand::isAT()
+{
+	char cardRank1 = card1.getRank();
+	char cardRank2 = card2.getRank();
+
+	if ((cardRank1 == 'A' && cardRank2 == 'T') || (cardRank1 == 'T' && cardRank2 == 'A'))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool Hand::isKT()
+{
+	char cardRank1 = card1.getRank();
+	char cardRank2 = card2.getRank();
+
+	if ((cardRank1 == 'K' && cardRank2 == 'T') || (cardRank1 == 'T' && cardRank2 == 'K'))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool Hand::isQJ()
+{
+	char cardRank1 = card1.getRank();
+	char cardRank2 = card2.getRank();
+
+	if ((cardRank1 == 'Q' && cardRank2 == 'J') || (cardRank1 == 'J' && cardRank2 == 'Q'))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
 bool Hand::isOOP3Bet()
 {
 	if (isAK() || isAQ() || (isPocket() && card1.isBroadway())) return true;
@@ -132,6 +211,41 @@ bool Hand::isOOP3Bet()
 bool Hand::is100BBStackOff()
 {
 	if (isAK() || (isPocket() && (card1.getRank() == 'Q' || card1.getRank() == 'K' || card1.getRank() == 'A'))) return true;
+
+	return false;
+}
+
+bool Hand::isBigSC()
+{
+	if (card1.getSuit() != card2.getSuit()) return false;
+
+	if ((card1.getRank() == '8' && card2.getRank() == '9') || (card1.getRank() == '9' || card2.getRank() == '8')) return true;
+	if ((card1.getRank() == '9' && card2.getRank() == 'T') || (card1.getRank() == 'T' || card2.getRank() == '9')) return true;
+
+	return false;
+}
+
+bool Hand::isAxs()
+{
+	if (card1.getSuit() != card2.getSuit()) return false;
+	if (card1.getRank() == 'A' || card2.getRank() == 'A') return true; 
+
+	return false;
+}
+
+bool Hand::isStrongBroadway()
+{
+	if (is100BBStackOff()) return true;
+	if (isAQ() || isAJ() || isKQ() || isKJ()) return true;
+
+	return false;
+}
+
+bool Hand::isSuitedBroadway()
+{
+	if (card1.getSuit() != card2.getSuit()) return false;
+
+	if (isAK() || isAQ() || isAJ() || isAT() || isKQ() || isKJ() || isKT() || isQJ()) return true;
 
 	return false;
 }

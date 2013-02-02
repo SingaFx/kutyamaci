@@ -35,6 +35,18 @@ public:
 	bool isAQ();
 	bool isOOP3Bet();
 	bool is100BBStackOff();
+	
+	bool isAJ();
+	bool isKQ();
+	bool isKJ();
+	bool isKT();
+	bool isQJ();
+	bool isAT();
+
+	bool isBigSC();
+	bool isAxs();
+	bool isSuitedBroadway(); 
+	bool isStrongBroadway();
 };
 
 #endif HAND_H
