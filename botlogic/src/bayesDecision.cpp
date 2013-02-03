@@ -322,11 +322,25 @@ double manipulateEQRaise(double EQ, double betsize, CurrentGameInfo& game)
 			EQ = modifyValue(EQ, -0.30);
 		}
 
-		if (!heroInPosition(game) && betsize <= 17 && !game.getHand().isOOP3Bet())
+		if (!heroInPosition(game) && betsize > 9 && !game.getHand().isOOP3Bet())
 		{
 			//OOP FOLD
 			EQ = modifyValue(EQ, -0.20);
 			logger.logExp("\t\t\tModifying Raise: 3BET OOP WEAK HAND EQ -20%", BOT_LOGIC);
+		}
+
+		if (betsize > 5 && (!game.getHand().isAxs() && !game.getHand().isStrongBroadway() && !game.getHand().isSuitedBroadway() && !game.getHand().isBigSC()))
+		{
+			//OOP FOLD
+			EQ = modifyValue(EQ, -0.20);
+			logger.logExp("\t\t\tModifying Raise: 3BET WEAK HAND EQ -20%", BOT_LOGIC);
+		}
+
+		if (betsize > 20 && !game.getHand().is100BBStackOff())
+		{
+			//OOP FOLD
+			EQ = modifyValue(EQ, -0.20);
+			logger.logExp("\t\t\tModifying Raise: 4BET WEAK HAND EQ -20%", BOT_LOGIC);
 		}
 
 		//IMPLEMENT PREFLOP 4BET
@@ -341,16 +355,11 @@ double manipulateEQRaise(double EQ, double betsize, CurrentGameInfo& game)
 	{
 		if (!heroInPosition(game) && currentbet < 2)
 		{
-			logger.logExp("\t\t\tModifying Raise: OOP EQ -10%", BOT_LOGIC);
-			EQ = modifyValue(EQ, -0.10);
-		}
-		if (!heroInPosition(game) && currentbet < 2 && game.getPotcommon() > 20)
-		{
 			logger.logExp("\t\t\tModifying Raise: OOP EQ -5%", BOT_LOGIC);
 			EQ = modifyValue(EQ, -0.05);
 		}
 
-		if (currentbet >= 2)
+		if (currentbet >= 2 && maxStackSize > 100)
 		{
 			logger.logExp("\t\t\tModifying Raise: RAISE EQ -5%", BOT_LOGIC);
 			EQ = modifyValue(EQ, -0.05);
@@ -361,7 +370,7 @@ double manipulateEQRaise(double EQ, double betsize, CurrentGameInfo& game)
 		if (!heroInPosition(game) && currentbet < 2)
 		{
 			logger.logExp("\t\t\tModifying Raise: OOP EQ -7%", BOT_LOGIC);
-			EQ = modifyValue(EQ, -0.07);
+			EQ = modifyValue(EQ, -0.03);
 		}
 
 		if (currentbet > 2)
@@ -412,6 +421,13 @@ double manipulateEQRaiseAllIn(double EQ, double betsize, CurrentGameInfo& game)
 			EQ = modifyValue(EQ, -0.20);
 			logger.logExp("\t\t\tModifying Raise: STACKOFF 100BB WEAK HAND EQ -20%", BOT_LOGIC);
 		}
+
+		//DEEP STACK OFF
+		if (betsize > 30 && maxStackSize > 200 && !(game.getHand().isPocket() && game.getHand().getCard1().getRank() == 'A'))
+		{
+			EQ = modifyValue(EQ, -0.20);
+			logger.logExp("\t\t\tModifying Raise: STACKOFF 100BB WEAK HAND EQ -20%", BOT_LOGIC);
+		}
 	}
 	else if (game.getStreet() == 1)
 	{
@@ -441,7 +457,7 @@ double manipulateEQCall(double EQ, CurrentGameInfo& game)
 		}
 		if (game.getAmountToCall() + game.getHero().getBetsize() > 20) 
 		{
-			logger.logExp("\t\t\tModifying Call: > 6 bet call EQ -30%", BOT_LOGIC);
+			logger.logExp("\t\t\tModifying Call: > 20 bet call EQ -30%", BOT_LOGIC);
 			EQ = modifyValue(EQ, -0.3);
 		}
 		if (!heroInPosition(game)) 
@@ -533,7 +549,7 @@ double manipulateFE(double FE, double betsize, CurrentGameInfo& game, CurrentPla
 		if (boardType == 1)
 		{
 			logger.logExp("\t\t\tModifying FE: BOARDTYPE == 1 -20%", BOT_LOGIC);
-			FE = modifyValue(FE, -0.2);
+			FE = modifyValue(FE, -0.25);
 		}
 		else if (boardType == 2)
 		{
@@ -544,7 +560,7 @@ double manipulateFE(double FE, double betsize, CurrentGameInfo& game, CurrentPla
 				FE = modifyValue(FE, -0.10);
 				logger.logExp("\t\t\tModifying FE: BOARDTYPE == 2 -10%", BOT_LOGIC);
 			}
-			FE = modifyValue(FE, -0.3);
+			FE = modifyValue(FE, -0.35);
 		}
 	}
 	else if (game.getStreet() == 2)
@@ -700,7 +716,7 @@ double BayesDecision::calculateEQ(vector<PlayerRange>& ranges, vector<Card>& boa
 	}
 
 	logger.logExp("Calculating EQ...", BOT_LOGIC);
-	double eq = calc.calculate(result, board, 10000) / 100;
+	double eq = calc.calculate(result, board, 10000);
 	logger.logExp("Calculated original EQ", eq, BOT_LOGIC);
 	logger.logExp("=============END EQ CALCULATION========================", RANGE_LOGGER);
 	//eq = modifyValue(eq, -0.05);
@@ -1139,6 +1155,8 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 		
 		logger.logExp("EV of allin : ", EVAI, BOT_LOGIC);
 
+		
+		betsize = game.getHero().getActualStacksize() + game.getHero().getBetsize();
 		if (EVAI > 0)
 		{
 			//OOPS
