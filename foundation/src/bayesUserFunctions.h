@@ -744,6 +744,8 @@ public:
 			weight = 0.55;
 		}
 
+
+
 		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, weight);
 		callingRange = callingRange.normalize();
 
@@ -1109,6 +1111,7 @@ public:
 			weight = 0.6;
 		}
 
+
 		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, weight);
 		callingRange = callingRange.normalize();
 
@@ -1381,7 +1384,6 @@ public:
 		PlayerRange callingRange = getRange(v, cards, own, x);
 		PlayerRange raiseRangeTotal;
 
-		/*
 		v[4] = 1;
 		
 		int aktBetSize = nBetSize + 1;
@@ -1404,7 +1406,7 @@ public:
 		}
 		else if (AF <= 2)
 		{
-			weight = 0.99;
+			weight = 0.97;
 		}
 		else if (AF <= 3)
 		{
@@ -1420,7 +1422,6 @@ public:
 		}
 
 		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, weight);
-		*/
 		callingRange = callingRange.normalize();
 
 

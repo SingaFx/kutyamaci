@@ -329,7 +329,7 @@ double manipulateEQRaise(double EQ, double betsize, CurrentGameInfo& game)
 			logger.logExp("\t\t\tModifying Raise: 3BET OOP WEAK HAND EQ -20%", BOT_LOGIC);
 		}
 
-		if (betsize > 5 && (!game.getHand().isAxs() && !game.getHand().isStrongBroadway() && !game.getHand().isSuitedBroadway() && !game.getHand().isBigSC()))
+		if (betsize > 2 && (!game.getHand().isAxs() && !game.getHand().isStrongBroadway() && !game.getHand().isSuitedBroadway() && !game.getHand().isBigSC()))
 		{
 			//OOP FOLD
 			EQ = modifyValue(EQ, -0.20);
@@ -370,10 +370,10 @@ double manipulateEQRaise(double EQ, double betsize, CurrentGameInfo& game)
 		if (!heroInPosition(game) && currentbet < 2)
 		{
 			logger.logExp("\t\t\tModifying Raise: OOP EQ -7%", BOT_LOGIC);
-			EQ = modifyValue(EQ, -0.03);
+			EQ = modifyValue(EQ, -0.05);
 		}
 
-		if (currentbet > 2)
+		if (currentbet >= 2 && maxStackSize > 100)
 		{
 			logger.logExp("\t\t\tModifying Raise: RAISE EQ -5%", BOT_LOGIC);
 			EQ = modifyValue(EQ, -0.05);
@@ -381,7 +381,7 @@ double manipulateEQRaise(double EQ, double betsize, CurrentGameInfo& game)
 	}
 	else if (game.getStreet() == 3)
 	{
-		if (currentbet > 2)
+		if (currentbet >= 2 && maxStackSize > 100)
 		{
 			logger.logExp("\t\t\tModifying Raise: RAISE EQ -5%", BOT_LOGIC);
 			EQ = modifyValue(EQ, -0.05);
@@ -538,6 +538,7 @@ double manipulateFE(double FE, double betsize, CurrentGameInfo& game, CurrentPla
 	else if (game.getStreet() == 1)
 	{
 		FE = modifyValue(FE, -0.15);
+		if (game.getOpponentsInfo().size() > 1) FE = modifyValue(FE, 0.1);
 		logger.logExp("\t\t\tModifying FE: DEFAULT -15%", BOT_LOGIC);
 
 		int str = Evaluator::cardStrength(game.getHand().getCard1(), game.getHand().getCard2(), game.getBoard());
@@ -1157,6 +1158,7 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 
 		
 		betsize = game.getHero().getActualStacksize() + game.getHero().getBetsize();
+		betsize *= game.getBblind();
 		if (EVAI > 0)
 		{
 			//OOPS

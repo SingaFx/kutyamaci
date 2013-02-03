@@ -74,14 +74,14 @@ void WriteToDebugWindow()
 		string s = gamestate.getPlayerNameByPos(i);
 		myOutput.push_back(s);
 	}
-
+	
 	for (int i = 0; i < 6; ++i)
 	{
 		if (!gamestate.isCurrentPlayerInfoSet(i)) continue;
 		string s = gamestate.getCurrentPlayerInfo(i).getName();
 		myOutput.push_back(s);
-	}
-	*/
+	}*/
+	
 
 
 	/*
@@ -100,7 +100,7 @@ void WriteToDebugWindow()
 		os << "BETROUND: " << gamestate.getBettingRound();
 		myOutput.push_back(os.str());
 	}
-
+	/*
 	{
 		ostringstream os;
 
@@ -121,9 +121,9 @@ void WriteToDebugWindow()
 		os << "FLop pot common: " << gamestate.getCurrentGameInfo()->getFlopPotSize();
 		myOutput.push_back(os.str());
 	}
-
+	*/
 	stream.clear();
-
+	/*
 	vector<double> currentBets(6);
 	getCurrentBets(currentBets, cgi->getBblind());
 
@@ -133,7 +133,7 @@ void WriteToDebugWindow()
 	}
 	stream << endl;
 	myOutput.push_back(stream.str());
-
+	*/
 	//stream.clear();
 	
 
@@ -148,12 +148,14 @@ void WriteToDebugWindow()
 			double betsize2 = gamestate.getCurrentBetByPos(idx);
 			double bblind = cgi->getBblind();
 			double stacksize = gamestate.getCurrentPlayerInfo(idx).getStacksize();
+			//double stacksize = gamestate.getInitialBalanceByPos(idx);
+			double actualstack = gamestate.getCurrentPlayerInfo(idx).getActualStacksize();
 
-			os << name << " " << line << " " << betsize << " " << betsize2 << " " << bblind << " " << stacksize;
+			os << name <<  " " << stacksize*bblind << " " << line << " " << betsize*bblind << " " << actualstack*bblind;
 			myOutput.push_back(os.str());
 		}
 	}
-
+	/*
 	for (int idx = 0; idx < 6; ++idx)
 	{
 		PlayerRange range = PlayerRangeManager::getPlayerRangeManager().getPlayerRange(idx);
@@ -161,7 +163,7 @@ void WriteToDebugWindow()
 		ostringstream os;
 		os << gamestate.getPlayerNameByPos(range.getId()) << " " << range.totalPercentage();
 		myOutput.push_back(os.str());
-	}
+	}*/
 
 	/*
 	stream.clear();
@@ -940,7 +942,7 @@ double process_query(const char* pquery)
 		if (ranges.size() == 1 && gamestateManager.getAction().getType() == 'r')
 		{
 			logger.logExp("Waiting for hero's balance", DLL_DECISION_LOGGER);
-			Sleep(3000);
+			//Sleep(3000);
 			process_state(NULL);
 		}
 
@@ -975,7 +977,7 @@ double process_query(const char* pquery)
 			if (!isBitSet((int)playersplayingbits, idx))
 			{
 				if (currentBets[idx] > 0)
-					potcommon += currentBets[idx] / cgi->getBblind(); 
+					potcommon += currentBets[idx]; 
 			}
 		}
 
@@ -1159,7 +1161,7 @@ double process_state(holdem_state* pstate)
 		playerRangeManager.resetRanges(gamestateManager);
 		refreshPlayersName(pstate);
 
-		Sleep(3000);
+		//Sleep(3000);
     }
 
 	if (scrape_cycle == 1)
@@ -1168,7 +1170,7 @@ double process_state(holdem_state* pstate)
 		{
 			if (currentBets[idx] > 0)
 			{
-				gamestateManager.setInitialBalance(idx, getBalanceByPos(idx) + currentBets[idx]);
+				gamestateManager.setInitialBalance(idx, getBalanceByPos(idx) + currentBets[idx] * cgi->getBblind());
 			}
 			else
 			{
@@ -1189,7 +1191,7 @@ double process_state(holdem_state* pstate)
 		//Opponent Number == 1!!
 		if (gamestateManager.getAction().getType() == 'r')
 		{
-			Sleep(3000);
+			//Sleep(3000);
 		}
 		
 
@@ -1262,7 +1264,7 @@ double process_state(holdem_state* pstate)
                     {
                         currentPlayerInfo.setLine(1);
                         gamestateManager.setMaxRaise(currentBet);
-						Sleep(3000);
+						//Sleep(3000);
 						correctStackSizes(currentPlayerInfo, currentBet, idx);
                     }
                     else
@@ -1338,7 +1340,7 @@ double process_state(holdem_state* pstate)
                     else if (currentBet > maxRaise)
                     {
                         currentPlayerInfo.setLine(1);
-						Sleep(3000);
+						//Sleep(3000);
                         gamestateManager.setMaxRaise(currentBet);
 						correctStackSizes(currentPlayerInfo, currentBet, idx);
                     }
