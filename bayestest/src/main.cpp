@@ -328,6 +328,47 @@ void testRiverRange2()
 
 }
 
+void testRiverRange3()
+{
+	int v[9];
+
+	double potSize = 59*0.04;
+	double stackSize = 114*0.04;
+	double betSize = 44.25*0.04;
+	int line = 1;
+	double VPIP = 17.5;
+	double PFR = 15.7;
+	double AF = 2.5;
+	double flopPotSize = 6.25*0.04;
+
+	v[1] = normalizePotSize(4, potSize, 0.04);
+	v[2] = normalizeStackSize(stackSize, 0.04);
+	v[3] = normalizeBetSize(2, betSize, potSize, 0.04);
+	v[4] = line;
+	v[5] = normalizeVPIP(VPIP);
+	v[6] = normalizePFR(PFR);
+	v[7] = normalizeAF(AF);
+	v[8] = normalizePotSize(2, flopPotSize, 0.04);
+
+	printf("\n--------------------------------------River regular call range 3bet pot x, x, x--------------------------------------------\n");
+
+	vector<Card> board;
+	board.push_back(Card('6','h'));
+	board.push_back(Card('5','c'));
+	board.push_back(Card('A','d'));
+	board.push_back(Card('Q','s'));
+	board.push_back(Card('K','s'));
+
+	Hand own(Card('A','s'), Card('6','d'));
+
+	river.printRange(v);
+
+	PlayerRange range = river.getRange(VPIP, PFR, AF, stackSize, line, betSize, 0.04, potSize, flopPotSize, board, own, 10);
+	//PlayerRange range = river.getRange(v, board, own, 0);
+	range.printHS(board);
+
+}
+
 void testEvaluator1()
 {
 	printf("\n--------------------------------------River JJ on 8s3c8c4s3h--------------------------------------------\n");
@@ -424,7 +465,8 @@ int main()
 		//testEQCalculator();
 
 		//testRiverRange1();
-		testRiverRange2();
+		//testRiverRange2();
+		testRiverRange3();
 
 		//testPreflopRange1();
 		//testPreflopRange2();
