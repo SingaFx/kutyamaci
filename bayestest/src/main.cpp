@@ -266,6 +266,22 @@ void testBoardType3()
 	printf("--------------------------------------end of board type testing---------------------------------------\n");
 }
 
+void testBoardType4()
+{
+	printf("\n--------------------------------------board type testing--------------------------------------------\n");
+
+	vector<Card> board;
+	board.push_back(Card('T','c'));
+	board.push_back(Card('J','d'));
+	board.push_back(Card('A','c'));
+
+	int boardType = Evaluator::boardType(board);
+
+	printf("Tc Jd Ac board type                        = %d\n", boardType);
+
+	printf("--------------------------------------end of board type testing---------------------------------------\n");
+}
+
 void testRiverRange1()
 {
 	printf("\n--------------------------------------River regular AI call range 3bet pot on 8s3c8c4s3h--------------------------------------------\n");
@@ -407,6 +423,26 @@ void testEvaluator2()
 	printf("--------------------------------------end of River AT on 7d4s4hTs8c---------------------------------------\n");
 }
 
+void testEvaluator3()
+{
+	printf("\n--------------------------------------FLOP 78 on 649--------------------------------------------\n");
+
+	vector<Card> board;
+	board.push_back(Card('T','s'));
+	board.push_back(Card('7','s'));
+	board.push_back(Card('7','c'));
+	board.push_back(Card('7','h'));
+	board.push_back(Card('9','h'));
+
+	Hand hand;
+	hand.setHand(Card('A','c'),Card('T','c'));
+
+	printf("handstrength : %d", Evaluator::cardStrength(hand.getCard1(), hand.getCard2(), board));
+	//printf("flopair : %d", Evaluator::flopTotalAir(hand, board));
+
+	printf("--------------------------------------end of FLOP 78 on 649---------------------------------------\n");
+}
+
 void testEQCalculator()
 {
 	printf("\n--------------------------------------EQ calculation --------------------------------------------\n");
@@ -456,17 +492,20 @@ int main()
 
 		testBoardType();
 		testBoardType2();
-		testBoardType3();
+		testBoardType3();*/
+		testBoardType4();
 
-		testEvaluator1();*/
+		//testEvaluator1();
 
-		testEvaluator2();
+		//testEvaluator3();
+
+		//testEvaluator2();
 
 		//testEQCalculator();
 
 		//testRiverRange1();
 		//testRiverRange2();
-		testRiverRange3();
+		//testRiverRange3();
 
 		//testPreflopRange1();
 		//testPreflopRange2();

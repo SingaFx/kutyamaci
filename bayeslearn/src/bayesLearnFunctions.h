@@ -1282,6 +1282,22 @@ public:
 						++totalS[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF][flopPotCommon];
 						if (j + 1 < player.getRiverAction().size())
 							++totalFE[nPotSize][nStackSize][size][0][nVPIP][nPFR][nAF][flopPotCommon];
+
+						/*if (action.getSize() > 90 * 0.04 && nPotSize == normalizePotSize(4, 50 * 0.04, 0.04))
+						{
+							printf("Situation= %d %d %d %d %d %d %d %d\n", nPotSize, nStackSize, size, 1, nVPIP, nPFR, nAF, flopPotCommon);
+							printf("Total= %d\n", totalFE[nPotSize][nStackSize][size][1][nVPIP][nPFR][nAF][flopPotCommon]);
+							printf("Potcommon= %lf Balance= %lf\n", totalpot, player.getBalance());
+							printf("%s\n", player.getPlayerName().c_str());
+							for (int k = 0; k < player.getRiverAction().size(); ++k)
+							{
+								printf("%s\n", player.getRiverAction()[k].toString().c_str());
+							}
+							printf("Hand: %s = %d\n", player.getHand().toString().c_str(), hand);
+							printf("Board: %s%s%s%s%s\n", handhistory.getFlopCard1().toString().c_str(), 
+								handhistory.getFlopCard2().toString().c_str(), handhistory.getFlopCard3().toString().c_str(), handhistory.getTurnCard().toString().c_str(), handhistory.getRiverCard().toString().c_str());
+						}*/
+
 					}
 
 					if (action.getType() == 'r')
