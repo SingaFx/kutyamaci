@@ -1381,6 +1381,23 @@ public:
 		 return 4;
 	}
 
+	static bool flopTotalAir(Hand h, vector<Card> board)
+	{
+		convertRankToNumbers(h.getCard1());
+		convertRankToNumbers(h.getCard2());
+		convertRankToNumbers(board[0]);
+		convertRankToNumbers(board[1]);
+		convertRankToNumbers(board[2]);
+
+		if (cardStrength(h.getCard1(), h.getCard2(), board[0], board[1], board[2]) != 4)
+			return false;
+
+		if (flopTwoOverCards(h.getCard1(), h.getCard2(), board[0], board[1], board[2]) || h.getCard1().getRank() == 14 || h.getCard2().getRank() == 14)
+			return false;
+
+		return true;
+	}
+
 	// Turn
 	static int cardStrength(Card h1, Card h2, Card b1, Card b2, Card b3, Card b4)
 	{
