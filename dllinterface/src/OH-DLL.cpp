@@ -830,6 +830,8 @@ double AnyVPIP(int index)
 
 	Database* database = gamestateManager.getDatabase();
 
+	if (gamestateManager.getDealerPosition() < 0 || gamestateManager.getDealerPosition() > 5) return 0;
+
 	vector<int> relativePositions;
     calculateRelativPositions(relativePositions, gamestateManager.getDealerPosition());
 

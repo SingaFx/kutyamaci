@@ -83,13 +83,18 @@ PlayerRange PlusEVBotLogic::calculateRange(int id, CurrentGameInfo& gameInfo, Pl
 		CurrentPlayerInfo player = gameInfo.getPlayerbyId(id);
 		
 		PlayerRange actual = turn.getRange(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * bblind, player.getLine(), player.getBetsize() * bblind, gameInfo.getBblind(), 
-											gameInfo.getPotcommon() * bblind, gameInfo.getFlopPotSize() * gameInfo.getBblind(), gameInfo.getBoard(), gameInfo.getHand(), patternsNeeded);
+											gameInfo.getPotcommon() * bblind, gameInfo.getFlopPotSize() * bblind, gameInfo.getBoard(), gameInfo.getHand(), patternsNeeded);
 
 		res = RangeUtils::mergeRange(oldPlayerRange, actual, gameInfo.getBoard(), gameInfo.getHand());
 
 		ostringstream os;
 		os << "Turn range query; Input : VPIP : " << player.getVPIP() << " PFR : " << player.getPFR() << "AF : " << player.getAF() << " StackSize : " << player.getStacksize() << " line : " << player.getLine() << " betsize : " <<
 			player.getBetsize() << " bblind : " << gameInfo.getBblind() << " Potcommon : " << gameInfo.getPotcommon() << "Flop pot size : "<<  gameInfo.getFlopPotSize() <<  endl;
+
+		if (actual.range.size() == 0)
+		{
+			logger.logExp("Cannot get actual range!!!", BOT_LOGIC);
+		}
 
 		/*
 		os << "Old range : " << oldPlayerRange.totalPercentage() << "; New range : " << res.totalPercentage();
@@ -105,8 +110,13 @@ PlayerRange PlusEVBotLogic::calculateRange(int id, CurrentGameInfo& gameInfo, Pl
 	{
 		CurrentPlayerInfo player = gameInfo.getPlayerbyId(id);
 		
-		PlayerRange actual = river.getRange(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize(), player.getLine(), player.getBetsize(), gameInfo.getBblind(), 
-											gameInfo.getPotcommon(), gameInfo.getFlopPotSize() * gameInfo.getBblind(), gameInfo.getBoard(), gameInfo.getHand(), patternsNeeded);
+		PlayerRange actual = river.getRange(player.getVPIP(), player.getPFR(), player.getAF(), player.getStacksize() * bblind, player.getLine(), player.getBetsize() * bblind, gameInfo.getBblind(), 
+											gameInfo.getPotcommon() * bblind, gameInfo.getFlopPotSize() * bblind, gameInfo.getBoard(), gameInfo.getHand(), patternsNeeded);
+
+		if (actual.range.size() == 0)
+		{
+			logger.logExp("Cannot get actual range!!!", BOT_LOGIC);
+		}
 
 		res = RangeUtils::mergeRange(oldPlayerRange, actual, gameInfo.getBoard(), gameInfo.getHand());
 
