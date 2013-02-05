@@ -664,7 +664,13 @@ public:
 		{
 			v[0] = i;
 			HS[i] = getProbabilityHS(v, x);
-			if (HS[i] < 0) return res;
+			//HACK
+			if (HS[i] < 0)
+			{
+				memset(HS, 0, sizeof(HS));
+				HS[0] = 1;
+			}
+			//if (HS[i] < 0) return res;
 		}
 
 		res = RangeUtils::createRange(8, HS, cards, own);
@@ -681,7 +687,13 @@ public:
 		{
 			v[0] = i;
 			HS[i] = getProbabilityHS(v, x);
-			if (HS[i] < 0) return res;
+			//HACK
+			if (HS[i] < 0)
+			{
+				memset(HS, 0, sizeof(HS));
+				HS[0] = 1;
+			}
+			//if (HS[i] < 0) return res;
 		}
 
 		res = RangeUtils::createRange(8, HS, cards, own);
@@ -1031,7 +1043,13 @@ public:
 		{
 			v[0] = i;
 			HS[i] = getProbabilityHS(v, x);
-			if (HS[i] < 0) return res;
+			//HACK
+			if (HS[i] < 0)
+			{
+				memset(HS, 0, sizeof(HS));
+				HS[0] = 1;
+			}
+			//if (HS[i] < 0) return res;
 		}
 
 		res = RangeUtils::createRange(8, HS, cards, own);
@@ -1048,7 +1066,13 @@ public:
 		{
 			v[0] = i;
 			HS[i] = getProbabilityHS(v, x);
-			if (HS[i] < 0) return res;
+			//HACK
+			if (HS[i] < 0)
+			{
+				memset(HS, 0, sizeof(HS));
+				HS[0] = 1;
+			}
+			//if (HS[i] < 0) return res;
 		}
 
 		res = RangeUtils::createRange(8, HS, cards, own);
@@ -1100,11 +1124,11 @@ public:
 		}
 		else if (AF <= 3)
 		{
-			weight = 0.75;
+			weight = 0.70;
 		}
 		else if (AF <= 5)
 		{
-			weight = 0.7;
+			weight = 0.65;
 		}
 		else
 		{
@@ -1340,7 +1364,13 @@ public:
 		{
 			v[0] = i;
 			HS[i] = getProbabilityHS(v, x);
-			if (HS[i] < 0) return res;
+			//HACK
+			if (HS[i] < 0)
+			{
+				memset(HS, 0, sizeof(HS));
+				HS[0] = 1;
+			}
+			//if (HS[i] < 0) return res;
 		}
 
 		res = RangeUtils::createRange(8, HS, cards, own);
@@ -1357,7 +1387,13 @@ public:
 		{
 			v[0] = i;
 			HS[i] = getProbabilityHS(v, x);
-			if (HS[i] < 0) return res;
+			//HACK
+			if (HS[i] < 0)
+			{
+				memset(HS, 0, sizeof(HS));
+				HS[0] = 1;
+			}
+			//if (HS[i] < 0) return res;
 		}
 
 		res = RangeUtils::createRange(8, HS, cards, own);
@@ -1402,23 +1438,23 @@ public:
 
 		if (AF <= 1)
 		{
-			weight = 0.99;
+			weight = 0.95;
 		}
 		else if (AF <= 2)
 		{
-			weight = 0.97;
+			weight = 0.92;
 		}
 		else if (AF <= 3)
 		{
-			weight = 0.95;
+			weight = 0.90;
 		}
 		else if (AF <= 5)
 		{
-			weight = 0.9;
+			weight = 0.85;
 		}
 		else
 		{
-			weight = 0.9;
+			weight = 0.85;
 		}
 
 		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, weight);

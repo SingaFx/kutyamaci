@@ -1,0 +1,402 @@
+##2012-11-18 17:33:34##
+
+##notes##
+Playbot3. Created by Matrix as an example of a prwin, 
+pot odds bot with the following bells and whistles:
+Bet and call capping to limit pot chasing in marginal situations
+EV's modified by proportion of bulls, bears and limpers 
+Autobet and Check Raise logic 
+Options for random trimming of decision levels to reduce predictability 
+Plenty of constants to trim to get the bot to play your way. 
+
+EDITED 2005-10-30 to correct EV criteria and handrank oddity. 
+
+EDITED 2009-05-31 by TheHighFish: 
+  * conversion to new ohf-format 
+  * comments for unused standard formulae 
+  * put some symbols into the debug-tab to demonstrate its usage 
+  * removed unused hand-lists
+
+##dll##
+
+
+##bankroll##
+0.000000
+
+##defcon##
+0.000000
+
+##rake##
+0.000000
+
+##nit##
+1000
+
+##f$alli##
+   0                                     // default is do not alli 
+   || [ prwin >= 1.00 ]                  // dead nuts
+
+##f$swag##
+// No stated wagers with a FL-bot.
+
+##f$srai##
+// No stated raises with a FL-bot.
+
+##f$rais##
+
+
+##f$call##
+
+
+##f$prefold##
+
+
+##f$rebuy##
+// <=0 means: don't rebuy.
+//  >0 means: target-amount.
+// Default is: no rebuy.
+0
+
+##f$delay##
+
+
+##f$chat##
+// No chat. 
+0
+
+##f$P##
+
+
+##f$play##
+
+
+##f$test##
+
+
+##f$debug##
+                 = elapsed
+
+                 = sblind
+                 = bblind
+                 = bet
+
+                 = call
+                 = currentbet
+                 = balance
+
+                 = f$evcall
+                 = f$evrais
+
+                 = potplayer
+                 = potcommon
+                 = pot
+                 = rake
+
+                 = chair
+                 = handrank2652
+                 = pokerval
+                 = prwin
+                 = prlos
+                 = prtie
+                 = nopponents
+
+##list01##
+AA  KK  QQ  JJ  TT  99  88  77  
+AKs AQs AJs KQs KJs QJs 
+KA  QA  QK  JA  
+
+##list02##
+AA  KK  QQ  JJ  TT  99  88  77  66  55  
+AKs AQs AJs KQs KJs QJs 
+KA  QA  QK  JA  JK  JQ  
+
+##list03##
+AA  KK  QQ  JJ  TT  99  88  77  66  55  44  33  22  
+AKs AQs AJs ATs A9s A8s A7s A6s A5s A4s A3s A2s KQs KJs KTs K9s K8s QJs QTs Q9s Q8s JTs J9s J8s T9s T8s 98s 
+KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  9A  
+
+##list04##
+AA  KK  QQ  JJ  TT  99  88  77  66  55  44  33  22  
+AKs AQs AJs ATs A9s A8s A7s A6s A5s A4s A3s A2s KQs KJs KTs K9s K8s K7s K6s K5s K4s K3s K2s QJs QTs Q9s Q8s Q7s Q6s JTs J9s J8s J7s J6s T9s T8s T7s T6s 98s 87s 76s 65s 54s 
+KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  9A  9T  8A  89  7A  78  6A  67  5A  4A  3A  2A  
+
+##list12##
+AA  KK  QQ  JJ  TT  99  88  77  
+AKs AQs AJs ATs KQs KJs KTs QJs QTs JTs 
+KA  QA  QK  JA  JK  JQ  TA  TK  
+
+##list13##
+AA  KK  QQ  JJ  TT  99  88  77  
+AKs AQs AJs ATs A9s A8s KQs KJs KTs QJs QTs JTs 
+KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  
+
+##list14##
+AA  KK  QQ  JJ  TT  99  88  77  66  55  44  33  22  
+AKs AQs AJs ATs A9s A8s A7s A6s A5s A4s A3s A2s KQs KJs KTs QJs QTs JTs T9s 
+KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  
+
+##list15##
+AA  KK  QQ  JJ  TT  99  
+AKs AQs AJs KQs KJs QJs 
+KA  QA  QK  JA  
+
+##list24##
+AA  KK  QQ  JJ  TT  
+AKs AQs AJs KQs QJs 
+KA  QA  
+
+##list21##
+AA  KK  QQ  JJ  
+AKs AQs 
+KA  QA  
+
+##list22##
+AA  KK  QQ  JJ  TT  99  
+AKs AQs AJs 
+KA  QA  JA  
+
+
+##list23##
+AA  KK  QQ  JJ  TT  
+AKs AQs 
+KA  QA  
+
+
+##list25##
+AA  KK  QQ  
+AKs 
+KA  
+
+
+##f$BoardType##
+//Return the boardtype
+//1: Wet -> FD + ST opp
+//2: SemiWet -> ST opp
+//3: Dry -> no fd + no st opp
+
+f$IsWetBoard ? 1 :
+f$IsSemiWetBoard ? 2 :
+f$IsDryBoard ? 3 :
+0
+
+##f$IsPairedBoard##
+nrankedcommon == 2
+
+##f$IsWetBoard##
+br == 2 ? 1
+:br == 3 ? 1
+:br == 4 ? 1
+: 0
+
+##f$IsSemiWetBoard##
+br == 2 ? 1
+:br == 3 ? 1
+:br == 4 ? 1
+: 0
+
+##f$IsDryBoard##
+br == 2 ? 1
+:br == 3 ? 1
+:br == 4 ? 1
+: 0
+
+##f$OddsCall##
+//Odds call
+//calculate the odds for call, and call with a given range! + implied odds!
+//preflop, flop, turn, river
+
+##f$FlopRaise##
+//INPUT: nopponentsplaying, boardtype, pottype, (opponenttype, opponenthandrange), HAND TYPE, STACKSIZE, raise/bet?
+//OUTPUT:
+//bet/fold
+//bet/call
+//raise
+
+##f$TurnRaise##
+//INPUT: nopponentsplaying, boardtype, pottype, (opponenttype, opponenthandrange), HAND TYPE, STACKSIZE
+//OUTPUT:
+//bet/fold
+//bet/call
+//raise
+
+##f$RiverRaise##
+//INPUT: nopponentsplaying, boardtype, pottype, (opponenttype, opponenthandrange), HAND TYPE, STACKSIZE
+//OUTPUT:
+//bet/fold
+//bet/call
+//raise
+
+##f$FlopCall##
+//INPUT: nopponentsplaying, boardtype, pottype, (opponenttype, opponenthandrange), HAND TYPE, STACKSIZE
+//OUTPUT:
+//call
+//fold
+
+##f$TurnCall##
+//INPUT: nopponentsplaying, boardtype, pottype, (opponenttype, opponenthandrange), HAND TYPE, STACKSIZE
+//OUTPUT:
+//call
+//fold
+
+##f$RiverCall##
+//INPUT: nopponentsplaying, boardtype, pottype, (opponenttype, opponenthandrange), HAND TYPE, STACKSIZE
+//OUTPUT:
+//call
+//fold
+
+##f$OpponentStrength##
+//actions -> (AIR, WEAK, NORMAL, STRONG, ULTRA STRONG)
+br == 2 ? 1
+:br == 3 ? 1
+:br == 4 ? 1
+: 0
+
+##f$PreflopRaise##
+f$PreflopFirstIn ?
+		f$PositionEP ? islist01 
+  :f$PositionMP ? islist02 
+  :f$PositionCO ? islist03 
+  :f$PositionBU ? islist04
+  :f$PositionSB ? islist03
+  :0
+:f$Preflop1Limper ? 
+		f$PositionMP ? islist12
+  :f$PositionCO ? islist14
+  :f$PositionBU ? islist14 
+  :f$PositionSB ? islist12
+  :f$PositionBB ? f$OpponentIsSB ? islist15
+											 : islist12
+  :0
+:f$PreflopLimpers ?
+		f$PositionMP ? islist12
+  :f$PositionCO ? islist13
+  :f$PositionBU ? islist13 
+  :f$PositionSB || f$PositionBB ? islist15
+  :0
+:f$PreflopFacing1Raise ?
+  f$PositionBU ? islist24
+  : islist21 
+:f$PreflopFacingReRaise ?
+    f$StackSize == 0 ? islist22  //0..30
+			:f$StackSize == 1 ? islist23 //30..70
+    :f$StackSize == 2 ? islist25 //70..120
+    :f$StackSize == 3 ? ($KK || $AA)
+    :$AA
+:f$PreflopFacing2Raise ?
+    f$StackSize == 0 ? islist22  //0..30
+			:f$StackSize == 1 ? islist23 //30..70
+    :f$StackSize == 2 ? islist25 //70..120
+    :f$StackSize == 3 ? ($KK || $AA)
+    :$AA
+:0
+
+##f$BetSize##
+br == 1 ? 
+  f$PreflopUnopened ?
+    f$PositionBU && f$PreflopFirstIn ? 3 * bblind
+    :f$PositionSB || f$PositionBB ? (5 + nopponentscalling) * bblind
+    :(4 + nopponentscalling) * bblind //IsoSize
+
+  :f$PreflopFacing1Raise ?  //3BET
+    f$StackSize > 2 ? (4 + nopponentscalling/1.5) * ncallbets * bblind //DEEP 3bet
+    :f$PositionSB || f$PositionBB ? (3.5 + nopponentscalling) * ncallbets < 11 ? 11*bblind
+      :(3.5 + nopponentscalling) * ncallbets * bblind
+    :(3 + nopponentscalling) * ncallbets  < 10 ? 10*bblind
+      :(3 + nopponentscalling) * ncallbets * bblind
+  :f$PreflopFacingReRaise || f$PreflopFacing2Raise ? //3BET v 4BET
+     f$TotalBalance
+  :0
+
+
+##f$StackSize##
+br==1 ? 1
+: 1
+
+##f$PotType##
+
+
+##f$PreflopStackSize##
+
+
+##f$PostflopStackSize##
+
+
+##f$BotHandStrength##
+// -> (AIR, WEAK, NORMAL, STRONG, ULTRA STRONG)
+br == 2 ? 1
+:br == 3 ? 1
+:br == 4 ? 1
+: 0
+
+##f$PreflopFacing1Raise##
+br == 1 && f$BitsPlayersRaisingPreflop == 1 && ncallbets < 8 && ncallbets > 1
+
+##f$BitsPlayersRaisingPreflop##
+`(raisbits1 & f$BitPlayersMoreThanOneBet)
+
+##f$BitPlayersMoreThanOneBet##
+((currentbet0 > bblind) ? 0x0001 : 0)
+| ((currentbet1 > bblind) ? 0x0002 : 0)
+| ((currentbet2 > bblind) ? 0x0004 : 0)
+| ((currentbet3 > bblind) ? 0x0008 : 0)
+| ((currentbet4 > bblind) ? 0x0010 : 0)
+| ((currentbet5 > bblind) ? 0x0020 : 0)
+| ((currentbet6 > bblind) ? 0x0040 : 0)
+| ((currentbet7 > bblind) ? 0x0080 : 0)
+| ((currentbet8 > bblind) ? 0x0100 : 0)
+| ((currentbet9 > bblind) ? 0x0200 : 0)
+
+##f$PreflopFacing2Raise##
+(f$BitsPlayersRaisingPreflop > 1 || ncallbets >= 8) && !(didcall || didswag || didrais)
+
+##f$PreflopFacingReRaise##
+br == 1 && (didcall || didswag || didrais) && call > 0
+
+##f$PreflopFirstIn##
+(br == 1) && (ncallbets <= 1) && (nopponentscalling <= 0)
+
+##f$PreflopLimpers##
+(br == 1) && (ncallbets <= 1) && (nopponentscalling > 1)
+
+##f$PositionBB##
+dealposition == 2
+
+##f$PositionBU##
+nplayersdealt >= 3 && nplayersdealt-dealposition == 0
+
+##f$PositionCO##
+nplayersdealt >= 4 && nplayersdealt-dealposition == 1
+
+##f$PositionEP##
+nplayersdealt == 6 && dealposition == 3
+
+##f$PositionMP##
+nplayersdealt >= 5 && nplayersdealt-dealposition == 2
+
+##f$PositionSB##
+dealposition == 1
+
+##f$PreflopCall##
+
+
+##f$Preflop1Limper##
+(br == 1) && (ncallbets <= 1) && (nopponentscalling == 1)
+
+##f$OpponentIsSB##
+(callbits1 == 0x0001 && ac_dealpos0 == 1) ||
+(callbits1 == 0x0002 && ac_dealpos1 == 1) ||
+(callbits1 == 0x0004 && ac_dealpos2 == 1) ||
+(callbits1 == 0x0008 && ac_dealpos3 == 1) ||
+(callbits1 == 0x0010 && ac_dealpos4 == 1) ||
+(callbits1 == 0x0020 && ac_dealpos5 == 1) ||
+(callbits1 == 0x0040 && ac_dealpos6 == 1) ||
+(callbits1 == 0x0080 && ac_dealpos7 == 1) ||
+(callbits1 == 0x0100 && ac_dealpos8 == 1) ||
+(callbits1 == 0x0200 && ac_dealpos9 == 1)
+
+##f$PreflopUnopened##
+(br == 1) && (ncallbets <= 1)
+
+##f$TotalBalance##
+balance + ncurrentbets * bblind
+

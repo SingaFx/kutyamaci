@@ -330,7 +330,7 @@ double manipulateEQRaise(double EQ, double betsize, CurrentGameInfo& game)
 			logger.logExp("\t\t\tModifying Raise: 3BET OOP WEAK HAND EQ -20%", BOT_LOGIC);
 		}
 
-		if (betsize > 2 && (!game.getHand().isAxs() && !game.getHand().isStrongBroadway() && !game.getHand().isSuitedBroadway() && !game.getHand().isBigSC()))
+		if (betsize > 2 && (!game.getHand().isOOP3Bet() && !game.getHand().isAxs() && !game.getHand().isStrongBroadway() && !game.getHand().isSuitedBroadway() && !game.getHand().isBigSC()))
 		{
 			//OOP FOLD
 			EQ = modifyValue(EQ, -0.20);
@@ -444,7 +444,7 @@ double manipulateEQRaiseAllIn(double EQ, double betsize, CurrentGameInfo& game)
 
 		if (effectiv > 250 && isRegular(game))
 		{
-			EQ = modifyValue(EQ, -0.10);
+			EQ = modifyValue(EQ, -0.05);
 		}
 
 		if (effectiv > 300)
@@ -466,7 +466,7 @@ double manipulateEQRaiseAllIn(double EQ, double betsize, CurrentGameInfo& game)
 
 		if (effectiv > 250 && isRegular(game))
 		{
-			EQ = modifyValue(EQ, -0.10);
+			EQ = modifyValue(EQ, -0.05);
 		}
 
 		if (effectiv > 300)
@@ -638,7 +638,7 @@ double manipulateFE(double FE, double betsize, CurrentGameInfo& game, CurrentPla
 		int str = Evaluator::cardStrength(game.getHand().getCard1(), game.getHand().getCard2(), game.getBoard());
 
 		FE = modifyValue(FE, -0.15);
-		if (game.getOpponentsInfo().size() > 1 && str > 1) FE = modifyValue(FE, 0.1);
+		if (game.getOpponentsInfo().size() > 1 && str > 1) FE = modifyValue(FE, 0.10);
 		logger.logExp("\t\t\tModifying FE: DEFAULT -15%", BOT_LOGIC);
 
 		
@@ -668,7 +668,7 @@ double manipulateFE(double FE, double betsize, CurrentGameInfo& game, CurrentPla
 	{
 		//DEFAULT SUBSTRACT FE
 		FE = modifyValue(FE, -0.20);
-		logger.logExp("\t\t\tModifying FE: DEFAULT -15%(20%)", BOT_LOGIC);
+		logger.logExp("\t\t\tModifying FE: DEFAULT -15%(23%)", BOT_LOGIC);
 
 		if (game.getOpponentsInfo().size() == 1)
 		{
@@ -1363,63 +1363,69 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 
 		int str = Evaluator::cardStrength(game.getHand().getCard1(), game.getHand().getCard2(), game.getBoard());
 
-		for (int i = ranges.size() > 2 ? betSizes.size() - 1 : 0; i < betSizes.size(); ++i)
+		if (!Evaluator::flopTotalAir(game.getHand(), game.getBoard()))
 		{
-
-			double betsize = betSizes[i];
-			double potcommon = game.getPotcommon() * game.getBblind();
-
-			logger.logExp("actualBetSize: ", betSizes[i], LOGGER_TYPE::BOT_LOGIC);
-
-
-			//STACK functions are FUCKED UP
-			double stacksize = game.getHero().getActualStacksize() + game.getHero().getBetsize();
-			double maxOpponentS = maxOpponentTotalStack(game);
-			double effectiv = (stacksize < maxOpponentS ? stacksize : maxOpponentS);
-
-			logger.logExp("\t\tHero actualStackSize: ", game.getHero().getActualStacksize(), BOT_LOGIC);
-			logger.logExp("\t\tHeroCurrentBet: ", game.getHero().getBetsize(), BOT_LOGIC);
-			logger.logExp("\t\tOpponent maxStack: ", maxOpponentS, BOT_LOGIC);
-			logger.logExp("\t\teffective stack ", effectiv, BOT_LOGIC);
-			logger.logExp("\t\tHero's stacksize : ", stacksize, BOT_LOGIC);
-
-			effectiv *= game.getBblind();
-			bool allIn = false;
-			if (betsize >= 0.4 * effectiv)
+			for (int i = ranges.size() > 2 ? betSizes.size() - 1 : 0; i < betSizes.size(); ++i)
 			{
-				betsize = effectiv;
-				allIn = true;
-			}
 
-			vector<PlayerRange> aktRanges;
-			for (int j = 0; j < ranges.size(); ++j)
-			{
-				PlayerRange akt = getCallRaiseRange(betsize, ranges[j], game, preflop, flop, turn, river);
-				if (akt.range.size() == 0)
+				double betsize = betSizes[i];
+				double potcommon = game.getPotcommon() * game.getBblind();
+
+				logger.logExp("actualBetSize: ", betSizes[i], LOGGER_TYPE::BOT_LOGIC);
+
+				//STACK functions are FUCKED UP
+				double stacksize = game.getHero().getActualStacksize() + game.getHero().getBetsize();
+				double maxOpponentS = maxOpponentTotalStack(game);
+				double effectiv = (stacksize < maxOpponentS ? stacksize : maxOpponentS);
+
+				logger.logExp("\t\tHero actualStackSize: ", game.getHero().getActualStacksize(), BOT_LOGIC);
+				logger.logExp("\t\tHeroCurrentBet: ", game.getHero().getBetsize(), BOT_LOGIC);
+				logger.logExp("\t\tOpponent maxStack: ", maxOpponentS, BOT_LOGIC);
+				logger.logExp("\t\teffective stack ", effectiv, BOT_LOGIC);
+				logger.logExp("\t\tHero's stacksize : ", stacksize, BOT_LOGIC);
+
+				effectiv *= game.getBblind();
+				bool allIn = false;
+				if (betsize >= 0.4 * effectiv)
 				{
-					logger.logExp("Couldn't get opponent's calling+raising range.", LOGGER_TYPE::BOT_LOGIC);
-					break;
+					betsize = effectiv;
+					allIn = true;
 				}
-				aktRanges.push_back(akt);
-			}
+
+				vector<PlayerRange> aktRanges;
+				for (int j = 0; j < ranges.size(); ++j)
+				{
+					PlayerRange akt = getCallRaiseRange(betsize, ranges[j], game, preflop, flop, turn, river);
+					if (akt.range.size() == 0)
+					{
+						logger.logExp("Couldn't get opponent's calling+raising range.", LOGGER_TYPE::BOT_LOGIC);
+						break;
+					}
+					aktRanges.push_back(akt);
+				}
 			
-			if (aktRanges.size() != ranges.size()) break;
+				if (aktRanges.size() != ranges.size()) break;
 
-			vector<double> foldEquities = getFoldEquities(betsize, game, ranges, preflop, flop, turn, river);
+				vector<double> foldEquities = getFoldEquities(betsize, game, ranges, preflop, flop, turn, river);
 			
-			int moveType;
-			double evraise = calculateEVRaise(game, aktRanges, foldEquities, betsize, moveType, allIn);
+				int moveType;
+				double evraise = calculateEVRaise(game, aktRanges, foldEquities, betsize, moveType, allIn);
 
-			if (ranges.size() == 1 && betsize > potcommon && str <= 2 && str != 0 && !canCallAfterRaise(game, ranges[0], betsize, preflop, flop, turn, river))
-				evraise = -10000;
+				if (ranges.size() == 1 && betsize > potcommon && str <= 2 && str != 0 && !canCallAfterRaise(game, ranges[0], betsize, preflop, flop, turn, river))
+					evraise = -10000;
 
 
-			if (evraise > EVRAISE)
-			{
-				EVRAISE = evraise;
-				maxRaiseSize = betsize;
-				maxRaiseType = moveType;
+				if (evraise > EVRAISE)
+				{
+					EVRAISE = evraise;
+					maxRaiseSize = betsize;
+					maxRaiseType = moveType;
+				}
 			}
+		}
+		else
+		{
+			EVRAISE = -1000;
 		}
 
 		//IMPLEMENT: CHECK OOP VS REGULAR
@@ -1428,7 +1434,7 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 
 		//IP VISZONYLAG SZARAZ BOARDON EROS HAND
 		int boardType = Evaluator::boardType(game.getBoard());
-		if (ranges.size() == 1 && EVRAISE > 0 && boardType < 3 && maxRaiseType == 0 && heroInPosition(game) && game.getBiggestBet() * game.getBblind() <= potcommon 
+		if (ranges.size() == 1 && EVRAISE > 0 && boardType < 2 && maxRaiseType == 0 && heroInPosition(game) && game.getBiggestBet() * game.getBblind() <= potcommon 
 			&& game.getBiggestBet() * game.getBblind()> potcommon * 0.5)
 		{
 			CurrentPlayerInfo& player = game.getPlayerbyId(ranges[0].getId());
@@ -1443,20 +1449,20 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 
 		//RANDOM ODA CHECK REGULARNAK
 		int random = rand() % 3;
-		if (ranges.size() == 1 && isRegular(game) && !heroInPosition(game) && game.getHand().isPocket() && !game.getHand().getCard1().isBroadway() && boardType < 3 && (str == 0 || str == 3) &&
+		if (ranges.size() == 1 && isRegular(game) && !heroInPosition(game) && game.getHand().isPocket() && !game.getHand().getCard1().isBroadway() && boardType < 2 && (str == 0 || str == 3) &&
 			((game.getHero().getPoz() == 1 && game.getPlayerbyId(ranges[0].getId()).getPoz() != 2) || game.getHero().getPoz() == 2))
 		{
 			logger.logExp("======================POCKET OOP REGULAR CHECK===================", LOGGER_TYPE::BOT_LOGIC);
 			EVRAISE = -1000;
 		}
-		else if (random == 0 && ranges.size() == 1 && !heroInPosition(game) && isRegular(game) && abs(game.getBiggestBet() - 0) < 0.01 && maxRaiseType == 0 && boardType < 3)
+		else if (random == 0 && ranges.size() == 1 && !heroInPosition(game) && isRegular(game) && abs(game.getBiggestBet() - 0) < 0.01 && maxRaiseType == 0 && boardType < 2)
 		{
 			logger.logExp("======================RANDOM REGULAR CHECK===================", LOGGER_TYPE::BOT_LOGIC);
 			EVRAISE = -1000;
 		}
 
 		//PLAY VS AGGRO CHBH
-		if (ranges.size() == 1 && heroInPosition(game) && game.getBiggestBet() * game.getBblind() < potcommon * 0.2 && maxRaiseType == 0 && boardType < 3 && isRegular(game))
+		if (ranges.size() == 1 && heroInPosition(game) && game.getBiggestBet() * game.getBblind() < potcommon * 0.2 && maxRaiseType == 0 && boardType < 2 && isRegular(game))
 		{
 			int random;
 			random = random % 3;
@@ -1491,58 +1497,65 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 
 		int str = Evaluator::cardStrength(game.getHand().getCard1(), game.getHand().getCard2(), game.getBoard());
 
-		for (int i = ranges.size() > 2 ? betSizes.size() - 1 : 0; i < betSizes.size(); ++i)
+		if (str != 5 && str != 4)
 		{
-
-			double betsize = betSizes[i];
-
-			double potcommon = game.getPotcommon() * game.getBblind();
-
-			logger.logExp("actualBetSize: ", betSizes[i], LOGGER_TYPE::BOT_LOGIC);
-
-						//STACK functions are FUCKED UP
-			double stacksize = game.getHero().getActualStacksize() + game.getHero().getBetsize();
-			double maxOpponentS = maxOpponentTotalStack(game);
-			double effectiv = (stacksize < maxOpponentS ? stacksize : maxOpponentS);
-
-			logger.logExp("\t\tHero actualStackSize: ", game.getHero().getActualStacksize(), BOT_LOGIC);
-			logger.logExp("\t\tHeroCurrentBet: ", game.getHero().getBetsize(), BOT_LOGIC);
-			logger.logExp("\t\tOpponent maxStack: ", maxOpponentS, BOT_LOGIC);
-			logger.logExp("\t\teffective stack ", effectiv, BOT_LOGIC);
-			logger.logExp("\t\tHero's stacksize : ", stacksize, BOT_LOGIC);
-
-			effectiv *= game.getBblind();
-			bool allIn = false;
-			if (betsize >= 0.4 * effectiv)
+			for (int i = ranges.size() > 2 ? betSizes.size() - 1 : 0; i < betSizes.size(); ++i)
 			{
-				betsize = effectiv;
-				allIn = true;
-			}
 
-			vector<PlayerRange> aktRanges;
-			for (int j = 0; j < ranges.size(); ++j)
-			{
-				PlayerRange akt = getCallRaiseRange(betsize, ranges[j], game, preflop, flop, turn, river);
-				if (akt.range.size() == 0) break;
-				aktRanges.push_back(akt);
-			}
+				double betsize = betSizes[i];
+
+				double potcommon = game.getPotcommon() * game.getBblind();
+
+				logger.logExp("actualBetSize: ", betSizes[i], LOGGER_TYPE::BOT_LOGIC);
+
+							//STACK functions are FUCKED UP
+				double stacksize = game.getHero().getActualStacksize() + game.getHero().getBetsize();
+				double maxOpponentS = maxOpponentTotalStack(game);
+				double effectiv = (stacksize < maxOpponentS ? stacksize : maxOpponentS);
+
+				logger.logExp("\t\tHero actualStackSize: ", game.getHero().getActualStacksize(), BOT_LOGIC);
+				logger.logExp("\t\tHeroCurrentBet: ", game.getHero().getBetsize(), BOT_LOGIC);
+				logger.logExp("\t\tOpponent maxStack: ", maxOpponentS, BOT_LOGIC);
+				logger.logExp("\t\teffective stack ", effectiv, BOT_LOGIC);
+				logger.logExp("\t\tHero's stacksize : ", stacksize, BOT_LOGIC);
+
+				effectiv *= game.getBblind();
+				bool allIn = false;
+				if (betsize >= 0.4 * effectiv)
+				{
+					betsize = effectiv;
+					allIn = true;
+				}
+
+				vector<PlayerRange> aktRanges;
+				for (int j = 0; j < ranges.size(); ++j)
+				{
+					PlayerRange akt = getCallRaiseRange(betsize, ranges[j], game, preflop, flop, turn, river);
+					if (akt.range.size() == 0) break;
+					aktRanges.push_back(akt);
+				}
 			
-			if (aktRanges.size() != ranges.size()) break;
+				if (aktRanges.size() != ranges.size()) break;
 		
-			vector<double> foldEquities = getFoldEquities(betsize, game, ranges, preflop, flop, turn, river);
+				vector<double> foldEquities = getFoldEquities(betsize, game, ranges, preflop, flop, turn, river);
 			
-			int moveType;
-			double evraise = calculateEVRaise(game, aktRanges, foldEquities, betsize, moveType, allIn);
+				int moveType;
+				double evraise = calculateEVRaise(game, aktRanges, foldEquities, betsize, moveType, allIn);
 
-			if (ranges.size() == 1 && betsize > potcommon && str <= 2 && !canCallAfterRaise(game, ranges[0], betsize, preflop, flop, turn, river))
-				evraise = -10000;
+				if (ranges.size() == 1 && betsize > potcommon && str <= 2 && !canCallAfterRaise(game, ranges[0], betsize, preflop, flop, turn, river))
+					evraise = -10000;
 
-			if (evraise > EVRAISE)
-			{
-				EVRAISE = evraise;
-				maxRaiseSize = betsize;
-				maxRaiseType = moveType;
+				if (evraise > EVRAISE)
+				{
+					EVRAISE = evraise;
+					maxRaiseSize = betsize;
+					maxRaiseType = moveType;
+				}
 			}
+		}
+		else
+		{
+			EVRAISE = -1000;
 		}
 
 		//IMPLEMENT: OOP BET INSTEAD CHECK?
@@ -1558,14 +1571,14 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 		//RANDOM ODA CHECK REGULARNAK
 		int random = rand() % 3;
 		int boardType = Evaluator::boardType(game.getBoard());
-		if (random == 0 && ranges.size() == 1 && !heroInPosition(game) && isRegular(game) && abs(game.getBiggestBet() - 0) < 0.01 && maxRaiseType == 0 && boardType < 3)
+		if (random == 0 && ranges.size() == 1 && !heroInPosition(game) && isRegular(game) && abs(game.getBiggestBet() - 0) < 0.01 && maxRaiseType == 0 && boardType < 2)
 		{
 			logger.logExp("======================RANDOM REGULAR CHECK===================", LOGGER_TYPE::BOT_LOGIC);
 			EVRAISE = -1000;
 		}
 
 		//IP VISZONYLAG SZARAZ BOARDON EROS HAND
-		if (ranges.size() == 1 && EVRAISE > 0 && boardType < 3 && maxRaiseType == 0 && heroInPosition(game) && game.getBiggestBet() * game.getBblind() <= potcommon 
+		if (ranges.size() == 1 && EVRAISE > 0 && boardType < 2 && maxRaiseType == 0 && heroInPosition(game) && game.getBiggestBet() * game.getBblind() <= potcommon 
 			&& game.getBiggestBet() * game.getBblind() > potcommon * 0.5)
 		{
 			CurrentPlayerInfo& player = game.getPlayerbyId(ranges[0].getId());
@@ -1579,7 +1592,7 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 		}
 
 		//PLAY VS AGGRO CHBH
-		if (ranges.size() == 1 && heroInPosition(game) && game.getBiggestBet() * game.getBblind() < potcommon * 0.2 && maxRaiseType < 2 && boardType < 3 && isRegular(game))
+		if (ranges.size() == 1 && heroInPosition(game) && game.getBiggestBet() * game.getBblind() < potcommon * 0.2 && maxRaiseType < 2 && boardType < 2 && isRegular(game))
 		{
 			int random;	
 			random = rand() % 2;
