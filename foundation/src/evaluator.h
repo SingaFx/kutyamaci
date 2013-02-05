@@ -1959,21 +1959,21 @@ public:
 				cout << "Error in cardStrength(river, full house) : script is supposed to terminate earlier" << endl;
 			}
 
-			Card highStandAloneCard = board[0];
-			Card lowStandAloneCard = board[1];
+			Card highStandAloneCard = board[1];
+			Card lowStandAloneCard = board[0];
 			Card trips = board[2];
 			if (board[0].getRank() == board[1].getRank())
 			{
-				highStandAloneCard = board[3];
-				lowStandAloneCard = board[4];
+				highStandAloneCard = board[4];
+				lowStandAloneCard = board[3];
 			}
 			if ((board[1].getRank() == board[2].getRank()) && (board[2].getRank() == board[3].getRank()))
 			{
-				highStandAloneCard = board[0];
-				lowStandAloneCard = board[4];
+				highStandAloneCard = board[4];
+				lowStandAloneCard = board[0];
 			}
 
-			if (highStandAloneCard.getRank() > lowStandAloneCard.getRank())
+			if (highStandAloneCard.getRank() < lowStandAloneCard.getRank())
 			{
 				Card temp = highStandAloneCard;
 				highStandAloneCard = lowStandAloneCard;
