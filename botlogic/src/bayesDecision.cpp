@@ -639,6 +639,7 @@ double manipulateFE(double FE, double betsize, CurrentGameInfo& game, CurrentPla
 
 		FE = modifyValue(FE, -0.15);
 		if (game.getOpponentsInfo().size() > 1 && str > 1) FE = modifyValue(FE, 0.10);
+		if (game.getBiggestBet() > 1) FE = modifyValue(FE, -0.1);
 		logger.logExp("\t\t\tModifying FE: DEFAULT -15%", BOT_LOGIC);
 
 		
@@ -1579,7 +1580,7 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 
 		//IP VISZONYLAG SZARAZ BOARDON EROS HAND
 		if (ranges.size() == 1 && EVRAISE > 0 && boardType < 2 && maxRaiseType == 0 && heroInPosition(game) && game.getBiggestBet() * game.getBblind() <= potcommon 
-			&& game.getBiggestBet() * game.getBblind() > potcommon * 0.5)
+			&& game.getBiggestBet() * game.getBblind() > potcommon * 0.5 && abs(game.getPotcommon() - game.getFlopPotSize()) > 0.01)
 		{
 			CurrentPlayerInfo& player = game.getPlayerbyId(ranges[0].getId());
 			double AF = player.getAF();
@@ -1592,7 +1593,7 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 		}
 
 		//PLAY VS AGGRO CHBH
-		if (ranges.size() == 1 && heroInPosition(game) && game.getBiggestBet() * game.getBblind() < potcommon * 0.2 && maxRaiseType < 2 && boardType < 2 && isRegular(game))
+		if (ranges.size() == 1 && heroInPosition(game) && game.getBiggestBet() * game.getBblind() < potcommon * 0.2 && maxRaiseType < 2 && boardType < 2 && isRegular(game) && abs(game.getPotcommon() - game.getFlopPotSize()) > 0.01)
 		{
 			int random;	
 			random = rand() % 2;

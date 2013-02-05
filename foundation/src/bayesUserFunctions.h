@@ -1442,19 +1442,19 @@ public:
 		}
 		else if (AF <= 2)
 		{
-			weight = 0.92;
+			weight = 0.85;
 		}
 		else if (AF <= 3)
 		{
-			weight = 0.90;
+			weight = 0.80;
 		}
 		else if (AF <= 5)
 		{
-			weight = 0.85;
+			weight = 0.75;
 		}
 		else
 		{
-			weight = 0.85;
+			weight = 0.75;
 		}
 
 		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, weight);
