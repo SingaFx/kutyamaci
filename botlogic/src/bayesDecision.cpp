@@ -510,7 +510,7 @@ double manipulateEQCall(double EQ, CurrentGameInfo& game)
 
 	if (game.getStreet() == 0)
 	{
-		EQ = modifyValue(EQ, -0.05);
+		EQ = modifyValue(EQ, -0.09);
 		logger.logExp("\t\t\tModifying Call: DEFAULT EQ -5%", BOT_LOGIC);
 
 		if (game.getAmountToCall() + game.getHero().getBetsize() > 6)
@@ -532,7 +532,7 @@ double manipulateEQCall(double EQ, CurrentGameInfo& game)
 	else if (game.getStreet() == 1)
 	{		
 		//DEFAULT VACUUM
-		EQ = modifyValue(EQ, -0.07);
+		EQ = modifyValue(EQ, -0.1);
 		if (!heroInPosition(game))
 		{
 			EQ = modifyValue(EQ, -0.05);
@@ -565,7 +565,7 @@ double manipulateEQCall(double EQ, CurrentGameInfo& game)
 	else if (game.getStreet() == 2)
 	{
 		//DEFAULT VACUUM
-		EQ = modifyValue(EQ, -0.05);
+		EQ = modifyValue(EQ, -0.07);
 		logger.logExp("\t\t\tModifying Call: DEFAULT EQ -5%", BOT_LOGIC);
 		int str = Evaluator::cardStrength(game.getHand().getCard1(), game.getHand().getCard2(), game.getBoard());
 
