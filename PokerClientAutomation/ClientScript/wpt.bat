@@ -1,0 +1,1 @@
+C:\Programs\WPT\WPT.exe -P=WPTPoker

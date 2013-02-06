@@ -123,7 +123,7 @@ AutoItSetOption("WinTitleMatchMode", 2)
 AutoItSetOption("MustDeclareVars", 1)
 
 
-_DebugSetup("Log window", True) ; start displaying debug environment
+;~ _DebugSetup("Log window", True) ; start displaying debug environment
 Sleep(500)
 WinMove("Log window", "", 0, 600)
 dbgOut("Server-side Hopper for OH v1.03, Copyright (C) 2010 nik0")
@@ -411,9 +411,9 @@ EndFunc   ;==>getHwndFromPID
 
 
 Func dbgOut($str)
-	$curHwnd = WinGetHandle("")
-	_DebugOut($str)
-	WinActivate($curHwnd)
+;~ 	$curHwnd = WinGetHandle("")
+;~ 	_DebugOut($str)
+;~ 	WinActivate($curHwnd)
 ;~ 	Sleep(50)
 EndFunc   ;==>dbgOut
 

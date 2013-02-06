@@ -3,8 +3,8 @@
 #include <Constants.au3>
 #include <Debug.au3>
 #include <File.au3>
-#include<Date.au3>
- _DebugSetup("Log window client 2", True)
+#include <Date.au3>
+; _DebugSetup("Log window client 2", True)
 
 Global $datafile
 if $CmdLine[0] < 1 Then 
@@ -21,43 +21,16 @@ Global $updaterfolder = IniRead($datafile, "startup", "updaterfolder", "-1")
 Global $password = IniRead($datafile, "startup", "password", "-1")
 
 
-
 _FileCreate("bla.bat")
-FileWriteLine("bla.bat","xcopy " & $startfolder & "* " & $endfolder & " /e /-y")
+FileWriteLine("bla.bat","xcopy " & $startfolder & "* " & $endfolder & " /e")
 FileWriteLine("bla.bat","rd " & $startfolder & " /s /q")
 FileWriteLine("bla.bat","md " & $startfolder)
 
-Run("run.bat")
+Run("bla.bat")
 
-Sleep(2000)
+Sleep(1000)
 
-; Send password
-
-Send($password & "ENTER")
-
-dbgOut(_NowDate())
-Global $date = _NowDate()
-;$date = StringReplace($date, '.', '')
-$date = StringSplit($date, '/')
-Global $datestr
-
-Local $i = $date[0]
-While $i > 0 
-   if StringLen($date[$i]) < 2 Then
-	  $datestr = $datestr & '0' & $date[$i]
-   Else
-	  $datestr = $datestr & $date[$i]
-   EndIf
-  $i = $i - 1 
-WEnd
-
-;dbgOut($datestr)
-
-;Run("updater --live "& $updaterfolder & $datestr)
-
-; MsgBox(_NowDate())
-
-;Exit
+Send('a')
 
 Global $g_IP = IniRead($datafile, "connections", "serverip", "-1")
 Global $g_PORT = IniRead($datafile, "connections", "serverport", "-1")
@@ -72,7 +45,6 @@ If $socket = -1 Then
    Exit
 EndIf
 ; dbgOut("Connected to the server")
-
 
 Global $run_path = IniRead($datafile, "startup", "runpath", "-1")
 Global $run = IniRead($datafile, "startup", "run", "-1")
@@ -117,8 +89,11 @@ Global $thisrow = 0;
 
 ;~    2 is for substring-search in window title
 
-AutoItSetOption("WinTitleMatchMode", 2)
-$array = WinList($name)
+Do
+   AutoItSetOption("WinTitleMatchMode", 2)
+   $array = WinList($name)
+   Sleep(100)
+Until $array[0][0] == 4
 
 ; ~    $array[0][0] = number of windows found
 ; ~    $array[$i][1] = table handle (unique!) for the $ith window
@@ -150,13 +125,43 @@ for $i = 1 to $array[0][0]
     
     ;~ SEND DATA TO DA SERVER
     Bring(StringTrimLeft($array[$i][1],2), $tableX, $tableY, $i - 1)
-Next
+ Next
+ 
+ ;	NOW WE CAN RUN THE UPDATER
+   dbgOut(_NowDate())
+   Global $date = _NowDate()
+   ;$date = StringReplace($date, '.', '')
+   $date = StringSplit($date, '/')
+   Global $datestr
 
+   Local $i = 3
+   if StringLen($date[$i]) < 2 Then
+	  $datestr = $datestr & '0' & $date[$i]
+   Else
+	  $datestr = $datestr & $date[$i]
+   EndIf
+   $i = 1
+   if StringLen($date[$i]) < 2 Then
+	  $datestr = $datestr & '0' & $date[$i]
+   Else
+	  $datestr = $datestr & $date[$i]
+   EndIf
+   $i = 2
+   if StringLen($date[$i]) < 2 Then
+	  $datestr = $datestr & '0' & $date[$i]
+   Else
+	  $datestr = $datestr & $date[$i]
+   EndIf
+		  
+   Run("updater --live "& $updaterfolder & $datestr & " --ip " & $g_IP)
+   dbgOut("updater --live "& $updaterfolder & $datestr & " --ip " & $g_IP)
+   AutoItSetOption("WinTitleMatchMode", 2)
+   WinSetState("updater", "", @SW_MINIMIZE)
 
 Func dbgOut($str)
-    $curHwnd = WinGetHandle("")
-    _DebugOut($str)
-    WinActivate($curHwnd)
+;~     $curHwnd = WinGetHandle("")
+;~     _DebugOut($str)
+;~     WinActivate($curHwnd)
  EndFunc
  
 Func openOneTableWithoutScrape()

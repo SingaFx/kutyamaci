@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
 	desc.add_options()
 		("live", po::value<string>(), "live import from specified path")
 		("import", po::value<string>(), "folder import from specified path")
+		("ip", po::value<string>(), "ip of the database server")
 	;
 
 	po::variables_map vm;
@@ -26,7 +27,7 @@ int main(int argc, char *argv[])
 	po::notify(vm);
 
 	////TODO:command line arguments for this!
-	database = new Database("192.168.1.100", "root", "root", "kutya");
+	database = new Database((char*)vm["ip"].as<string>().c_str(), "root", "root", "kutya");
 	printf("%s\n", database->query("show tables").c_str());
 
 	if (vm.count("live"))
