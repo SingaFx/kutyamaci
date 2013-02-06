@@ -1,0 +1,1 @@
+C:\Programs\PartyGaming\PartyGaming.exe -P=PartyPoker
