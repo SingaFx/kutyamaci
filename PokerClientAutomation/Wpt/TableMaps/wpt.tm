@@ -2,7 +2,7 @@
 
 // OpenScrape 2.0.0
 
-// 2013-01-28 23:03:00
+// 2013-02-06 12:37:42
 // 32 bits per pixel
 
 //
@@ -17,7 +17,7 @@ z$clientsize       480  323
 
 s$activemethod              2
 s$buttonclickmethod         Single
-s$handresetmethod           2
+s$handresetmethod           7
 s$nchairs                   6
 s$network                   wpt
 s$potmethod                 2
@@ -33,11 +33,11 @@ s$ttlimits                  ^*$^s/^b
 // regions
 //
 
-r$c0cardface0        147  97 157 120        0    0 H0
-r$c0cardface1        185  97 195 120        0    0 H0
-r$c0cardface2        224  97 234 120        0    0 H0
-r$c0cardface3        263  97 273 120        0    0 H0
-r$c0cardface4        301  97 311 120        0    0 H0
+r$c0cardface0        147  97 157 120        0    0 H1
+r$c0cardface1        185  97 195 120        0    0 H1
+r$c0cardface2        224  97 234 120        0    0 H1
+r$c0cardface3        263  97 273 120        0    0 H1
+r$c0cardface4        301  97 311 120        0    0 H1
 r$c0handnumber       411   2 478   9   ffffff    0 T0
 r$c0pot0             220  59 263  66   b4d5bd    0 T1
 r$i0button           314 279 322 297        0    0 N
@@ -59,10 +59,8 @@ r$i4state            334 290 338 294   62491c    0 H3
 r$i5button           268 277 288 289        0    0 N
 r$i5label            262 284 271 288        0    0 H2
 r$i5state            256 280 256 280    812a2    0 C
-r$i860button         171 177 198 185        0    0 N
-r$i860state          164 116 200 125   f4f8f7    0 C
-r$i86button          309 285 318 300        0    0 N
-r$i86state           255 286 265 297   4acde7    0 C
+r$i861button         172 174 200 186        0    0 N
+r$i861state          162 176 182 184   ca9544    1 C
 r$p0active           268 228 268 228   101212    5 C
 r$p0balance          265 224 314 231   ffffff    0 T2
 r$p0bet              261 175 320 181   ffffff    0 T3
@@ -170,6 +168,7 @@ t0$J 6 1 1 7e
 t0$4 6 1a 3f 2
 t0$X 63 14 8 14 63
 t0$y 79 5 7e
+t0$5 7a 51 51 4e
 t0$U 7e 1 1 1 7e
 t0$l 7f
 t0$L 7f 1 1 1
