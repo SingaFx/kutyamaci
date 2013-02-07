@@ -511,7 +511,7 @@ double manipulateEQCall(double EQ, CurrentGameInfo& game)
 	if (game.getStreet() == 0)
 	{
 		EQ = modifyValue(EQ, -0.09);
-		logger.logExp("\t\t\tModifying Call: DEFAULT EQ -5%", BOT_LOGIC);
+		logger.logExp("\t\t\tModifying Call: DEFAULT EQ -9%", BOT_LOGIC);
 
 		if (game.getAmountToCall() + game.getHero().getBetsize() > 6)
 		{
@@ -625,6 +625,31 @@ double manipulateFE(double FE, double betsize, CurrentGameInfo& game, CurrentPla
 	{
 		//RANDOMIZE FE
 		FE = modifyValue(FE, -0.10);
+
+		if (game.getHero().getPoz() == -2)
+		{
+			FE = modifyValue(FE, -0.1);
+		}
+
+		if (game.getHero().getPoz() == -1)
+		{
+			FE = modifyValue(FE, -0.05);
+		}
+
+		if (game.getHero().getPoz() == 0)
+		{
+			FE = modifyValue(FE, -0.02);
+		}
+
+		if (game.getHero().getPoz() == 1)
+		{
+			FE = modifyValue(FE, -0.05);
+		}
+
+		if (game.getHero().getPoz() == 2)
+		{
+			FE = modifyValue(FE, -0.02);
+		}
 
 		//OOP FE-- (NO 3BET BLUFF OOP)
 		if (!heroInPosition(game)) 
@@ -1149,6 +1174,14 @@ bool BayesDecision::canCallAfterRaise(CurrentGameInfo& gameInfo, PlayerRange& ra
 	if (allinRange.range.size() == 0)
 	{
 		logger.logExp("\tERROR IN OPPONENT ALLIN RANGE : RETURNING TRUE", BOT_LOGIC);
+
+		int str = Evaluator::cardStrength(gameInfo.getHand().getCard1(), gameInfo.getHand().getCard2(), gameInfo.getBoard());
+		int maxStackSize = maxOpponentOriginalStack(gameInfo);
+
+		if (maxStackSize > 120 && (str == 1 || str == 2))
+		{
+			return false;
+		}
 		return true;
 	}
 

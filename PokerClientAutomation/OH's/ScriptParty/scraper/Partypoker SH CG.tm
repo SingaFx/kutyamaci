@@ -2,7 +2,7 @@
 
 // OpenScrape 2.0.0
 
-// 2013-01-31 22:16:53
+// 2013-02-06 12:36:51
 // 32 bits per pixel
 
 //
@@ -60,8 +60,6 @@ r$i5label            261 284 270 288        0    0 H2
 r$i5state            254 285 258 289        0    0 H3
 r$i860button         171 177 198 185        0    0 N
 r$i860state          164 116 200 125   f4f8f7    0 C
-r$i86button          309 285 318 300        0    0 N
-r$i86state           255 286 265 297   4acde7    0 C
 r$p0active           268 228 268 228   101212    5 C
 r$p0balance          265 224 314 231   ffffff    0 T2
 r$p0bet              261 175 320 181   ffffff    0 T3
