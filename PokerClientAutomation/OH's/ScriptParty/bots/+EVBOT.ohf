@@ -59,7 +59,7 @@ f$PositionSB ? dll$BBVPIP < 18 ? 0 : !islist05
 br == 0 ? 
 	f$PreflopRaise ? randomround * 100 : 0 :
 br == 1 ? randomround * 200 :
-	randomround * 400
+	randomround * 300
 
 ##f$chat##
 
