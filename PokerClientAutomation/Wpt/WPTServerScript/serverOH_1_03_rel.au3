@@ -270,7 +270,8 @@ While $end = 0
 					   Next
 					   Send("{ENTER}")
 					   
-					   MouseClick("left", $myTables[$params[2]][$TAB_X]+300, $myTables[$params[2]][$TAB_Y]+320, 1, 1)
+					   ;FOLD->
+					   ;MouseClick("left", $myTables[$params[2]][$TAB_X]+300, $myTables[$params[2]][$TAB_Y]+320, 1, 1)
 				   EndIf
 			    WEnd
 				If $params[1] == "BRING_N_ATTACH" Then

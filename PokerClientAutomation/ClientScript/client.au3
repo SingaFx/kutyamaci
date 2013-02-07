@@ -21,6 +21,7 @@ Global $updaterfolder = IniRead($datafile, "startup", "updaterfolder", "-1")
 Global $password = IniRead($datafile, "startup", "password", "-1")
 
 
+;NOT WORKING?
 _FileCreate("bla.bat")
 FileWriteLine("bla.bat","xcopy " & $startfolder & "* " & $endfolder & " /e")
 FileWriteLine("bla.bat","rd " & $startfolder & " /s /q")
@@ -156,7 +157,7 @@ for $i = 1 to $array[0][0]
    Run("updater --live "& $updaterfolder & $datestr & " --ip " & $g_IP)
    dbgOut("updater --live "& $updaterfolder & $datestr & " --ip " & $g_IP)
    AutoItSetOption("WinTitleMatchMode", 2)
-   WinSetState("updater", "", @SW_MINIMIZE)
+   WinSetState("updater", "", @SW_HIDE)
 
 Func dbgOut($str)
 ;~     $curHwnd = WinGetHandle("")
