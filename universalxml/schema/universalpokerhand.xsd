@@ -1,14 +1,21 @@
 <?xml version="1.0"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <xs:complexType name="preflopaction_type">
+  <xs:complexType name="action_type">
     <xs:sequence>
       <xs:element name="playername" type="xs:string"/>
-      <xs:element name="action" type="xs:string"/>
+      <xs:element name="move" type="xs:string"/>
       <xs:element name="size" type="xs:double"/>
       <xs:element name="raisesto" type="xs:double"/>
     </xs:sequence>
   </xs:complexType>
+
+  <xs:complexType name="action_container_type">
+    <xs:sequence>
+      <xs:element name ="action" type = "action_type" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+      
   
   <xs:complexType name="seat_type">
     <xs:sequence>
@@ -30,7 +37,18 @@
       <xs:element name="bigblind" type="xs:string"/>
       <xs:element name="holecard1" type="xs:string"/>
       <xs:element name="holecard2" type="xs:string"/>
-      <xs:element name="preflopaction" type="preflopaction_type" maxOccurs="unbounded"/>
+      <xs:element name="preflopaction" type="action_container_type"/>
+      <xs:element name="sawFlop" type="xs:boolean"/>
+      <xs:element name="flopCard1" type="xs:string" minOccurs="0"/>
+      <xs:element name="flopCard2" type="xs:string" minOccurs="0"/>
+      <xs:element name="flopCard3" type="xs:string" minOccurs="0"/>
+      <xs:element name="flopaction" type="action_container_type" minOccurs="0"/>
+      <xs:element name="sawTurn" type="xs:boolean"/>
+      <xs:element name="turnCard" type="xs:string" minOccurs="0"/>
+      <xs:element name="turnaction" type="action_container_type" minOccurs="0"/>
+      <xs:element name="sawRiver" type="xs:boolean"/>
+      <xs:element name="riverCard" type="xs:string" minOccurs="0"/>
+      <xs:element name="riveraction" type="action_container_type" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 

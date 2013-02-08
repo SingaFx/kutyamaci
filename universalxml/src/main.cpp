@@ -6,6 +6,11 @@
 
 using namespace std;
 
+void writeAction(ofstream* outputStream, action_container_type::action_const_iterator* current)
+{
+    (*outputStream) << current->playername() ;
+}
+
 void main(int argc, char* argv[])
 {
     auto_ptr<handhistory_container_type> h(handhistory_container(argv[1]));
@@ -35,7 +40,11 @@ void main(int argc, char* argv[])
         (*generatedHandHistory) << "Dealing pocket cards" << endl;
         (*generatedHandHistory) << "Dealing to " << handhistory_iterator->user() << ": [" << handhistory_iterator->holecard1() << ", " << handhistory_iterator->holecard2() << "]" << endl;
 
-        for (handhistory_type::preflopaction_const_iterator preflop_iterator = handhistory_iterator->preflopaction().begin(); preflop_iterator != handhistory_iterator->preflopaction().end(); ++preflop_iterator)
+        for (action_container_type::action_const_iterator preflop_iterator = handhistory_iterator->preflopaction().action().begin(); preflop_iterator != handhistory_iterator->preflopaction().action().end(); ++preflop_iterator)
+        {
+            preflop_iterator->playername();
+        }
+        /*for (handhistory_type::preflopaction_const_iterator preflop_iterator = handhistory_iterator->preflopaction().begin(); preflop_iterator != handhistory_iterator->preflopaction().end(); ++preflop_iterator)
         {
             (*generatedHandHistory) << preflop_iterator->playername() ;
             string action = preflop_iterator->action();
@@ -55,7 +64,85 @@ void main(int argc, char* argv[])
             {
                 (*generatedHandHistory) << " raises $" << preflop_iterator->size() << " to $" << preflop_iterator->raisesto() << endl;
             }
+        }*/
+
+        if (handhistory_iterator->sawFlop())
+        {
+            (*generatedHandHistory) << "--- Dealing flop [" << handhistory_iterator->flopCard1() << ", " << handhistory_iterator->flopCard2() << ", " << handhistory_iterator->flopCard3() << "]" << endl;
+
+            /*for (handhistory_type::flopaction_const_iterator flop_iterator = handhistory_iterator->flopaction().begin(); flop_iterator != handhistory_iterator->flopaction().end(); ++flop_iterator)
+            {
+                (*generatedHandHistory) << flop_iterator->playername() ;
+                string action = flop_iterator->action();
+                if (action == "f")
+                {
+                    (*generatedHandHistory) << " folds" << endl;
+                }
+                else if (action == "c")
+                {
+                    (*generatedHandHistory) << " calls $" << flop_iterator->size() << endl;
+                }
+                else if (action == "x")
+                {
+                    (*generatedHandHistory) << " checks" << endl;
+                }
+                else if (action == "r")
+                {
+                    (*generatedHandHistory) << " raises $" << flop_iterator->size() << " to $" << flop_iterator->raisesto() << endl;
+                }
+            }*/
         }
+        if (handhistory_iterator->sawTurn())
+        {
+            (*generatedHandHistory) << "--- Dealing turn [" << handhistory_iterator->turnCard() << "]" << endl;
+            /*for (handhistory_type::turnaction_const_iterator turn_iterator = handhistory_iterator->turnaction().begin(); turn_iterator != handhistory_iterator->turnaction().end(); ++turn_iterator)
+            {
+                (*generatedHandHistory) << turn_iterator->playername() ;
+                string action = turn_iterator->action();
+                if (action == "f")
+                {
+                    (*generatedHandHistory) << " folds" << endl;
+                }
+                else if (action == "c")
+                {
+                    (*generatedHandHistory) << " calls $" << turn_iterator->size() << endl;
+                }
+                else if (action == "x")
+                {
+                    (*generatedHandHistory) << " checks" << endl;
+                }
+                else if (action == "r")
+                {
+                    (*generatedHandHistory) << " raises $" << turn_iterator->size() << " to $" << turn_iterator->raisesto() << endl;
+                }
+            }*/
+        }
+        if (handhistory_iterator->sawRiver())
+        {
+            (*generatedHandHistory) << "--- Dealing river [" << handhistory_iterator->riverCard() << "]" << endl;
+            /*for (handhistory_type::riveraction_const_iterator river_iterator = handhistory_iterator->turnaction().begin(); river_iterator != handhistory_iterator->riveraction().end(); ++river_iterator)
+            {
+                (*generatedHandHistory) << river_iterator->playername() ;
+                string action = river_iterator->action();
+                if (action == "f")
+                {
+                    (*generatedHandHistory) << " folds" << endl;
+                }
+                else if (action == "c")
+                {
+                    (*generatedHandHistory) << " calls $" << river_iterator->size() << endl;
+                }
+                else if (action == "x")
+                {
+                    (*generatedHandHistory) << " checks" << endl;
+                }
+                else if (action == "r")
+                {
+                    (*generatedHandHistory) << " raises $" << river_iterator->size() << " to $" << river_iterator->raisesto() << endl;
+                }
+            }*/
+        }
+
 
         (*generatedHandHistory) << "***** End of hand " <<  handhistory_iterator->id() << "*****" << endl;
     }
