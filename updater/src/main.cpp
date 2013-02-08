@@ -2,6 +2,10 @@
 #include <string>
 #include <boost/program_options.hpp>
 
+#define _WIN32_WINNT 0x0500
+#include <windows.h>
+#include <iostream>
+
 #include "database.h"
 #include "updater.h"
 #include "import_updater.h"
@@ -15,6 +19,9 @@ Updater* updater=NULL;
 
 int main(int argc, char *argv[])
 {
+	HWND hWnd = GetConsoleWindow();
+	ShowWindow( hWnd, SW_HIDE );
+
 	po::options_description desc("Allowed options");
 	desc.add_options()
 		("live", po::value<string>(), "live import from specified path")
@@ -28,12 +35,12 @@ int main(int argc, char *argv[])
 
 	////TODO:command line arguments for this!
 	database = new Database((char*)vm["ip"].as<string>().c_str(), "root", "root", "kutya");
-	printf("%s\n", database->query("show tables").c_str());
+	//printf("%s\n", database->query("show tables").c_str());
 
 	if (vm.count("live"))
 	{
-		printf("Live mode!\n");
-		printf("The specified directory: %s\n", vm["live"].as<string>().c_str());
+		//printf("Live mode!\n");
+		//printf("The specified directory: %s\n", vm["live"].as<string>().c_str());
 		updater = new LiveUpdater(vm["live"].as<string>(), database);
 	}
 	else if (vm.count("import"))

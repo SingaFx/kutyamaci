@@ -2,7 +2,7 @@
 #include <Constants.au3>
 #include <Debug.au3>
 
-;~  _DebugSetup("Log window", True) ; start displaying debug environment
+ _DebugSetup("Log window", True) ; start displaying debug environment
 
  Global $max_connections = 10
  Global $cmd_max_length = 256
@@ -14,6 +14,8 @@
  Global $partyscript = IniRead("slave.ini", "other", "partyscript", "-1")
  Global $wptcript = IniRead("slave.ini", "other", "wptscript", "-1")
  Global $client = IniRead("slave.ini", "other", "client", "-1")
+
+;Run("C:\kutya\kutya.exe -s 3000 tancoskurva 100", "C:\kutya\")
 
  TCPStartup()
 
@@ -58,21 +60,43 @@
 		 If ($recv == "CLOSE_WPT") Then
 			closeSession("WPT")
 		 EndIf
+		 If ($recv == "CHECK_BWIN") Then
+			check("bwin")
+		 EndIf
     EndIf
  WEnd
  
-Func closeSession($lobby)
+Func check($lobby)
    Local $name = "Hold'em"
+   Local $tablemap = $lobby & 'client.tm'
    AutoItSetOption("WinTitleMatchMode", 2)
-   $array = WinList($name)
-   Local $k
+   Local $array = WinList($name)
    for $k = 1 to $array[0][0]
-	  Local $table = WinGetPos($array[$k][1])
-	  MouseClick("left", $table[0] + 13, $table[1] + 330, 1, 1)
-	  Sleep(500)
+	  Local $text = _DllScrape_scrapeRegion($tablemap, $array[$k][1], "imback", "OpenScrapeDLL.dll",20)
+	  if $text = 'imback' Then
+		 _DllScrape_clickRegion("bwinclient.tm", $array[$k][1], "imback", "OpenScrapeDLL.dll",1)
+	  EndIf
+	  Sleep(100)
    Next
+EndFunc   
+ 
+Func closeSession($lobby)
+   dbgOut("Closing the session")
+   Local $name = "Hold'em"
+   Local $tablemap = $lobby & 'client.tm'
+   AutoItSetOption("WinTitleMatchMode", 2)
+   Local $array = WinList($name)
+   Local $k
+   Local $text
    
-   Sleep(80000)
+   for $k = 1 to $array[0][0]
+	  $text = ''
+	  While $text <> 'imback'
+		 MouseMove(1, 1, 1)
+		 $text = _DllScrape_scrapeRegion($tablemap, $array[$k][1], "imback", "OpenScrapeDLL.dll",20)
+		 Sleep(5000)
+	  WEnd
+   Next
 
    for $k = 1 to $array[0][0]
 	  WinClose($array[$k][1])
@@ -80,25 +104,122 @@ Func closeSession($lobby)
 	  MouseClick("left", $table[0] + 200, $table[1] + 213, 1, 1)
    Next
    
-   Sleep(1000)
+   Sleep(5000)
    
+   WinActivate($lobby)
    AutoItSetOption("WinTitleMatchMode", 2)
    $array = WinList($lobby)
    WinClose($array[1][1])
    Local $lobbyWindow = WinGetPos($array[1][1])
    MouseClick("left", $lobbyWindow[0] + 465, $lobbyWindow[1] + 400, 1)
    
-   Local $updater_name  = "updater"
-   AutoItSetOption("WinTitleMatchMode", 2)
-   $array = WinList($updater_name)
-   WinClose($array[1][1])
-   
+   ProcessClose("updater.exe")
    ProcessClose("client.exe")
 EndFunc
 
 Func dbgOut($str)
-;~ 	$curHwnd = WinGetHandle("")
-;~ 	_DebugOut($str)
-;~ 	WinActivate($curHwnd)
-;~ 	Sleep(50)
+	$curHwnd = WinGetHandle("")
+	_DebugOut($str)
+	WinActivate($curHwnd)
+	Sleep(50)
 EndFunc   ;==>dbgOut
+
+;------- Functions -------
+
+Func _DllScrape_scrapeRegion($nameTableMap, $hWnd, $regionName, $dllName, $offset)
+
+	;Opening Dll
+	Local $dll = DllOpen($dllName)
+
+	;Loading Table Map
+	_DllScrape_LoadTablemap($nameTableMap, $dll)
+
+	;Let's read another region! (Color region)
+	Local $text = _DllScrape_ReadRegionWithOffset($hWnd, $regionName, $offset,$dll)
+
+	;Don't forge to close Dll
+	DllClose($dll)
+
+	Return $text
+
+EndFunc
+
+Func _DllScrape_clickRegion($nameTableMap, $hWnd, $regionName, $dllName, $numberClicks)
+
+	;Opening Dll
+	Local $dll = DllOpen($dllName)
+
+	;Loading Table Map
+	_DllScrape_LoadTablemap($nameTableMap,$dll)
+
+	;Lets Get coord from the region
+	Local $coord = _DllScrape_GetCoordRegion($regionName,$dll)
+
+	Local $pos = WinGetPos ( $hWnd )
+
+	Local $extraX = 4      ;Classic XP
+	Local $extraY = 23     ;Classic XP
+
+;~ 	$x = Random(0, $coord[4] - $coord[2], 1) + Int($coord[2]) + $pos[0] + $extraX
+;~  $y = Random(0, $coord[5] - $coord[3], 1) + Int($coord[3]) + $pos[1] + $extraY
+	$x = Int((($coord[4] - $coord[2]) / 2) + $coord[2] + $pos[0] + $extraX )
+	$y = Int((($coord[5] - $coord[3]) / 2) + $coord[3] + $pos[1] + $extraY ) + 5
+
+	MouseClick ( "left" , $x  , $y, $numberClicks, 1)
+
+	;Don't forge to close Dll
+	DllClose($dll)
+
+EndFunc
+
+;Function to load Table Map in Dll
+Func _DllScrape_LoadTablemap($name, $dll)
+
+	Local $res = DllCall($dll, "int:cdecl", "OpenTablemap", "str", $name)
+
+	If (@error <> 0) Then
+		ConsoleWrite("ERROR in dllcall(OpenTablemap) " & @error & @CRLF)
+		Exit
+	EndIf
+
+	If ($res[0] = 0) Then
+		ConsoleWrite("ERROR in OpenTablemap with map " & $name & @CRLF)
+		Exit
+	EndIf
+EndFunc   ;==>LoadTablemap
+
+;Function to read a region using a window ($hWnd) and name of region
+Func _DllScrape_ReadRegion($hWnd, $name,$dll)
+	Return _DllScrape_ReadRegionWithOffset($hWnd, $name, 0,$dll)
+EndFunc   ;==>ReadRegion
+
+;Function to read a region using a window ($hWnd) and name of region
+Func _DllScrape_ReadRegionWithOffset($hWnd, $name, $offset, $dll)
+	Local $res = DllCall($dll, "int:cdecl", "ReadRegion", "hwnd", $hWnd, "str", $name, "str*", "", "int", $offset)
+
+	If (@error <> 0) Then
+		ConsoleWrite("ERROR in dllcall(ReadRegion) " & @error & @CRLF)
+		Exit
+	EndIf
+
+	Return $res[3]
+
+EndFunc   ;==>ReadRegionWithOffset
+
+;Function to get Coord from a region ($name)
+Func _DllScrape_GetCoordRegion($name,$dll)
+	Local $posl
+	Local $posr
+	Local $post
+	Local $posb
+
+	Local $res = DllCall($dll, "none:cdecl", "GetRegionPos", "str", $name, "int*", $posl, "int*", $post, "int*", $posr, "int*", $posb)
+
+	if (@error <> 0) Then
+		ConsoleWrite("ERROR in dllcall(ReadRegion) " & @error & @CRLF)
+		Exit
+	EndIf
+
+	Return $res
+
+EndFunc   ;==>GetCoordRegion
