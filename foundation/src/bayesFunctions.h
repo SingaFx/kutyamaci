@@ -4,6 +4,7 @@
 #include "rangeFunctions.h"
 #include "bayesUtils.h"
 
+
 class BayesPreflop
 {
 public:
@@ -41,7 +42,7 @@ public:
 class BayesFlop
 {
 public:
-	enum node
+	enum names
 	{
 		HAND_STRENGTH = 0,
 		FOLD_EQUITY = 1,
@@ -52,7 +53,7 @@ public:
 		PLAYER_VPIP = 6,
 		PLAYER_PFR = 7,
 		PLAYER_AF = 8,
-		BOARD_TYPE = 9,
+		BOARD_TYPE = 9
 	};
 
 	static const int HAND_STRENGTH_NUM = 9;
@@ -76,7 +77,7 @@ public:
 class BayesTurn
 {
 public:
-	enum node
+	enum names
 	{
 		HAND_STRENGTH = 0,
 		FOLD_EQUITY = 1,
@@ -112,7 +113,7 @@ public:
 class BayesRiver
 {
 public:
-	enum node
+	enum names
 	{
 		HAND_STRENGTH = 0,
 		FOLD_EQUITY = 1,

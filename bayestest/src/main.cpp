@@ -474,7 +474,7 @@ void testRiverRange6()
 	double potSize = 1.28;
 	double stackSize = 5.04;
 	double betSize = 4.44;
-	int line = 1;
+	int line = 0;
 	double VPIP = 18;
 	double PFR = 15;
 	double AF = 3.0;

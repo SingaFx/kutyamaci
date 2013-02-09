@@ -272,12 +272,17 @@ PlayerRange BayesDecision::getCallRaiseRange(double betsize, PlayerRange& range,
 
 	logger.logExp(s.str(), BOT_LOGIC);
 
+	
 	totalRange.setId(range.getId());
 	if (totalRange.range.size() == 0)
 	{
 		logger.logExp("Call raise range is 0", LOGGER_TYPE::BOT_LOGIC);
 		return totalRange;
 	}
+
+	double hs1 = totalRange.getHS(0, game.getBoard());
+	double hs2 = range.getHS(0, game.getBoard());
+	if (hs2 > hs1) return range;
 
 	if (game.getStreet() != 0)
 		totalRange = RangeUtils::mergeRange(range, totalRange, game.getBoard(), game.getHand());
@@ -354,12 +359,6 @@ double manipulateEQRaise(double EQ, double betsize, CurrentGameInfo& game)
 	}
 	else if (game.getStreet() == 1)
 	{
-		if (!heroInPosition(game) && currentbet < 2)
-		{
-			logger.logExp("\t\t\tModifying Raise: OOP EQ -5%", BOT_LOGIC);
-			EQ = modifyValue(EQ, -0.05);
-		}
-
 		if (currentbet >= 2 && maxStackSize > 100)
 		{
 			logger.logExp("\t\t\tModifying Raise: RAISE EQ -5%", BOT_LOGIC);
@@ -368,12 +367,6 @@ double manipulateEQRaise(double EQ, double betsize, CurrentGameInfo& game)
 	}
 	else if (game.getStreet() == 2)
 	{
-		if (!heroInPosition(game) && currentbet < 2)
-		{
-			logger.logExp("\t\t\tModifying Raise: OOP EQ -7%", BOT_LOGIC);
-			EQ = modifyValue(EQ, -0.05);
-		}
-
 		if (currentbet >= 2 && maxStackSize > 100)
 		{
 			logger.logExp("\t\t\tModifying Raise: RAISE EQ -5%", BOT_LOGIC);
@@ -532,7 +525,7 @@ double manipulateEQCall(double EQ, CurrentGameInfo& game)
 	else if (game.getStreet() == 1)
 	{		
 		//DEFAULT VACUUM
-		EQ = modifyValue(EQ, -0.1);
+		EQ = modifyValue(EQ, -0.07);
 		if (!heroInPosition(game))
 		{
 			EQ = modifyValue(EQ, -0.05);
@@ -565,7 +558,7 @@ double manipulateEQCall(double EQ, CurrentGameInfo& game)
 	else if (game.getStreet() == 2)
 	{
 		//DEFAULT VACUUM
-		EQ = modifyValue(EQ, -0.07);
+		EQ = modifyValue(EQ, -0.05);
 		logger.logExp("\t\t\tModifying Call: DEFAULT EQ -5%", BOT_LOGIC);
 		int str = Evaluator::cardStrength(game.getHand().getCard1(), game.getHand().getCard2(), game.getBoard());
 
@@ -720,7 +713,7 @@ double manipulateFE(double FE, double betsize, CurrentGameInfo& game, CurrentPla
 	}
 	else if (game.getStreet() == 3)
 	{
-		FE = modifyValue(FE, -0.20);
+		FE = modifyValue(FE, -1);
 		logger.logExp("\t\t\tModifying FE: DEFAULT -10%(15%)", BOT_LOGIC);
 		if (boardType == 2)
 		{
@@ -808,7 +801,6 @@ double manipulateFE(double FE, double betsize, CurrentGameInfo& game, CurrentPla
 	return FE;
 }
 //======================================================================================================
-
 double BayesDecision::calculateEQ(vector<PlayerRange>& ranges, vector<Card>& board, Hand& hand, CurrentGameInfo& game)
 {
 	Logger& logger = Logger::getLogger(BOT_LOGIC);
@@ -843,7 +835,9 @@ double BayesDecision::calculateEQ(vector<PlayerRange>& ranges, vector<Card>& boa
 	}
 
 	logger.logExp("Calculating EQ...", BOT_LOGIC);
-	double eq = calc.calculate(result, board, 10000);
+	double eq;
+	if (game.getStreet() == 3)	eq = calc.calculate(result, board, 5000);
+	else eq = calc.calculate(result, board, 10000);
 	logger.logExp("Calculated original EQ", eq, BOT_LOGIC);
 	logger.logExp("=============END EQ CALCULATION========================", RANGE_LOGGER);
 	//eq = modifyValue(eq, -0.05);
@@ -912,7 +906,7 @@ vector<double> BayesDecision::getFoldEquities(double betsize, CurrentGameInfo& g
 
 	return result;
 }
-double BayesDecision::calculateEVRaise(CurrentGameInfo& gameInfo, vector<PlayerRange>& callRaiseRanges, vector<double>& foldEquities, double betsize, int& moveType, bool allIn = false)
+double BayesDecision::calculateEVRaise(CurrentGameInfo& gameInfo, vector<PlayerRange>& callRaiseRanges, vector<double>& foldEquities, double betsize, int& moveType, double callEQ, bool allIn = false)
 { 
 	Logger& logger = Logger::getLogger(BOT_LOGIC);
 	logger.logExp("\t\t===================Calculating EV of raise with betsize========================", betsize, BOT_LOGIC);
@@ -970,12 +964,21 @@ double BayesDecision::calculateEVRaise(CurrentGameInfo& gameInfo, vector<PlayerR
 
 		double eq = 1;
 		if (nr > 0) eq = calculateEQ(actualRanges, gameInfo.getBoard(), gameInfo.getHand(), gameInfo);
+
+		if (n == 1 && nr > 0 && callEQ < eq) 
+		{
+			eq = callEQ;
+		}
+
 		logger.logExp("\t\tCalculated EQ : ", eq, BOT_LOGIC);
 		//MANIPULATE EQ RAISE
 		if (nr > 0 && !allIn) eq = manipulateEQRaise(eq, betsize, gameInfo);
 		if (nr > 0 && allIn) eq = manipulateEQRaiseAllIn(eq, betsize, gameInfo);
 
-		if (n == 1 && nr > 0) EQ = eq;
+		if (n == 1 && nr > 0) 
+		{
+			EQ = eq;
+		}
 
 		logger.logExp("\t\tFinal EQ : ", eq, BOT_LOGIC);
 		double thisEV = eq * (pot + totalCalls + heroCurrentBet) - (1 - eq) * (betsize - heroCurrentBet);
@@ -1013,7 +1016,7 @@ double BayesDecision::calculateEVRaise(CurrentGameInfo& gameInfo, vector<PlayerR
 
 	return ev;
 }
-double BayesDecision::calculateEVCall(CurrentGameInfo& game, vector<PlayerRange>& ranges)
+double BayesDecision::calculateEVCall(CurrentGameInfo& game, vector<PlayerRange>& ranges, double& callEQ)
 {
 	Logger& logger = Logger::getLogger(LOGGER_TYPE::BOT_LOGIC);
 
@@ -1025,7 +1028,7 @@ double BayesDecision::calculateEVCall(CurrentGameInfo& game, vector<PlayerRange>
 		double totalpot = game.getTotalPot() * game.getBblind();
 		double call = game.getAmountToCall() * game.getBblind();
 		double eq = calculateEQ(ranges, game.getBoard(), game.getHand(), game);
-		
+		callEQ = eq;
 		//MANIPULATE EQ CALL/CHECK
 		eq = manipulateEQCall(eq, game);
 
@@ -1047,7 +1050,7 @@ double BayesDecision::calculateEVCall(CurrentGameInfo& game, vector<PlayerRange>
 		double call = game.getAmountToCall() * game.getBblind();
 		double potcommon = game.getPotcommon() * game.getBblind();
 		double eq = calculateEQ(ranges, game.getBoard(), game.getHand(), game);
-
+		callEQ = eq;
 		//MANIPULATE EQ CALL/CHECK
 		eq = manipulateEQCall(eq, game);
 
@@ -1069,7 +1072,7 @@ double BayesDecision::calculateEVCall(CurrentGameInfo& game, vector<PlayerRange>
 		double call = game.getAmountToCall() * game.getBblind();
 		double potcommon = game.getPotcommon() * game.getBblind();
 		double eq = calculateEQ(ranges, game.getBoard(), game.getHand(), game);
-
+		callEQ = eq;
 		//MANIPULATE EQ CALL/CHECK
 		eq = manipulateEQCall(eq, game);
 
@@ -1090,7 +1093,7 @@ double BayesDecision::calculateEVCall(CurrentGameInfo& game, vector<PlayerRange>
 		double call = game.getAmountToCall() * game.getBblind();
 		double commonpot = game.getPotcommon() * game.getBblind();
 		double eq = calculateEQ(ranges, game.getBoard(), game.getHand(), game);
-
+		callEQ = eq;
 		//MANIPULATE EQ CALL/CHECK
 		eq = manipulateEQCall(eq, game);
 
@@ -1286,7 +1289,7 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 			foldEquities[i] *= 0.2;
 
 		int moveType;
-		double EVAI = calculateEVRaise(game, aktRanges, foldEquities, betsize, moveType, true);
+		double EVAI = calculateEVRaise(game, aktRanges, foldEquities, betsize, moveType, 100, true);
 		
 		logger.logExp("EV of allin : ", EVAI, BOT_LOGIC);
 
@@ -1306,6 +1309,9 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 	if (game.getStreet() == 0)
 	{
 		logger.logExp("==============PREFLOP CALCULATION STARTED==================", LOGGER_TYPE::BOT_LOGIC);
+		
+		double callEQ = 0;
+		EVCALL = calculateEVCall(game, ranges, callEQ);
 
 		for (int i = ranges.size() > 2 ? betSizes.size() - 1 : 0; i < betSizes.size(); ++i)
 		{
@@ -1346,7 +1352,7 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 			vector<double> foldEquities = getFoldEquities(betsize, game, ranges, preflop, flop, turn, river);
 
 			int moveType;
-			double evraise = calculateEVRaise(game, aktRanges, foldEquities, betsize, moveType, allIn);
+			double evraise = calculateEVRaise(game, aktRanges, foldEquities, betsize, moveType, callEQ, allIn);
 
 			if (evraise > EVRAISE)
 			{
@@ -1355,8 +1361,6 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 				maxRaiseType = moveType;
 			}
 		}
-
-		EVCALL = calculateEVCall(game, ranges);
 
 		if (EVRAISE < 0 && game.getHand().isPocket())
 		{	
@@ -1394,6 +1398,9 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 	if (game.getStreet() == 1)
 	{
 		logger.logExp("===================FLOP CALCULATION STARTED============================", LOGGER_TYPE::BOT_LOGIC);
+
+		double callEQ = 0;
+		EVCALL = calculateEVCall(game, ranges, callEQ);
 
 		int str = Evaluator::cardStrength(game.getHand().getCard1(), game.getHand().getCard2(), game.getBoard());
 
@@ -1443,7 +1450,7 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 				vector<double> foldEquities = getFoldEquities(betsize, game, ranges, preflop, flop, turn, river);
 			
 				int moveType;
-				double evraise = calculateEVRaise(game, aktRanges, foldEquities, betsize, moveType, allIn);
+				double evraise = calculateEVRaise(game, aktRanges, foldEquities, betsize, moveType, callEQ, allIn);
 
 				if (ranges.size() == 1 && betsize > potcommon && str <= 2 && str != 0 && !canCallAfterRaise(game, ranges[0], betsize, preflop, flop, turn, river))
 					evraise = -10000;
@@ -1463,7 +1470,6 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 		}
 
 		//IMPLEMENT: CHECK OOP VS REGULAR
-		EVCALL = calculateEVCall(game, ranges);
 		double potcommon = game.getPotcommon() * game.getBblind();
 
 		//IP VISZONYLAG SZARAZ BOARDON EROS HAND
@@ -1500,7 +1506,7 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 		{
 			int random;
 			random = random % 3;
-			if (str == 0) random = 1;//nem chbh
+			if (str == 0 || str == 7) random = 1;//nem chbh
 
 			CurrentPlayerInfo& player = game.getPlayerbyId(ranges[0].getId());
 			double AF = player.getAF();
@@ -1528,6 +1534,9 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 	if (game.getStreet() == 2)
 	{
 		logger.logExp("=========================TURN CALCULATION STARTED==========================", LOGGER_TYPE::BOT_LOGIC);
+
+		double callEQ = 0;
+		EVCALL = calculateEVCall(game, ranges, callEQ);
 
 		int str = Evaluator::cardStrength(game.getHand().getCard1(), game.getHand().getCard2(), game.getBoard());
 
@@ -1574,7 +1583,7 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 				vector<double> foldEquities = getFoldEquities(betsize, game, ranges, preflop, flop, turn, river);
 			
 				int moveType;
-				double evraise = calculateEVRaise(game, aktRanges, foldEquities, betsize, moveType, allIn);
+				double evraise = calculateEVRaise(game, aktRanges, foldEquities, betsize, moveType, callEQ, allIn);
 
 				if (ranges.size() == 1 && betsize > potcommon && str <= 2 && !canCallAfterRaise(game, ranges[0], betsize, preflop, flop, turn, river))
 					evraise = -10000;
@@ -1593,7 +1602,6 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 		}
 
 		//IMPLEMENT: OOP BET INSTEAD CHECK?
-		EVCALL = calculateEVCall(game, ranges);
 
 		double potcommon = game.getPotcommon() * game.getBblind();
 		if (ranges.size() == 1 && EVRAISE > 0 && maxRaiseType == 2 && maxRaiseSize > potcommon)
@@ -1631,7 +1639,7 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 			int random;	
 			random = rand() % 2;
 
-			if (str == 0) random = 1; //nem chbh eros hand!
+			if (str == 0 || str == 7) random = 1; //nem chbh eros hand!
 
 			CurrentPlayerInfo& player = game.getPlayerbyId(ranges[0].getId());
 			double AF = player.getAF();
@@ -1656,6 +1664,8 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 	if (game.getStreet() == 3)
 	{
 		logger.logExp("==============================RIVER CALCULATION STARTED===================================", LOGGER_TYPE::BOT_LOGIC);
+		double callEQ = 0;
+		EVCALL = calculateEVCall(game, ranges, callEQ);
 
 		int str = Evaluator::cardStrength(game.getHand().getCard1(), game.getHand().getCard2(), game.getBoard());
 
@@ -1700,7 +1710,7 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 			vector<double> foldEquities = getFoldEquities(betsize, game, ranges, preflop, flop, turn, river);
 			
 			int moveType;
-			double evraise = calculateEVRaise(game, aktRanges, foldEquities, betsize, moveType, allIn);
+			double evraise = calculateEVRaise(game, aktRanges, foldEquities, betsize, moveType, callEQ, allIn);
 
 			if (ranges.size() == 1 && betsize > potcommon && str <= 2 && !canCallAfterRaise(game, ranges[0], betsize, preflop, flop, turn, river))
 				evraise = -10000;
@@ -1714,8 +1724,6 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 		}
 
 		//IMPLEMENT: OOP BET INSTEAD CHECK
-		EVCALL = calculateEVCall(game, ranges);
-
 		double potcommon = game.getPotcommon() * game.getBblind();
 
 		if (ranges.size() == 1 && maxRaiseType == 1)
