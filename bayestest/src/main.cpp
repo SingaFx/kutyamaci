@@ -416,7 +416,7 @@ void testRiverRange4()
 	board.push_back(Card('5','d'));
 	board.push_back(Card('K','h'));
 
-	Hand own(Card('K','s'), Card('T','c'));
+	Hand own(Card('K','s'), Card('9','c'));
 
 	river.printRange(v);
 
@@ -425,6 +425,88 @@ void testRiverRange4()
 	range.printHS(board);
 
 }
+
+void testRiverRange5()
+{
+	int v[9];
+
+	double potSize = 101.25*0.04;
+	double stackSize = 136.5*0.04;
+	double betSize = 84.75*0.04;
+	int line = 1;
+	double VPIP = 16.6;
+	double PFR = 12;
+	double AF = 1.83;
+	double flopPotSize = 8.75*0.04;
+
+	v[1] = normalizePotSize(4, potSize, 0.04);
+	v[2] = normalizeStackSize(stackSize, 0.04);
+	v[3] = normalizeBetSize(2, betSize, potSize, 0.04);
+	v[4] = line;
+	v[5] = normalizeVPIP(VPIP);
+	v[6] = normalizePFR(PFR);
+	v[7] = normalizeAF(AF);
+	v[8] = normalizePotSize(2, flopPotSize, 0.04);
+
+	printf("\n--------------------------------------River regular call range 3bet pot x, x, x--------------------------------------------\n");
+
+	vector<Card> board;
+	board.push_back(Card('T','s'));
+	board.push_back(Card('T','c'));
+	board.push_back(Card('9','h'));
+	board.push_back(Card('3','d'));
+	board.push_back(Card('A','d'));
+
+	Hand own(Card('T','h'), Card('2','h'));
+
+	river.printRange(v);
+
+	PlayerRange range = river.getRange(VPIP, PFR, AF, stackSize, line, betSize, 0.04, potSize, flopPotSize, board, own, 10);
+	//PlayerRange range = river.getRange(v, board, own, 10);
+	range.printHS(board);
+
+}
+
+void testRiverRange6()
+{
+	int v[9];
+
+	double potSize = 1.28;
+	double stackSize = 5.04;
+	double betSize = 4.44;
+	int line = 1;
+	double VPIP = 18;
+	double PFR = 15;
+	double AF = 3.0;
+	double flopPotSize = 0.24;
+
+	v[1] = normalizePotSize(4, potSize, 0.04);
+	v[2] = normalizeStackSize(stackSize, 0.04);
+	v[3] = normalizeBetSize(2, betSize, potSize, 0.04);
+	v[4] = line;
+	v[5] = normalizeVPIP(VPIP);
+	v[6] = normalizePFR(PFR);
+	v[7] = normalizeAF(AF);
+	v[8] = normalizePotSize(2, flopPotSize, 0.04);
+
+	printf("\n--------------------------------------River regular call range 3bet pot x, x, x--------------------------------------------\n");
+
+	vector<Card> board;
+	board.push_back(Card('K','c'));
+	board.push_back(Card('4','d'));
+	board.push_back(Card('8','c'));
+	board.push_back(Card('5','d'));
+	board.push_back(Card('K','h'));
+
+	Hand own(Card('K','s'), Card('T','c'));
+
+	river.printRange(v);
+
+	PlayerRange range = river.getRange(VPIP, PFR, AF, stackSize, line, betSize, 0.04, potSize, flopPotSize, board, own, 25);
+	//PlayerRange range = river.getRange(v, board, own, 10);
+	range.printHS(board);
+}
+
 
 void testEvaluator1()
 {
@@ -484,6 +566,25 @@ void testEvaluator3()
 	printf("--------------------------------------end of FLOP 78 on 649---------------------------------------\n");
 }
 
+void testEvaluator4()
+{
+	printf("\n--------------------------------------FLOP KT on KK485--------------------------------------------\n");
+
+	vector<Card> board;
+	board.push_back(Card('K','c'));
+	board.push_back(Card('4','d'));
+	board.push_back(Card('8','c'));
+	board.push_back(Card('5','d'));
+	board.push_back(Card('K','h'));
+
+	Hand hand;
+	hand.setHand(Card('J','s'),Card('J','c'));
+
+	printf("handstrength : %d", Evaluator::cardStrength(hand.getCard1(), hand.getCard2(), board));
+
+	printf("--------------------------------------end of FLOP KT on KK485---------------------------------------\n");
+}
+
 void testEQCalculator()
 {
 	printf("\n--------------------------------------EQ calculation --------------------------------------------\n");
@@ -534,7 +635,7 @@ int main()
 		testBoardType();
 		testBoardType2();
 		testBoardType3();*/
-		testBoardType4();
+		//testBoardType4();
 
 		//testEvaluator1();
 
@@ -542,13 +643,16 @@ int main()
 
 		//testEvaluator2();
 
+		//testEvaluator4();
+
 		//testEQCalculator();
 
 		//testRiverRange1();
 		//testRiverRange2();
 		//testRiverRange3();
-		testRiverRange4();
-
+		//testRiverRange4();
+		//testRiverRange5();
+		testRiverRange6();
 
 		//testPreflopRange1();
 		//testPreflopRange2();
