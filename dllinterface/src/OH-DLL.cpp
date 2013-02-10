@@ -989,6 +989,17 @@ double process_query(const char* pquery)
 		//OTHER PLAYERS TOO MAYBE?
 		gamestateManager.getCurrentPlayerInfo(0).setPoz(relativPositions[0]);
 		gamestateManager.getCurrentPlayerInfo(0).setActualStacksize(getBalanceByPos(0) / cgi->getBblind());
+
+		if (gamestateManager.getCurrentPlayerInfo(0).getActualStacksize() < 1)
+		{
+			gamestateManager.getCurrentPlayerInfo(0).setActualStacksize(125);
+		}
+
+		if (gamestateManager.getCurrentPlayerInfo(0).getStacksize() < 1)
+		{
+			gamestateManager.getCurrentPlayerInfo(0).setStacksize(125);
+		}
+
 		cgi->setHero(gamestateManager.getCurrentPlayerInfo(0));
 
 		action = botLogic->makeDecision(*cgi, ranges);

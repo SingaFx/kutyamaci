@@ -9,6 +9,8 @@
 
 using namespace std;
 
+
+
 class BayesUserPreflop : public BayesPreflop
 {
 public:
@@ -35,7 +37,6 @@ public:
 		FILE* f = fopen(filename.c_str(), "r");
 		back(f, false, 1);
 		backFE(f, false, 1);
-		
 		fclose(f);
 	}
 
@@ -377,7 +378,7 @@ public:
 
 		raiseRangeTotal = raiseRangeTotal.normalize();
 
-		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, 0.8);
+		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, 0.7);
 		callingRange = callingRange.normalize();
 
 		return callingRange;
@@ -539,6 +540,39 @@ private:
 };
 class BayesUserFlop : public BayesFlop
 {
+	static const int GRAF[5][8][8];
+
+	struct node
+	{
+		int VPIP, PFR, AF;
+		int betsize;
+	};
+
+	struct edge
+	{
+		node base;
+		node x;
+
+		int weight()
+		{
+			int res = 0;
+			res += BayesUserFlop::GRAF[0][base.VPIP][x.VPIP];
+			res += BayesUserFlop::GRAF[1][base.PFR][x.PFR];
+			res += BayesUserFlop::GRAF[2][base.AF][x.AF];
+			res += BayesUserFlop::GRAF[3][base.betsize][x.betsize];
+
+			return res;
+		}
+
+		bool operator <(edge& e)
+		{
+			return weight() < e.weight();
+		}
+	};
+
+	vector<edge> grafResult;
+
+
 public:
 	BayesUserFlop()
 	{
@@ -569,6 +603,61 @@ public:
 		fclose(f);
 	}
 
+	void readNormalize(string filename)
+	{
+		FILE* f = fopen(filename.c_str(), "r");
+		//
+		int n;
+		for (int iter = 0; iter < 4; ++iter)
+		{
+			scanf("%d", &n);
+			for (int i = 0; i < n; ++i)
+			{
+				for (int j = 0; j < n; ++j)
+				{
+					scanf("%d", &GRAF[iter][i][j]);
+				}
+			}
+		}
+
+		fclose(f);
+	}
+
+	void createGrafResult(int v[])
+	{
+		grafResult.clear();
+		
+		node base;
+		base.VPIP = v[5];
+		base.PFR = v[6];
+		base.AF = v[7];
+		base.betsize = v[3];
+
+		for (int vpip = 0; vpip < PLAYER_VPIP_NUM; ++vpip)
+		{
+			for (int pfr = 0; pfr < PLAYER_PFR_NUM; ++pfr)
+			{
+				for (int af = 0; af < PLAYER_AF_NUM; ++af)
+				{
+					for (int betsize = 0; betsize < PLAYER_BET_SIZE_NUM; ++betsize)
+					{
+						node x;
+						x.VPIP = vpip;
+						x.PFR = pfr;
+						x.AF = af;
+						x.betsize = betsize;
+
+						edge akt;
+						akt.base = base;
+						akt.x = x;
+
+						if (akt.weight() > 0) grafResult.push_back(akt);
+					}
+				}
+			}
+		}
+	}
+
 	void write(string filename)
 	{
 		printf("Writing bayes network\n");
@@ -593,8 +682,20 @@ public:
 			total += totalS[v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]];
 			res += probabilityHS[v[0]][v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]];
 		}
-		printf("Total %d\n", total);
+		//printf("Total %d\n", total);
 		if (x <= total) return (double) res / (double) total;
+
+		createGrafResult(v);
+		sort(grafResult.begin(), grafResult.end());
+
+		for (int i = 0; i < grafResult.size(); ++i)
+		{
+			total += totalS[v[1]][v[2]][grafResult[i].x.betsize][v[4]][grafResult[i].x.VPIP][grafResult[i].x.PFR][grafResult[i].x.AF];
+			res += probabilityHS[v[0]][v[1]][v[2]][grafResult[i].x.betsize][v[4]][grafResult[i].x.VPIP][grafResult[i].x.PFR][grafResult[i].x.AF];
+
+			//printf("GENERALIZE: %d %d %d %d %d %d %d\n", v[1], v[2], grafResult[i].x.betsize, v[4], grafResult[i].x.VPIP, grafResult[i].x.PFR, grafResult[i].x.AF);
+			if (x <= total) return (double) res / (double) total;
+		}
 
 		return -2.0;
 	}
@@ -668,7 +769,16 @@ public:
 			if (HS[i] < 0)
 			{
 				memset(HS, 0, sizeof(HS));
-				HS[0] = 1;
+				if (stackSize < 100 * bblind)
+				{
+					HS[0] = 0.5;
+					HS[1] = 0.5;
+				}
+				else
+				{
+					HS[0] = 1;
+				}
+				break;
 			}
 			//if (HS[i] < 0) return res;
 		}
@@ -691,7 +801,16 @@ public:
 			if (HS[i] < 0)
 			{
 				memset(HS, 0, sizeof(HS));
-				HS[0] = 1;
+				if (v[2] < 3)
+				{
+					HS[0] = 0.5;
+					HS[1] = 0.5;
+				}
+				else
+				{
+					HS[0] = 1;
+				}
+				break;
 			}
 			//if (HS[i] < 0) return res;
 		}
@@ -755,7 +874,6 @@ public:
 		{
 			weight = 0.55;
 		}
-
 
 
 		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, weight);
@@ -882,7 +1000,38 @@ private:
 };
 class BayesUserTurn : public BayesTurn
 {
-public:
+	static const int GRAF[5][8][8];
+
+	struct node
+	{
+		int VPIP, PFR, AF;
+		int betsize, flopPotSize;
+	};
+
+	struct edge
+	{
+		node base;
+		node x;
+
+		int weight()
+		{
+			int res = 0;
+			res += BayesUserTurn::GRAF[0][base.VPIP][x.VPIP];
+			res += BayesUserTurn::GRAF[1][base.PFR][x.PFR];
+			res += BayesUserTurn::GRAF[2][base.AF][x.AF];
+			res += BayesUserTurn::GRAF[3][base.betsize][x.betsize];
+			res += BayesUserTurn::GRAF[4][base.flopPotSize][x.flopPotSize];
+
+			return res;
+		}
+
+		bool operator <(edge& e)
+		{
+			return weight() < e.weight();
+		}
+	};
+
+	vector<edge> grafResult;
 
 public:
 	BayesUserTurn()
@@ -913,6 +1062,66 @@ public:
 		for (int i = 2; i < node_number; ++i)
 			totalS *= nums[i];
 		fclose(f);
+	}
+
+	void readNormalize(string filename)
+	{
+		FILE* f = fopen(filename.c_str(), "r");
+		//
+		int n;
+		for (int iter = 0; iter < 5; ++iter)
+		{
+			scanf("%d", &n);
+			for (int i = 0; i < n; ++i)
+			{
+				for (int j = 0; j < n; ++j)
+				{
+					scanf("%d", &GRAF[iter][i][j]);
+				}
+			}
+		}
+
+		fclose(f);
+	}
+
+	void createGrafResult(int v[])
+	{
+		grafResult.clear();
+		
+		node base;
+		base.VPIP = v[5];
+		base.PFR = v[6];
+		base.AF = v[7];
+		base.betsize = v[3];
+		base.flopPotSize = v[8];
+
+		for (int vpip = 0; vpip < PLAYER_VPIP_NUM; ++vpip)
+		{
+			for (int pfr = 0; pfr < PLAYER_PFR_NUM; ++pfr)
+			{
+				for (int af = 0; af < PLAYER_AF_NUM; ++af)
+				{
+					for (int betsize = 0; betsize < PLAYER_BET_SIZE_NUM; ++betsize)
+					{
+						for (int flopPotSize = 0; flopPotSize < FLOP_POT_SIZE_NUM; ++flopPotSize)
+						{
+							node x;
+							x.VPIP = vpip;
+							x.PFR = pfr;
+							x.AF = af;
+							x.betsize = betsize;
+							x.flopPotSize = flopPotSize;
+
+							edge akt;
+							akt.base = base;
+							akt.x = x;
+
+							if (akt.weight() > 0) grafResult.push_back(akt);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	void write(string filename)
@@ -951,14 +1160,17 @@ public:
 
 		if (x <= total) return (double) res / (double) total;
 
-		for (int i = 0; i < FLOP_POT_SIZE_NUM; ++i)
+		createGrafResult(v);
+		sort(grafResult.begin(), grafResult.end());
+
+		for (int i = 0; i < grafResult.size(); ++i)
 		{
-			if (v[8] == i) continue;
-			total += totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][i];
-			res += probabilityHS[v[0]][v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]][i];
+			total += totalS[v[1]][v[2]][grafResult[i].x.betsize][v[4]][grafResult[i].x.VPIP][grafResult[i].x.PFR][grafResult[i].x.AF][grafResult[i].x.flopPotSize];
+			res += probabilityHS[v[0]][v[1]][v[2]][grafResult[i].x.betsize][v[4]][grafResult[i].x.VPIP][grafResult[i].x.PFR][grafResult[i].x.AF][grafResult[i].x.flopPotSize];
+
+			//printf("GENERALIZE: %d %d %d %d %d %d %d %d\n", v[1], v[2], grafResult[i].x.betsize, v[4], grafResult[i].x.VPIP, grafResult[i].x.PFR, grafResult[i].x.AF, grafResult[i].x.flopPotSize);
+			if (x <= total) return (double) res / (double) total;
 		}
-		if (x <= total) return (double) res / (double) total;
-		
 
 		return -2.0;
 	}
@@ -1047,7 +1259,16 @@ public:
 			if (HS[i] < 0)
 			{
 				memset(HS, 0, sizeof(HS));
-				HS[0] = 1;
+				if (stackSize < 100 * bblind)
+				{
+					HS[0] = 0.5;
+					HS[1] = 0.5;
+				}
+				else
+				{
+					HS[0] = 1;
+				}
+				break;
 			}
 			//if (HS[i] < 0) return res;
 		}
@@ -1070,7 +1291,16 @@ public:
 			if (HS[i] < 0)
 			{
 				memset(HS, 0, sizeof(HS));
-				HS[0] = 1;
+				if (v[2] < 3)
+				{
+					HS[0] = 0.5;
+					HS[1] = 0.5;
+				}
+				else
+				{
+					HS[0] = 1;
+				}
+				break;
 			}
 			//if (HS[i] < 0) return res;
 		}
@@ -1258,6 +1488,39 @@ private:
 };
 class BayesUserRiver : public BayesRiver
 {
+	static const int GRAF[5][8][8];
+
+	struct node
+	{
+		int VPIP, PFR, AF;
+		int betsize, flopPotSize;
+	};
+
+	struct edge
+	{
+		node base;
+		node x;
+
+		int weight()
+		{
+			int res = 0;
+			res += BayesUserRiver::GRAF[0][base.VPIP][x.VPIP];
+			res += BayesUserRiver::GRAF[1][base.PFR][x.PFR];
+			res += BayesUserRiver::GRAF[2][base.AF][x.AF];
+			res += BayesUserRiver::GRAF[3][base.betsize][x.betsize];
+			res += BayesUserRiver::GRAF[4][base.flopPotSize][x.flopPotSize];
+
+			return res;
+		}
+
+		bool operator <(edge& e)
+		{
+			return weight() < e.weight();
+		}
+	};
+
+	vector<edge> grafResult;
+
 public:
 	BayesUserRiver()
 	{
@@ -1289,6 +1552,66 @@ public:
 		fclose(f);
 	}
 
+	void readNormalize(string filename)
+	{
+		FILE* f = fopen(filename.c_str(), "r");
+		//
+		int n;
+		for (int iter = 0; iter < 5; ++iter)
+		{
+			scanf("%d", &n);
+			for (int i = 0; i < n; ++i)
+			{
+				for (int j = 0; j < n; ++j)
+				{
+					scanf("%d", &GRAF[iter][i][j]);
+				}
+			}
+		}
+
+		fclose(f);
+	}
+
+	void createGrafResult(int v[])
+	{
+		grafResult.clear();
+		
+		node base;
+		base.VPIP = v[5];
+		base.PFR = v[6];
+		base.AF = v[7];
+		base.betsize = v[3];
+		base.flopPotSize = v[8];
+
+		for (int vpip = 0; vpip < PLAYER_VPIP_NUM; ++vpip)
+		{
+			for (int pfr = 0; pfr < PLAYER_PFR_NUM; ++pfr)
+			{
+				for (int af = 0; af < PLAYER_AF_NUM; ++af)
+				{
+					for (int betsize = 0; betsize < PLAYER_BET_SIZE_NUM; ++betsize)
+					{
+						for (int flopPotSize = 0; flopPotSize < FLOP_POT_SIZE_NUM; ++flopPotSize)
+						{
+							node x;
+							x.VPIP = vpip;
+							x.PFR = pfr;
+							x.AF = af;
+							x.betsize = betsize;
+							x.flopPotSize = flopPotSize;
+
+							edge akt;
+							akt.base = base;
+							akt.x = x;
+
+							if (akt.weight() > 0) grafResult.push_back(akt);
+						}
+					}
+				}
+			}
+		}
+	}
+
 	void write(string filename)
 	{
 		printf("Writing bayes network\n");
@@ -1316,13 +1639,17 @@ public:
 		}
 		if (x <= total) return (double) res / (double) total;
 
-		for (int i = 0; i < FLOP_POT_SIZE_NUM; ++i)
+		createGrafResult(v);
+		sort(grafResult.begin(), grafResult.end());
+
+		for (int i = 0; i < grafResult.size(); ++i)
 		{
-			if (v[8] == i) continue;
-			total += totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][i];
-			res += probabilityHS[v[0]][v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]][i];
+			total += totalS[v[1]][v[2]][grafResult[i].x.betsize][v[4]][grafResult[i].x.VPIP][grafResult[i].x.PFR][grafResult[i].x.AF][grafResult[i].x.flopPotSize];
+			res += probabilityHS[v[0]][v[1]][v[2]][grafResult[i].x.betsize][v[4]][grafResult[i].x.VPIP][grafResult[i].x.PFR][grafResult[i].x.AF][grafResult[i].x.flopPotSize];
+
+			//printf("GENERALIZE: %d %d %d %d %d %d %d %d\n", v[1], v[2], grafResult[i].x.betsize, v[4], grafResult[i].x.VPIP, grafResult[i].x.PFR, grafResult[i].x.AF, grafResult[i].x.flopPotSize);
+			if (x <= total) return (double) res / (double) total;
 		}
-		if (x <= total) return (double) res / (double) total;
 
 		return -2.0;
 	}
@@ -1368,7 +1695,16 @@ public:
 			if (HS[i] < 0)
 			{
 				memset(HS, 0, sizeof(HS));
-				HS[0] = 1;
+				if (stackSize < 100 * bblind)
+				{
+					HS[0] = 0.5;
+					HS[1] = 0.5;
+				}
+				else
+				{
+					HS[0] = 1;
+				}
+				break;
 			}
 			//if (HS[i] < 0) return res;
 		}
@@ -1391,7 +1727,16 @@ public:
 			if (HS[i] < 0)
 			{
 				memset(HS, 0, sizeof(HS));
-				HS[0] = 1;
+				if (v[2] < 3)
+				{
+					HS[0] = 0.5;
+					HS[1] = 0.5;
+				}
+				else
+				{
+					HS[0] = 1;
+				}
+				break;
 			}
 			//if (HS[i] < 0) return res;
 		}

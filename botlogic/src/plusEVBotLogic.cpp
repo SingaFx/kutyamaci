@@ -4,7 +4,12 @@
 
 PlusEVBotLogic::PlusEVBotLogic()
 {
-	database = new Database("127.0.0.1", "root", "root", "kutya");
+	//TODO config file!
+	FILE* f = fopen("dllconfig.ini", "r");
+	char s[100];
+	fscanf(f, "%s", s); 
+	fclose(f);
+	database = new Database(s, "root", "root", "kutya");
 	preflop.read("preflopBayes");
 	flop.read("flopBayes");
 	turn.read("turnBayes");

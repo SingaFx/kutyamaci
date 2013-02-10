@@ -169,6 +169,24 @@ public:
 
 		printf("Total = %lf\n", total);
 	}
+
+	
+	double getHS(int k, vector<Card> board)
+	{
+		double HS[10];
+		memset(HS, 0, sizeof(HS));
+
+		std::set<pair<Hand, double> >::iterator it;
+		double total = 0;
+		for (it = range.begin(); it != range.end(); ++it)
+		{
+			int str = Evaluator::cardStrength(it->first.getCard1(),  it->first.getCard2(), board);
+			HS[str] += it->second;
+			total += it->second;
+		}
+
+		return HS[k];
+	}
 };
 class RangeUtils
 {

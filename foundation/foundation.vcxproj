@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Action.cpp" />
+    <ClCompile Include="src\bayesUserFunctions.cpp" />
     <ClCompile Include="src\BwinPartyParser.cpp" />
     <ClCompile Include="src\Card.cpp" />
     <ClCompile Include="src\currentGameInfo.cpp" />

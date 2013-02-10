@@ -17,7 +17,11 @@ GameStateManager::GameStateManager()
 	, myStackSize(5.0)
 	, bluff(false)
 {
-	database = new Database("127.0.0.1", "root", "root", "kutya");
+	FILE* f = fopen("dllconfig.ini", "r");
+	char s[100];
+	fscanf(f, "%s", s); 
+	fclose(f);
+	database = new Database(s, "root", "root", "kutya");
 }
 
 GameStateManager::~GameStateManager()
