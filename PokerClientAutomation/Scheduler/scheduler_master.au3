@@ -14,19 +14,19 @@ Global $Global_Mutex_Handle
 Global $Mutex_Locked = 0
 
 $script[0] = "serverOH_1_03_rel.exe"
-$script_dir[0] = "f:\repo\PokerClientAutomation\BwinParty\BwinServerScript\"
+$script_dir[0] = "c:\botting\stuff\BwinServerScript\"
 $start_command[0] = "START_BWIN"
 $end_command[0] = "CLOSE_BWIN"
 $lobby[0] = "bwin"
 
 $script[1] = "serverOH_1_03_rel.exe"
-$script_dir[1] = "f:\repo\PokerClientAutomation\PartyPoker\PartyServerScript\"
+$script_dir[1] = "c:\botting\stuff\PartyServerScript\"
 $start_command[1] = "START_PARTY"
 $end_command[1] = "CLOSE_PARTY"
 $lobby[1] = "Party"
 
 $script[2] = "serverOH_1_03_rel.exe"
-$script_dir[2] = "f:\repo\PokerClientAutomation\WPT\WPTServerScript\"
+$script_dir[2] = "c:\botting\stuff\WPTServerScript\"
 $start_command[2] = "START_WPT"
 $end_command[2] = "CLOSE_WPT"
 $lobby[2] = "WPT"
@@ -42,25 +42,28 @@ If $socket = -1 Then
    Exit
 EndIf
 
-;~ While 1
-;~    playSession(2, 1200000000)
-;~    playSession(0, 6000000)
-;~    playSession(1, 6000000)
-;~ WEnd
-
-playSession(0, 200000)
-playSession(1, 200000)
-playSession(2, 200000)
+While 1
+   playSession(0, Random(600, 1200, 1))
+   playSession(1, Random(600, 1200, 1))
+   playSession(2, Random(600, 1200, 1))
+WEnd
 
 Func playSession($id, $time)
    Run($script_dir[$id] & $script[$id], $script_dir[$id])
    Sleep(20000)
    TCPSend($socket, $start_command[$id])
    
+   Sleep(60000)
+   
    check($id)
+   
+   Local $i
+   
+   For $i = 1 to $time
+	  Sleep(1000)
+	  check($id)
+   Next
    ;CLICK I'M BACK
-   Sleep($time)
-   check($id)
    
    Local $k
    for $k = 1 to 10
@@ -72,13 +75,9 @@ Func playSession($id, $time)
    Sleep(200000)
    ;BACKUP PLAN
 
-   Local $ohwindows = "EVBOT.ohf"
-   AutoItSetOption("WinTitleMatchMode", 2)
-   Local $array = WinList($ohwindows)
-   Local $k
-   for $k = 1 to $array[0][0]
-	  WinClose($array[$k][1])
-   Next
+   While ProcessExists("OpenHoldem.exe")
+	  ProcessClose("OpenHoldem.exe")
+   WEnd
    
    ProcessClose($script[$id])
 EndFunc

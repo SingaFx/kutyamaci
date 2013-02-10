@@ -2,7 +2,9 @@
 #include <Constants.au3>
 #include <Debug.au3>
 
- _DebugSetup("Log window", True) ; start displaying debug environment
+;~  _DebugSetup("Log window", True) ; start displaying debug environment
+
+ Opt("TrayIconHide", 1)
 
  Global $max_connections = 10
  Global $cmd_max_length = 256
@@ -115,13 +117,18 @@ Func closeSession($lobby)
    
    ProcessClose("updater.exe")
    ProcessClose("client.exe")
+   
+   While ProcessExists("chrome.exe")
+	  ProcessClose("chrome.exe")
+   WEnd
+   
 EndFunc
 
 Func dbgOut($str)
-	$curHwnd = WinGetHandle("")
-	_DebugOut($str)
-	WinActivate($curHwnd)
-	Sleep(50)
+;~ 	$curHwnd = WinGetHandle("")
+;~ 	_DebugOut($str)
+;~ 	WinActivate($curHwnd)
+;~ 	Sleep(50)
 EndFunc   ;==>dbgOut
 
 ;------- Functions -------

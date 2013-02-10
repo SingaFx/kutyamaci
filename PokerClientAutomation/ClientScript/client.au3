@@ -6,6 +6,8 @@
 #include <Date.au3>
 ; _DebugSetup("Log window client 2", True)
 
+Opt("TrayIconHide", 1)
+
 Global $datafile
 if $CmdLine[0] < 1 Then 
    $datafile = "clientdata.ini"
@@ -34,6 +36,7 @@ Sleep(1000)
 Send('a')
 
 Global $g_IP = IniRead($datafile, "connections", "serverip", "-1")
+Global $db_IP = IniRead($datafile, "connections", "databaseip", "-1")
 Global $g_PORT = IniRead($datafile, "connections", "serverport", "-1")
 Global $encrypt_key = "bla"
 
@@ -59,6 +62,9 @@ Run($run_path&$run)
 ; Global $MAX_TABLES = IniRead($datafile, "other", "maxtables", "-1") 
 
 WinWaitActive($casinoname)
+
+AutoItSetOption("WinTitleMatchMode", 2)
+WinClose("cmd.exe")
 
 sleep(IniRead($datafile, "startup", "sleep0", "-1"))
 
@@ -154,8 +160,8 @@ for $i = 1 to $array[0][0]
 	  $datestr = $datestr & $date[$i]
    EndIf
 		  
-   Run("updater --live "& $updaterfolder & $datestr & " --ip " & $g_IP)
-   dbgOut("updater --live "& $updaterfolder & $datestr & " --ip " & $g_IP)
+   Run("updater --live "& $updaterfolder & $datestr & " --ip " & $db_IP)
+   dbgOut("updater --live "& $updaterfolder & $datestr & " --ip " & $db_IP)
    AutoItSetOption("WinTitleMatchMode", 2)
    WinSetState("updater", "", @SW_HIDE)
 
@@ -559,5 +565,4 @@ Func _DllScrape_GetCoordRegion($name,$dll)
 	Return $res
 
 EndFunc   ;==>GetCoordRegion
-
 
