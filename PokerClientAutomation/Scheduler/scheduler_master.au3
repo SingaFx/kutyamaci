@@ -43,9 +43,9 @@ If $socket = -1 Then
 EndIf
 
 While 1
-   playSession(0, Random(600, 1200, 1))
-   playSession(1, Random(600, 1200, 1))
-   playSession(2, Random(600, 1200, 1))
+   playSession(0, Random(5400, 9000, 1))
+   playSession(1, Random(5400, 9000, 1))
+   playSession(2, Random(5400, 9000, 1))
 WEnd
 
 Func playSession($id, $time)
