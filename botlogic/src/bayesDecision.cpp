@@ -1161,13 +1161,14 @@ bool BayesDecision::committed(CurrentGameInfo& game)
 }
 bool BayesDecision::canCallAfterRaise(CurrentGameInfo& gameInfo, PlayerRange& range, double betsize, BayesUserPreflop& preflop, BayesUserFlop& flop, BayesUserTurn& turn , BayesUserRiver& river)
 {
+	Logger& logger = Logger::getLogger(BOT_LOGIC);
 	if (gameInfo.getStreet() == 3)
 	{
 		logger.logExp("\t===============RIVER canCallAfterRaise================= ", BOT_LOGIC);
 		return 1;
 	}
 
-	Logger& logger = Logger::getLogger(BOT_LOGIC);
+	
 	logger.logExp("\t===============BEGIN canCallAfterRaise================= ", BOT_LOGIC);
 
 

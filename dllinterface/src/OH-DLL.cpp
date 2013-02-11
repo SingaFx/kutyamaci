@@ -871,7 +871,7 @@ double process_query(const char* pquery)
 		return AnyVPIP(0);
 	}
 
-	if (!strcmp(pquery, "dll$SBVPIP))
+	if (!strcmp(pquery, "dll$SBVPIP"))
 	{
 		return AnyVPIP(1);
 	}
