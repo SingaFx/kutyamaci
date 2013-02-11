@@ -585,6 +585,23 @@ void testEvaluator4()
 	printf("--------------------------------------end of FLOP KT on KK485---------------------------------------\n");
 }
 
+void testEvaluator5()
+{
+	printf("\n--------------------------------------FLOP 99 on JT2--------------------------------------------\n");
+
+	vector<Card> board;
+	board.push_back(Card('J','c'));
+	board.push_back(Card('T','d'));
+	board.push_back(Card('2','c'));
+
+	Hand hand;
+	hand.setHand(Card('9','s'),Card('9','c'));
+
+	printf("handstrength : %d", Evaluator::cardStrength(hand.getCard1(), hand.getCard2(), board));
+
+	printf("--------------------------------------end of FLOP 99 on JT2---------------------------------------\n");
+}
+
 void testEQCalculator()
 {
 	printf("\n--------------------------------------EQ calculation --------------------------------------------\n");
@@ -643,7 +660,7 @@ int main()
 
 		//testEvaluator2();
 
-		//testEvaluator4();
+		testEvaluator5();
 
 		//testEQCalculator();
 
@@ -652,7 +669,7 @@ int main()
 		//testRiverRange3();
 		//testRiverRange4();
 		//testRiverRange5();
-		testRiverRange6();
+		//testRiverRange6();
 
 		//testPreflopRange1();
 		//testPreflopRange2();

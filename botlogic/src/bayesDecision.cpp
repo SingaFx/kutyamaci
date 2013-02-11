@@ -1167,10 +1167,10 @@ bool BayesDecision::canCallAfterRaise(CurrentGameInfo& gameInfo, PlayerRange& ra
 
 
 	//effectiv = betsize ?
-	double effectiv = game.getHero().getActualStacksize() + game.getHero().getBetsize();
-	double maxOpponent = maxOpponentStack(game) + game.getBiggestBet();
+	double effectiv = gameInfo.getHero().getActualStacksize() + gameInfo.getHero().getBetsize();
+	double maxOpponent = maxOpponentStack(gameInfo) + gameInfo.getBiggestBet();
 	if (effectiv > maxOpponent) effectiv = maxOpponent;
-	effectiv *= game.getBblind();
+	effectiv *= gameInfo.getBblind();
 
 	PlayerRange allinRange;
 	CurrentPlayerInfo& player = gameInfo.getPlayerbyId(range.getId());

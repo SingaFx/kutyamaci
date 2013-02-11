@@ -47,7 +47,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\mysql\lib;..\bin\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>foundation.lib;libmysql.lib;botlogic.lib;eqcalculator.lib;poker-eval.lib;Poker.Equity.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>foundation.lib;libmysql.lib;botlogic.lib;eqcalculator.lib;poker-eval.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -63,7 +63,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>foundation.lib;libmysql.lib;botlogic.lib;eqcalculator.lib;poker-eval.lib;Poker.Equity.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>foundation.lib;libmysql.lib;botlogic.lib;eqcalculator.lib;poker-eval.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\mysql\lib;..\bin\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
