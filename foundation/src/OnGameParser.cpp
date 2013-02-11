@@ -3,11 +3,11 @@
 #include <boost/regex.hpp>
 #include "HandHistoryUtils.h"
 
-vector<HandHistory> OnGameParser::parse()
+vector<HandHistory> OnGameParser::parse(string filename)
 {
-	//cout << "Begin parsing file: " << filename << endl;
+	cout << "Begin parsing file: " << filename << endl;
 	ifstream file;
-	/*file.open(filename);*/
+	file.open(filename);
 
 	vector<HandHistory> result;
 	HandHistory actualhand;
@@ -89,7 +89,7 @@ vector<HandHistory> OnGameParser::parse()
 		else if (regex_search(line, what, fold, flags))
 		{
 			Action tempAction;
-            tempAction.setAction(0, 'f');
+            tempAction.setAction('f', 0);
 			string player_name = string(what[1].first,what[1].second);
 			HandHistoryUtils::addActiontoPlayer(actualhand, tempAction, player_name, round);
 		}
@@ -105,7 +105,7 @@ vector<HandHistory> OnGameParser::parse()
 		else if (regex_search(line, what, check, flags))
 		{
 			Action tempAction;
-            tempAction.setAction(0, 'x');
+            tempAction.setAction('x', 0);
 			string player_name = string(what[1].first,what[1].second);
 			HandHistoryUtils::addActiontoPlayer(actualhand, tempAction, player_name, round);
 		}

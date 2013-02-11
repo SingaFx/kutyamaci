@@ -55,7 +55,7 @@ public:
 		}
 		while (FindNextFile(hFind, &ffd) != 0);
 		FindClose(hFind);
-		cout << "Number of hands at showdown : " << this->nrofhands << endl;
+		//cout << "Number of hands at showdown : " << this->nrofhands << endl;
 	}
 
 	void parseAndUpdate(string filename)
