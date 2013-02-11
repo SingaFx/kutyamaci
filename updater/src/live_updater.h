@@ -37,7 +37,8 @@ public:
         set<string> S;
 		//NL10 modify!!
         boost::regex fileName("^Supersonic_[[:digit:]]*\.txt");
-        Logger& logger = Logger::getLogger(LOGGER_TYPE::HAND_HISTORY_PARSER);
+        
+		Logger& logger = Logger::getLogger(LOGGER_TYPE::HAND_HISTORY_PARSER);
 		while(1)
 		{
 			HANDLE hFind;

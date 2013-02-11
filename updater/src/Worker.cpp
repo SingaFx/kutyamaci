@@ -31,7 +31,7 @@ void Worker::operator()()
 
     vector<HandHistory> history;
 
-    //parser.openFileForParsing(hFind);
+    parser.openFileForParsing(hFind);
 
     while(1)
     {

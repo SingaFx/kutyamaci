@@ -78,9 +78,8 @@ vector<HandHistory> BwinPartyParser::parse()
 
     bool foundFirstHandEnd = false;
 
-    while (!fileHandle.eof() && !foundFirstHandEnd)
+    while (getline(fileHandle, line) && !foundFirstHandEnd)
     {
-        getline(fileHandle, line);
         if (regex_match(line, handend))
         {
             foundFirstHandEnd = true;
@@ -89,10 +88,8 @@ vector<HandHistory> BwinPartyParser::parse()
 
     bool isInHand = false;
 
-	while (!fileHandle.eof())
+	while (getline(fileHandle, line))
 	{
-		getline(fileHandle, line);
-
 		// Found a new hand
 		if (regex_search(line, what, handstart, flags))
 		{

@@ -1,5 +1,6 @@
 #include "eqcalculator.h"
 #include "logger.h"
+
 #include <time.h>
 
 Hand EqCalculator::sampleRange(PlayerRange &range)

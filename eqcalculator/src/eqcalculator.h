@@ -2,8 +2,10 @@
 
 #include "rangeFunctions.h"
 #include "Hand.h"
-#include "stdafx.h"
-#include "HoldemCalculator.h"
+#include "deck.h"
+#include "poker_defs.h"
+#include "rules_std.h"
+#include "eval.h"
 
 class EqCalculator
 {
@@ -15,7 +17,7 @@ class EqCalculator
 	Card numberToCard(int x);
 	string sampleToString(vector<Hand> &sample);
 	string boardToString(vector<Card> &board);
-	StdDeck_CardMask cardToMask(Card);
+	StdDeck_CardMask cardToMask(Card card);
 public:
 	EqCalculator();
 	double calculate(vector<PlayerRange> &range, vector<Card> &board, int nrtrials);

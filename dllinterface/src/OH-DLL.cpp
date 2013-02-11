@@ -876,6 +876,12 @@ double process_query(const char* pquery)
 		return AnyVPIP(2);
 	}
 
+	if (!strcmp(pquery,"dll$PREFOLD"))
+	{
+		if (scrape_cycle > 2) return 1;
+		return 0;
+	}
+
 	Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER); 
 	logger.logExp(string("[Processing query] : ").append(pquery).c_str(), DLL_DECISION_LOGGER);
 
