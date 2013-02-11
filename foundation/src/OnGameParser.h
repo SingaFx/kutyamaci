@@ -7,9 +7,9 @@
 
 using namespace std;
 
-class OnGameParser : public HandHistoryParser
+class OnGameParser
 {
 public:
-    virtual vector<HandHistory> parse();
+    vector<HandHistory> parse(string);
     //nice to have: destructor!
 };

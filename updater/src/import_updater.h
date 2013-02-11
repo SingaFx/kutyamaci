@@ -55,7 +55,7 @@ public:
 		}
 		while (FindNextFile(hFind, &ffd) != 0);
 		FindClose(hFind);
-		cout << "Number of hands at showdown : " << this->nrofhands << endl;
+		//cout << "Number of hands at showdown : " << this->nrofhands << endl;
 	}
 
 	void parseAndUpdate(string filename)
@@ -71,13 +71,14 @@ public:
 
         ifstream fileHandle;
 
-        BwinPartyParser parser(PARSER_TYPE::IMPORT_PARSER, fileHandle);
-        parser.openFileForParsing(filename);
-		vector<HandHistory> history =  parser.parse();
-        parser.closeFileAfterParsing();
-		nrofhands += HandHistoryUtils::exportToFile(history, "hh.txt");
+		OnGameParser parser;
+        //BwinPartyParser parser(PARSER_TYPE::IMPORT_PARSER, fileHandle);
+        //parser.openFileForParsing(filename);
+		vector<HandHistory> history =  parser.parse(filename);
+        //parser.closeFileAfterParsing();
+		//nrofhands += HandHistoryUtils::exportToFile(history, "hh.txt");
 
-		HandHistoryUtils::detailedExportToFile(history,"dhh.txt");
+		//HandHistoryUtils::detailedExportToFile(history,"dhh.txt");
 
 		for (int i = 0; i < history.size(); ++i)
 		{
