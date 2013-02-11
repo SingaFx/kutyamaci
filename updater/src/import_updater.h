@@ -75,9 +75,8 @@ public:
         parser.openFileForParsing(filename);
 		vector<HandHistory> history =  parser.parse();
         parser.closeFileAfterParsing();
-		nrofhands += HandHistoryUtils::exportToFile(history, "hh.txt");
-
-		HandHistoryUtils::detailedExportToFile(history,"dhh.txt");
+		//nrofhands += HandHistoryUtils::exportToFile(history, "hh.txt");
+		//HandHistoryUtils::detailedExportToFile(history,"dhh.txt");
 
 		for (int i = 0; i < history.size(); ++i)
 		{

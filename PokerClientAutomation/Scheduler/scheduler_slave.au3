@@ -103,6 +103,7 @@ Func closeSession($lobby)
    for $k = 1 to $array[0][0]
 	  WinClose($array[$k][1])
 	  Local $table = WinGetPos($array[$k][1])
+	  Sleep(1000)
 	  MouseClick("left", $table[0] + 200, $table[1] + 213, 1, 1)
    Next
    
