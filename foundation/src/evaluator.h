@@ -41,10 +41,37 @@ class Evaluator
 		return c1.getRank() < c2.getRank();
 	}
 
+	static int suitedNumber(vector<Card> cards)
+	{
+		int temp[255];
+		temp['c'] = 0; temp['d'] = 0; temp['h'] = 0; temp['s'] = 0;
+
+		for (int i = 0; i < cards.size(); ++i)
+		{
+			temp[cards[i].getSuit()]++;
+		}
+
+		return maxim(temp['c'],maxim(temp['d'],maxim(temp['h'],temp['s'])));
+	}
+
+	static void makeUnique(vector<Card> &cards)
+	{
+		vector<Card> strCards;
+
+		for (int i = 0; i < cards.size(); ++i)
+		{
+			if (i < cards.size() - 1 && cards[i].getRank() == cards[i+1].getRank())
+				continue;
+			
+			strCards.push_back(cards[i]);
+		}
+
+		cards = strCards;
+	}
+
 	static bool flopStraightFlush(vector<Card> &cards)
 	{
 		assert(cards.size() == 5);
-		sort(cards.begin(), cards.end(), compareCards);
 
 		return ((((cards[0].getRank() == cards[1].getRank()-1) && (cards[1].getRank() == cards[2].getRank()-1) && (cards[2].getRank() == cards[3].getRank()-1) && (cards[3].getRank() == cards[4].getRank()-1)) ||
 				((cards[0].getRank() == 2) && (cards[1].getRank() == 3) && (cards[2].getRank() == 4) && (cards[3].getRank() == 5) && (cards[4].getRank() == 14))) &&
@@ -54,7 +81,6 @@ class Evaluator
 	static bool flopPoker(vector<Card> &cards)
 	{
 		assert(cards.size() == 5);
-		sort(cards.begin(), cards.end(), compareCards);
 
 		return (((cards[0].getRank() == cards[1].getRank()) && (cards[1].getRank() == cards[2].getRank()) && (cards[2].getRank() == cards[3].getRank())) ||
 				((cards[1].getRank() == cards[2].getRank()) && (cards[2].getRank() == cards[3].getRank()) && (cards[3].getRank() == cards[4].getRank())));
@@ -63,7 +89,6 @@ class Evaluator
 	static bool flopFullHouse(vector<Card> &cards)
 	{
 		assert(cards.size() == 5);
-		sort(cards.begin(), cards.end(), compareCards);
 
 		return (((cards[0].getRank() == cards[1].getRank()) && (cards[2].getRank() == cards[3].getRank()) && (cards[3].getRank() == cards[4].getRank())) ||
 				((cards[0].getRank() == cards[1].getRank()) && (cards[1].getRank() == cards[2].getRank()) && (cards[3].getRank() == cards[4].getRank())));
@@ -72,7 +97,6 @@ class Evaluator
 	static bool flopFlush(vector<Card> &cards)
 	{
 		assert(cards.size() == 5);
-		sort(cards.begin(), cards.end(), compareCards);
 
 		if (flopStraightFlush(cards)) return false;
 
@@ -82,7 +106,6 @@ class Evaluator
 	static bool flopStraight(vector<Card> &cards)
 	{
 		assert(cards.size() == 5);
-		sort(cards.begin(), cards.end(), compareCards);
 
 		if (flopStraightFlush(cards)) return false;
 
@@ -93,7 +116,6 @@ class Evaluator
 	static bool flopThreeofaKind(vector<Card> &cards)
 	{
 		assert(cards.size() == 5);
-		sort(cards.begin(), cards.end(), compareCards);
 
 		if (flopPoker(cards)) return false;
 		if (flopFullHouse(cards)) return false;
@@ -105,7 +127,6 @@ class Evaluator
 	static bool flopTwoPair(vector<Card> &cards)
 	{
 		assert(cards.size() == 5);
-		sort(cards.begin(), cards.end(), compareCards);
 
 		if (flopFullHouse(cards)) return false;
 		if (flopPoker(cards)) return false;
@@ -118,7 +139,6 @@ class Evaluator
 	static bool flopOnePair(vector<Card> &cards)
 	{
 		assert(cards.size() == 5);
-		sort(cards.begin(), cards.end(), compareCards);
 
 		if (flopTwoPair(cards)) return false;
 		if (flopThreeofaKind(cards)) return false;
@@ -434,42 +454,75 @@ class Evaluator
 
 	static bool turnStraightFlush(vector<Card> &cards)
 	{
-		return turnHandStrength(cards,flopStraightFlush);
+		if (suitedNumber(cards) < 5)
+			return false;
+
+		char suit = cards[0].getSuit();
+		if (cards[0].getSuit() != cards[1].getSuit() && cards[0].getSuit() != cards[2].getSuit())
+			suit = cards[1].getSuit();
+
+		vector<Card> strCards;
+		for (int i = 0; i < cards.size(); ++i)
+			if (cards[i].getSuit() == suit)
+				strCards.push_back(cards[i]);
+
+		if (strCards.size() == 5)
+		{
+			return flopStraightFlush(strCards);
+		}
+		else
+		{
+			return flopStraightFlush(strCards[0], strCards[1], strCards[2], strCards[3], strCards[4]) || flopStraightFlush(strCards[1], strCards[2], strCards[3], strCards[4], strCards[5]) ||
+				flopStraightFlush(strCards[0], strCards[1], strCards[2], strCards[3], strCards[5]);
+		}
 	}
 
 	static bool turnPoker(vector<Card> &cards)
 	{
-		return turnHandStrength(cards, flopPoker);
+		return flopPoker(cards[0], cards[1], cards[2], cards[3], cards[4]) || flopPoker(cards[1], cards[2], cards[3], cards[4], cards[5]);
 	}
 
 	static bool turnFullHouse(vector<Card> &cards)
 	{
-		return turnHandStrength(cards, flopFullHouse);
+		return flopFullHouse(cards[0], cards[1], cards[2], cards[3], cards[4]) || flopFullHouse(cards[1], cards[2], cards[3], cards[4], cards[5]) ||
+			flopFullHouse(cards[0], cards[1], cards[3], cards[4], cards[5]) || flopFullHouse(cards[0], cards[1], cards[2], cards[4], cards[5]);
 	}
 
 	static bool turnFlush(vector<Card> &cards)
 	{
-		return turnHandStrength(cards, flopFlush);
+		return suitedNumber(cards) >= 5;
 	}
 
 	static bool turnStraight(vector<Card> &cards)
 	{
-		return turnHandStrength(cards, flopStraight);
+		vector<Card> strCards = cards;
+
+		makeUnique(strCards);
+
+		if (strCards.size() < 5)
+			return false;
+
+		if (strCards.size() == 5)
+			return flopStraight(strCards);
+
+		return flopStraight(cards[0], cards[1], cards[2], cards[3], cards[4]) || flopStraight(cards[1], cards[2], cards[3], cards[4], cards[5]) ||
+			flopStraight(cards[0], cards[1], cards[2], cards[3], cards[5]);
 	}
 
 	static bool turnThreeofaKind(vector<Card> &cards)
 	{
-		return turnHandStrength(cards, flopThreeofaKind);
+		return flopThreeofaKind(cards[0], cards[1], cards[2], cards[3], cards[4]) || flopThreeofaKind(cards[1], cards[2], cards[3], cards[4], cards[5]);
 	}
 
 	static bool turnTwoPair(vector<Card> &cards)
 	{
-		return turnHandStrength(cards, flopTwoPair);
+		return flopTwoPair(cards[0], cards[1], cards[2], cards[3], cards[4]) || flopTwoPair(cards[1], cards[2], cards[3], cards[4], cards[5])
+			|| flopTwoPair(cards[0], cards[1], cards[3], cards[4], cards[5]);
 	}
 
 	static bool turnOnePair(vector<Card> &cards)
 	{
-		return turnHandStrength(cards, flopOnePair);
+		return flopOnePair(cards[0], cards[1], cards[2], cards[3], cards[4]) || flopOnePair(cards[1], cards[2], cards[3], cards[4], cards[5]);
 	}
 
 	static bool flopHandStrength(Card &c1, Card &c2, Card &c3, Card &c4, Card &c5, bool fn(vector<Card>&))
@@ -817,14 +870,10 @@ class Evaluator
 
 		for (int i = 0; i < cards.size() - 1; ++i)
 		{
-			for (int j = i+1; j < cards.size(); ++j)
-			{
-				vector<Card> temp = cards;
-				temp.erase(temp.begin() + i);
-				temp.erase(temp.begin() + j - 1);
-				if (fn(temp))
-					return true;
-			}
+			vector<Card> temp = cards;
+			temp.erase(temp.begin() + i);
+			if (fn(temp))
+				return true;
 		}
 
 		return false;
@@ -832,42 +881,65 @@ class Evaluator
 
 	static bool riverStraightFlush(vector<Card> &cards)
 	{
-		return riverHandStrength(cards, flopStraightFlush);
+		if (suitedNumber(cards) < 5)
+			return false;
+
+		return riverHandStrength(cards, turnStraightFlush);
 	}
 
 	static bool riverPoker(vector<Card> &cards)
 	{
-		return riverHandStrength(cards, flopPoker);
+		return flopPoker(cards[0], cards[1], cards[2], cards[3], cards[4]) || flopPoker(cards[1], cards[2], cards[3], cards[4], cards[5])
+			|| flopPoker(cards[2], cards[3], cards[4], cards[5], cards[6]);
 	}
 
 	static bool riverFullHouse(vector<Card> &cards)
 	{
-		return riverHandStrength(cards, flopFullHouse);
+		return flopFullHouse(cards[0], cards[1], cards[2], cards[3], cards[4]) || flopFullHouse(cards[0], cards[1], cards[2], cards[4], cards[5])
+			|| flopFullHouse(cards[0], cards[1], cards[2], cards[5], cards[6]) || flopFullHouse(cards[1], cards[2], cards[3], cards[4], cards[5])
+			|| flopFullHouse(cards[1], cards[2], cards[3], cards[5], cards[6]) || flopFullHouse(cards[2], cards[3], cards[4], cards[5], cards[6])
+			|| flopFullHouse(cards[0], cards[1], cards[3], cards[4], cards[5]) || flopFullHouse(cards[0], cards[1], cards[4], cards[5], cards[6])
+			|| flopFullHouse(cards[1], cards[2], cards[4], cards[5], cards[6]);
 	}
 
 	static bool riverFlush(vector<Card> &cards)
 	{
-		return riverHandStrength(cards, flopFlush);
+		return suitedNumber(cards) >= 5;
 	}
 
 	static bool riverStraight(vector<Card> &cards)
 	{
-		return riverHandStrength(cards, flopStraight);
+		vector<Card> strCards = cards;
+
+		makeUnique(strCards);
+
+		if (strCards.size() < 5)
+			return false;
+		if (strCards.size() == 5)
+			return flopStraight(strCards);
+		if (strCards.size() == 6)
+			return turnStraight(strCards);
+
+		return flopStraight(cards[0], cards[1], cards[2], cards[3], cards[4]) || flopStraight(cards[1], cards[2], cards[3], cards[4], cards[5]) ||
+			flopStraight(cards[2], cards[3], cards[4], cards[5], cards[6]) || flopStraight(cards[0], cards[1], cards[2], cards[3], cards[6]);
 	}
 
 	static bool riverThreeofaKind(vector<Card> &cards)
 	{
-		return riverHandStrength(cards, flopThreeofaKind);
+		return flopThreeofaKind(cards[0], cards[1], cards[2], cards[3], cards[4]) || flopThreeofaKind(cards[1], cards[2], cards[3], cards[4], cards[5]) ||
+			flopThreeofaKind(cards[2], cards[3], cards[4], cards[5], cards[6]);
 	}
 
 	static bool riverTwoPair(vector<Card> &cards)
 	{
-		return riverHandStrength(cards, flopTwoPair);
+		return flopTwoPair(cards[0], cards[1], cards[2], cards[3], cards[4]) || flopTwoPair(cards[0], cards[1], cards[4], cards[5], cards[6])
+			|| flopTwoPair(cards[1], cards[2], cards[4], cards[5], cards[6]) || flopTwoPair(cards[2], cards[3], cards[4], cards[5], cards[6]);
 	}
 
 	static bool riverOnePair(vector<Card> &cards)
 	{
-		return riverHandStrength(cards, flopOnePair);
+		return flopOnePair(cards[0], cards[1], cards[2], cards[3], cards[4]) || flopOnePair(cards[1], cards[2], cards[3], cards[4], cards[5]) ||
+			flopOnePair(cards[2], cards[3], cards[4], cards[5], cards[6]);
 	}
 
 	static bool riverOneCardLowStrFlush(Card &h1, Card &h2, Card &b1, Card &b2, Card &b3, Card &b4, Card &b5)
@@ -1152,6 +1224,7 @@ public:
 		 pocket.push_back(h1);pocket.push_back(h2);
 		 sort(board.begin(),board.end(),compareCards);
 		 sort(pocket.begin(),pocket.end(),compareCards);
+		 sort(cards.begin(),cards.end(),compareCards);
 
 		 if (flopStraightFlush(cards))
 			 return 0;
@@ -1395,6 +1468,9 @@ public:
 		if (flopTwoOverCards(h.getCard1(), h.getCard2(), board[0], board[1], board[2]) || h.getCard1().getRank() == 14 || h.getCard2().getRank() == 14)
 			return false;
 
+		if (h.getCard1().getRank() == h.getCard2().getRank() || existsOnBoard(h.getCard1().getRank(), board) || existsOnBoard(h.getCard2().getRank(), board))
+			return false;
+
 		return true;
 	}
 
@@ -1421,6 +1497,7 @@ public:
 		pocket.push_back(h1);pocket.push_back(h2);
 		sort(board.begin(),board.end(),compareCards);
 		sort(pocket.begin(),pocket.end(),compareCards);
+		sort(cards.begin(),cards.end(),compareCards);
 
 		if (turnStraightFlush(cards))
 		{
@@ -1859,6 +1936,7 @@ public:
 		pocket.push_back(h1);pocket.push_back(h2);
 		sort(board.begin(),board.end(),compareCards);
 		sort(pocket.begin(),pocket.end(),compareCards);
+		sort(cards.begin(),cards.end(),compareCards);
 
 		if (riverStraightFlush(cards))
 		{
