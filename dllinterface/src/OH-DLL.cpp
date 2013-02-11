@@ -871,6 +871,11 @@ double process_query(const char* pquery)
 		return AnyVPIP(0);
 	}
 
+	if (!strcmp(pquery, "dll$SBVPIP"))
+	{
+		return AnyVPIP(1);
+	}
+
 	if (!strcmp(pquery,"dll$BBVPIP"))
 	{
 		return AnyVPIP(2);
@@ -947,10 +952,10 @@ double process_query(const char* pquery)
 		calculateRelativPositions(postflopRelatives, gamestateManager.getDealerPosition(), true);
 
 		// wait for hero's balance when the action before was raise and we are oop against 1 opponent
-		if (ranges.size() == 1 && gamestateManager.getAction().getType() == 'r')
+		if (ranges.size() == 1)
 		{
 			logger.logExp("Waiting for hero's balance", DLL_DECISION_LOGGER);
-			//Sleep(3000);
+			Sleep(1000);
 			process_state(NULL);
 		}
 

@@ -1,4 +1,4 @@
-##2013-02-04 15:15:48##
+##2013-02-11 20:54:58##
 
 ##notes##
 
@@ -43,11 +43,11 @@ dll$srai == 1
 (dll$call == -1 ? f$myCall : dll$call)
 
 ##f$prefold##
-br == 1 ? 
-(f$PositionEP ? !islist01 : 
-f$PositionMP ? !islist06 : 
+br == 1 && dll$PREFOLD ? 
+(f$PositionEP ? dll$BUVPIP < 20 && (dll$SBVPIP > 30 || dll$BBVPIP > 30) ? !islist07 : !islist01 : 
+f$PositionMP ? dll$BUVPIP < 20 && (dll$SBVPIP > 30 || dll$BBVPIP > 30) ? !islist08 : !islist06 : 
 f$PositionCO ? dll$BUVPIP < 21 ? !islist05 : !islist03 :
-f$PositionBU ? !islist04 :
+f$PositionBU ? dll$SBVPIP < 20 && dll$BBVPIP < 20 ? 0 : !islist04 :
 f$PositionSB ? dll$BBVPIP < 18 ? 0 : !islist05
 : 0)
 :0
@@ -56,10 +56,7 @@ f$PositionSB ? dll$BBVPIP < 18 ? 0 : !islist05
 
 
 ##f$delay##
-br == 0 ? 
-	f$PreflopRaise ? randomround * 100 : 0 :
-br == 1 ? randomround * 200 :
-	randomround * 400
+0
 
 ##f$chat##
 
@@ -107,7 +104,7 @@ KA  QA
 ##list02##
 AA  KK  QQ  JJ  TT  99  88  77  
 AKs AQs AJs KQs KJs QJs 
-KA  QA  QK  
+KA  QA  QK  JA  
 
 ##list03##
 AA  KK  QQ  JJ  TT  99  88  77  66  55  44  33  22  
@@ -116,8 +113,8 @@ KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  9A
 
 ##list04##
 AA  KK  QQ  JJ  TT  99  88  77  66  55  44  33  22  
-AKs AQs AJs ATs A9s A8s A7s A6s A5s A4s A3s A2s KQs KJs KTs K9s K8s K7s K6s K5s K4s K3s K2s QJs QTs Q9s Q8s Q7s Q6s Q5s Q4s Q3s Q2s JTs J9s J8s J7s J6s J5s J4s J3s J2s T9s T8s T7s T6s T5s T4s T3s T2s 98s 97s 96s 95s 94s 93s 92s 87s 86s 85s 84s 83s 82s 76s 75s 74s 73s 72s 65s 64s 63s 62s 54s 53s 
-KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  9A  9K  9Q  9J  9T  8A  8K  8Q  8J  8T  89  7A  7K  7Q  7J  7T  79  78  6A  6K  6Q  6J  6T  69  68  67  5A  5K  5Q  5J  56  4A  4K  4Q  45  3A  3K  3Q  2A  2K  2Q  
+AKs AQs AJs ATs A9s A8s A7s A6s A5s A4s A3s A2s KQs KJs KTs K9s K8s K7s K6s K5s K4s K3s K2s QJs QTs Q9s Q8s Q7s Q6s Q5s Q4s Q3s Q2s JTs J9s J8s J7s J6s J5s J4s J3s J2s T9s T8s T7s T6s T5s T4s T3s T2s 98s 97s 96s 95s 94s 93s 92s 87s 86s 85s 76s 75s 65s 54s 
+KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  9A  9K  9Q  9J  9T  8A  8K  8Q  8J  8T  89  7A  7K  7Q  7J  7T  79  78  6A  6K  6Q  6J  6T  69  68  67  5A  5K  5Q  4A  4K  4Q  3A  3K  3Q  2A  2K  2Q  
 
 ##list12##
 AA  KK  QQ  JJ  TT  99  88  77  
@@ -181,6 +178,16 @@ KA  QA  QK  JA  JK  JQ  TA  TK  TQ  TJ  9A  9K  9Q  9J  9T  8A  8K  89  7A  78  
 AA  KK  QQ  JJ  TT  99  88  77  66  55  44  33  22  
 AKs AQs AJs KQs KJs QJs 
 KA  QA  QK  
+
+##list07##
+AA  KK  QQ  JJ  TT  99  88  77  
+AKs AQs AJs ATs KQs KJs KTs QJs QTs JTs 
+KA  QA  QK  JA  
+
+##list08##
+AA  KK  QQ  JJ  TT  99  88  77  66  55  44  33  22  
+AKs AQs AJs ATs KQs KJs KTs QJs QTs JTs 
+KA  QA  QK  JA  
 
 ##f$BetSize##
 br == 1 ? 
@@ -378,10 +385,10 @@ nsuitedcommon < 3 && nstraightfillcommon > 1
 
 ##f$PreflopRaise##
 f$PreflopFirstIn ?
-		f$PositionEP ? islist01 
-  :f$PositionMP ? islist02 
+		f$PositionEP ? dll$BUVPIP < 20 && (dll$SBVPIP > 30 || dll$BBVPIP > 30) ? islist07 : islist01 
+  :f$PositionMP ? dll$BUVPIP < 20 && (dll$SBVPIP > 30 || dll$BBVPIP > 30) ? islist07 : islist02 
   :f$PositionCO ? dll$BUVPIP < 21 ? islist05 : islist03 
-  :f$PositionBU ? 1
+  :f$PositionBU ? dll$SBVPIP < 20 && dll$BBVPIP < 20 ? 1 : islist04
   :f$PositionSB ? dll$BBVPIP < 18 ? 1 : islist05
 	 :f$PositionBB ? islist12
   :0

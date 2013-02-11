@@ -335,7 +335,7 @@ double manipulateEQRaise(double EQ, double betsize, CurrentGameInfo& game)
 			logger.logExp("\t\t\tModifying Raise: 3BET OOP WEAK HAND EQ -20%", BOT_LOGIC);
 		}
 
-		//SBvsBB?
+		//SBvsBB 3BET??
 
 		if (betsize > 2 && (!game.getHand().isOOP3Bet() && !game.getHand().isAxs() && !game.getHand().isStrongBroadway() && !game.getHand().isSuitedBroadway() && !game.getHand().isBigSC()))
 		{
@@ -1162,7 +1162,13 @@ bool BayesDecision::committed(CurrentGameInfo& game)
 bool BayesDecision::canCallAfterRaise(CurrentGameInfo& gameInfo, PlayerRange& range, double betsize, BayesUserPreflop& preflop, BayesUserFlop& flop, BayesUserTurn& turn , BayesUserRiver& river)
 {
 	Logger& logger = Logger::getLogger(BOT_LOGIC);
+	if (gameInfo.getStreet() == 3)
+	{
+		logger.logExp("\t===============RIVER canCallAfterRaise================= ", BOT_LOGIC);
+		return 1;
+	}
 
+	
 	logger.logExp("\t===============BEGIN canCallAfterRaise================= ", BOT_LOGIC);
 
 
@@ -1717,7 +1723,7 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 			
 			
 			bool allIn = false;
-			if (betsize >= 0.7 * effectiv)
+			if (betsize >= 0.5 * effectiv)
 			{
 				betsize = effectiv;
 				allIn = true;
