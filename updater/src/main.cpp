@@ -19,8 +19,8 @@ Updater* updater=NULL;
 
 int main(int argc, char *argv[])
 {
-	HWND hWnd = GetConsoleWindow();
-	ShowWindow( hWnd, SW_HIDE );
+	//HWND hWnd = GetConsoleWindow();
+	//ShowWindow( hWnd, SW_HIDE );
 
 	po::options_description desc("Allowed options");
 	desc.add_options()
@@ -33,8 +33,11 @@ int main(int argc, char *argv[])
 	po::store(po::parse_command_line(argc, argv, desc), vm);
 	po::notify(vm);
 
+	char ip[100];
+	strcpy(ip, vm["ip"].as<string>().c_str());
+
 	////TODO:command line arguments for this!
-	database = new Database((char*)vm["ip"].as<string>().c_str(), "root", "root", "kutya");
+	database = new Database(ip, "root", "root", "kutya");
 	//printf("%s\n", database->query("show tables").c_str());
 
 	if (vm.count("live"))

@@ -20,9 +20,9 @@ Worker::Worker(string hFind, LiveUpdater* updater, boost::mutex& lock)
 
 void Worker::operator()()
 {
-    //Logger& logger = Logger::getLogger(LOGGER_TYPE::HAND_HISTORY_PARSER);
-    //logger.logExp("Started thread worker number: ", threadCounter, LOGGER_TYPE::HAND_HISTORY_PARSER);
-    //logger.logExp("Thread watches: ", hFind.c_str(), LOGGER_TYPE::HAND_HISTORY_PARSER);
+    Logger& logger = Logger::getLogger(LOGGER_TYPE::HAND_HISTORY_PARSER);
+    logger.logExp("Started thread worker number: ", threadCounter, LOGGER_TYPE::HAND_HISTORY_PARSER);
+    logger.logExp("Thread watches: ", hFind.c_str(), LOGGER_TYPE::HAND_HISTORY_PARSER);
     threadCounter++;
 
     ifstream fileHandle;
@@ -31,7 +31,7 @@ void Worker::operator()()
 
     vector<HandHistory> history;
 
-    parser.openFileForParsing(hFind);
+    //parser.openFileForParsing(hFind);
 
     while(1)
     {

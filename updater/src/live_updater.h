@@ -155,14 +155,14 @@ public:
 
 				for (int k = 0; k < player.getTurnAction().size(); ++k)
 				{
-					if (player.getFlopAction()[k].getType() == 'c') pass++;
-					if (player.getFlopAction()[k].getType() == 'r') aggr++;
+					if (player.getTurnAction()[k].getType() == 'c') pass++;
+					if (player.getTurnAction()[k].getType() == 'r') aggr++;
 				}
 
 				for (int k = 0; k < player.getRiverAction().size(); ++k)
 				{
-					if (player.getFlopAction()[k].getType() == 'c') pass++;
-					if (player.getFlopAction()[k].getType() == 'r') aggr++;
+					if (player.getRiverAction()[k].getType() == 'c') pass++;
+					if (player.getRiverAction()[k].getType() == 'r') aggr++;
 				}
 
 				(*aggrM)[player.getPlayerName()] += aggr;
