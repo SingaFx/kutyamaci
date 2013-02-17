@@ -31,7 +31,7 @@ FileWriteLine("bla.bat","md " & $startfolder)
 
 Run("bla.bat")
 
-Sleep(1000)
+Sleep(2000)
 
 Send('a')
 
@@ -55,9 +55,15 @@ Global $run = IniRead($datafile, "startup", "run", "-1")
 Global $casinoname = IniRead($datafile, "startup", "casinoname", "-1")
 
 
+
 dbgOut($run_path&$run)
 
 Run($run_path&$run)
+
+Sleep(10000)
+While ProcessExists("PGSmartUpgrade.exe")
+   Sleep(1000)
+WEnd
 
 ; Global $MAX_TABLES = IniRead($datafile, "other", "maxtables", "-1") 
 

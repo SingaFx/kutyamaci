@@ -1,0 +1,1 @@
+control timedate.cpl,,/Z (GMT-05:00) Eastern Time

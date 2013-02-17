@@ -9,10 +9,37 @@
 
 using namespace std;
 
-
-
 class BayesUserPreflop : public BayesPreflop
 {
+	static const int GRAF[2][8][8];
+
+	struct node
+	{
+		int VPIP, PFR;
+	};
+
+	struct edge
+	{
+		node base;
+		node x;
+
+		int weight()
+		{
+			int res = 0;
+			res += BayesUserPreflop::GRAF[0][base.VPIP][x.VPIP];
+			res += BayesUserPreflop::GRAF[1][base.PFR][x.PFR];
+
+			return res;
+		}
+
+		bool operator <(edge& e)
+		{
+			return weight() < e.weight();
+		}
+	};
+
+	vector<edge> grafResult;
+
 public:
 	BayesUserPreflop()
 	{
@@ -47,6 +74,30 @@ public:
 		backFE(f, true, 1);
 
 		fclose(f);
+	}
+	void createGrafResult(int v[])
+	{
+		grafResult.clear();
+		
+		node base;
+		base.VPIP = v[4];
+		base.PFR = v[5];
+
+		for (int vpip = 0; vpip < PREFLOP_PLAYER_VPIP_NUM; ++vpip)
+		{
+			for (int pfr = 0; pfr < PREFLOP_PLAYER_PFR_NUM; ++pfr)
+			{
+				node x;
+				x.VPIP = vpip;
+				x.PFR = pfr;
+
+				edge akt;
+				akt.base = base;
+				akt.x = x;
+
+				if (akt.weight() > 0) grafResult.push_back(akt);
+			}
+		}
 	}
 	double getProbability(int v[])
 	{
@@ -83,6 +134,17 @@ public:
 		}
 		if (x <= total) return (double) res / (double) total;
 
+		createGrafResult(v);
+		sort(grafResult.begin(), grafResult.end());
+
+		for (int i = 0; i < grafResult.size(); ++i)
+		{
+			total += totalPreflop[v[1]][v[2]][v[3]][grafResult[i].x.VPIP][grafResult[i].x.PFR][v[6]];
+			res += probabilityPreflop[v[0]][v[1]][v[2]][v[3]][grafResult[i].x.VPIP][grafResult[i].x.PFR][v[6]];
+
+			if (x <= total) return (double) res / (double) total;
+		}
+
 		return -2.0;
 	}
 	double getProbabilityFE(int v[], int x)
@@ -106,8 +168,8 @@ public:
 		for (int i = 0; i < PREFLOP_PLAYER_STACK_SIZE_NUM; ++i)
 		{
 			if (i == v[1]) continue;
-			total += totalFE[i][v[2]][v[3]][v[4]][v[1]][v[6]];
-			res += probabilityFE[i][v[2]][v[3]][v[4]][i][v[6]];
+			total += totalFE[i][v[2]][v[3]][v[4]][v[5]][v[6]];
+			res += probabilityFE[i][v[2]][v[3]][v[4]][v[5]][v[6]];
 		}
 		if (x <= total) return (double) res / (double) total;
 
@@ -350,7 +412,7 @@ public:
 		return getRange(v, x);
 	}
 
-	PlayerRange getCallRaiseRange(double VPIP, double PFR, double stackSize, int poz, int line, double betsize, double bblind, double potcommon, int x)
+	PlayerRange getCallRaiseRange(double VPIP, double PFR, double stackSize, int poz, int line, double betsize, double bblind, double potcommon, int x, bool allIn)
 	{
 		PlayerRange res;
 
@@ -367,18 +429,22 @@ public:
 		PlayerRange callingRange = getRange(v, x);
 		PlayerRange raiseRangeTotal;
 
-		v[3] = 1;
-
-		for (int i = nBetSize + 1; i < PREFLOP_PLAYER_BET_SIZE_NUM; ++i)
+		if (!allIn)
 		{
-			v[2] = i;
-			PlayerRange raiseRange = getRange(v, x);
-			raiseRangeTotal = RangeUtils::addRange(raiseRangeTotal, raiseRange);
+			v[3] = 1;
+
+			for (int i = nBetSize + 1; i < PREFLOP_PLAYER_BET_SIZE_NUM; ++i)
+			{
+				v[2] = i;
+				PlayerRange raiseRange = getRange(v, x);
+				raiseRangeTotal = RangeUtils::addRange(raiseRangeTotal, raiseRange);
+			}
+
+			raiseRangeTotal = raiseRangeTotal.normalize();
+
+			callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, 0.7);
 		}
 
-		raiseRangeTotal = raiseRangeTotal.normalize();
-
-		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, 0.7);
 		callingRange = callingRange.normalize();
 
 		return callingRange;
@@ -819,7 +885,7 @@ public:
 
 		return res;
 	}
-	PlayerRange getCallRaiseRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x)
+	PlayerRange getCallRaiseRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x, bool allIn)
 	{
 		PlayerRange res;
 
@@ -836,47 +902,57 @@ public:
 
 		PlayerRange callingRange = getRange(v, cards, own, x);
 		
-		PlayerRange raiseRangeTotal;
+		if (!allIn)
+		{
+			PlayerRange raiseRangeTotal;
 
-		v[4] = 1;
+			v[4] = 1;
 		
-		int aktBetSize = nBetSize + 1;
-		if (aktBetSize < 4) aktBetSize = 4;
+			int aktBetSize = nBetSize + 1;
+			if (aktBetSize < 4) aktBetSize = 4;
+			
+			double effectiv = stackSize - potcommon / 3;
+			int maxBetSize = 0;
+			if (effectiv > potcommon * 1) maxBetSize = 4;
+			if (effectiv > potcommon * 2) maxBetSize = 5;
+			if (effectiv > potcommon * 4) maxBetSize = 6;
+			if (effectiv > potcommon * 10) maxBetSize = 7;
 
-		for (int i = aktBetSize; i < PLAYER_BET_SIZE_NUM; ++i)
-		{
-			v[3] = i;
-			PlayerRange raiseRange = getRange(v, cards, own, x);
-			raiseRangeTotal = RangeUtils::addRange(raiseRangeTotal, raiseRange);
-		}
+			for (int i = aktBetSize; i < maxBetSize; ++i)
+			{
+				v[3] = i;
+				PlayerRange raiseRange = getRange(v, cards, own, x);
+				raiseRangeTotal = RangeUtils::addRange(raiseRangeTotal, raiseRange);
+			}
 
-		raiseRangeTotal = raiseRangeTotal.normalize();
+			raiseRangeTotal = raiseRangeTotal.normalize();
 
-		double weight = 0;
+			double weight = 0;
 
-		if (AF <= 1)
-		{
-			weight = 0.9;
-		}
-		else if (AF <= 2)
-		{
-			weight = 0.8;
-		}
-		else if (AF <= 3)
-		{
-			weight = 0.7;
-		}
-		else if (AF <= 5)
-		{
-			weight = 0.65;
-		}
-		else
-		{
-			weight = 0.55;
-		}
+			if (AF <= 1)
+			{
+				weight = 0.9;
+			}
+			else if (AF <= 2)
+			{
+				weight = 0.8;
+			}
+			else if (AF <= 3)
+			{
+				weight = 0.7;
+			}
+			else if (AF <= 5)
+			{
+				weight = 0.65;
+			}
+			else
+			{
+				weight = 0.55;
+			}
 
 
-		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, weight);
+			callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, weight);
+		}
 		callingRange = callingRange.normalize();
 
 		return callingRange;
@@ -897,27 +973,9 @@ public:
 		v[6] = normalizePFR(PFR);
 		v[7] = normalizeAF(AF);
 		
-		PlayerRange raiseRangeTotal;
-		
-		int aktBetSize = nBetSize + 1;
-		if (aktBetSize < 4) aktBetSize = 4;
+		PlayerRange raiseRange = getRange(v, cards, own, x);
 
-		for (int i = aktBetSize; i < PLAYER_BET_SIZE_NUM; ++i)
-		{
-			v[3] = i;
-			PlayerRange raiseRange = getRange(v, cards, own, x);
-			raiseRangeTotal = RangeUtils::addRange(raiseRangeTotal, raiseRange);
-		}
-
-		if (raiseRangeTotal.range.size() == 0)
-		{
-			logger.logExp("ERROR in raiseRangeTotal\n", BOT_LOGIC);
-			return raiseRangeTotal;
-		}
-
-		raiseRangeTotal = raiseRangeTotal.normalize();
-
-		return raiseRangeTotal;
+		return raiseRange;
 	}
 
 	void printRange(int v[], int x)
@@ -1203,7 +1261,7 @@ public:
 		{
 			if (v[8] == i) continue;
 			total += totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][i];
-			res += probabilityFE[v[0]][v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]][i];
+			res += probabilityFE[0][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][i];
 		}
 		if (x <= total) return (double) res / (double) total;
 
@@ -1309,7 +1367,7 @@ public:
 
 		return res;
 	}
-	PlayerRange getCallRaiseRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, double flop_potcommon, vector<Card>& cards, Hand own, int x)
+	PlayerRange getCallRaiseRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, double flop_potcommon, vector<Card>& cards, Hand own, int x, bool allIn)
 	{
 		PlayerRange res;
 
@@ -1326,47 +1384,58 @@ public:
 		v[8] = normalizePotSize(2, flop_potcommon, bblind);
 
 		PlayerRange callingRange = getRange(v, cards, own, x);
-		PlayerRange raiseRangeTotal;
-
-		v[4] = 1;
 		
-		int aktBetSize = nBetSize + 1;
-		if (aktBetSize < 4) aktBetSize = 4;
-
-		for (int i = aktBetSize; i < PLAYER_BET_SIZE_NUM; ++i)
+		if (!allIn)
 		{
-			v[3] = i;
-			PlayerRange raiseRange = getRange(v, cards, own, x);
-			raiseRangeTotal = RangeUtils::addRange(raiseRangeTotal, raiseRange);
-		}
+			PlayerRange raiseRangeTotal;
 
-		raiseRangeTotal = raiseRangeTotal.normalize();
+			v[4] = 1;
+		
+			int aktBetSize = nBetSize + 1;
+			if (aktBetSize < 4) aktBetSize = 4;
+			
+			double effectiv = stackSize - potcommon / 3;
+			int maxBetSize = 0;
+			if (effectiv > potcommon * 1) maxBetSize = 4;
+			if (effectiv > potcommon * 2) maxBetSize = 5;
+			if (effectiv > potcommon * 4) maxBetSize = 6;
+			if (effectiv > potcommon * 10) maxBetSize = 7;
 
-		double weight = 0;
+			for (int i = aktBetSize; i < maxBetSize; ++i)
+			{
+				v[3] = i;
+				PlayerRange raiseRange = getRange(v, cards, own, x);
+				raiseRangeTotal = RangeUtils::addRange(raiseRangeTotal, raiseRange);
+			}
 
-		if (AF <= 1)
-		{
-			weight = 0.9;
-		}
-		else if (AF <= 2)
-		{
-			weight = 0.85;
-		}
-		else if (AF <= 3)
-		{
-			weight = 0.70;
-		}
-		else if (AF <= 5)
-		{
-			weight = 0.65;
-		}
-		else
-		{
-			weight = 0.6;
-		}
+			raiseRangeTotal = raiseRangeTotal.normalize();
+
+			double weight = 0;
+
+			if (AF <= 1)
+			{
+				weight = 0.9;
+			}
+			else if (AF <= 2)
+			{
+				weight = 0.80;
+			}
+			else if (AF <= 3)
+			{
+				weight = 0.75;
+			}
+			else if (AF <= 5)
+			{
+				weight = 0.65;
+			}
+			else
+			{
+				weight = 0.6;
+			}
 
 
-		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, weight);
+			callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, weight);
+		}
 		callingRange = callingRange.normalize();
 
 		return callingRange;
@@ -1386,21 +1455,9 @@ public:
 		v[7] = normalizeAF(AF);
 		v[8] = normalizePotSize(2, flop_potcommon, bblind);
 		
-		PlayerRange raiseRangeTotal;
-		
-		int aktBetSize = nBetSize + 1;
-		if (aktBetSize < 4) aktBetSize = 4;
+		PlayerRange raiseRange = getRange(v, cards, own, x);
 
-		for (int i = aktBetSize; i < PLAYER_BET_SIZE_NUM; ++i)
-		{
-			v[3] = i;
-			PlayerRange raiseRange = getRange(v, cards, own, x);
-			raiseRangeTotal = RangeUtils::addRange(raiseRangeTotal, raiseRange);
-		}
-
-		raiseRangeTotal = raiseRangeTotal.normalize();
-
-		return raiseRangeTotal;
+		return raiseRange;
 	}
 
 	void printRange(int v[])
@@ -1629,6 +1686,7 @@ public:
 		total += totalS[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 		res += probabilityHS[v[0]][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 		
+		printf("X= %d, Total= %d\n", x, total);
 		if (x <= total) return (double) res / (double) total;
 		
 		for (int i = 0; i < PLAYER_STACK_SIZE_NUM; ++i)
@@ -1637,6 +1695,7 @@ public:
 			total += totalS[v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 			res += probabilityHS[v[0]][v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]][v[8]];
 		}
+		printf("X= %d, Total= %d\n", x, total);
 		if (x <= total) return (double) res / (double) total;
 
 		createGrafResult(v);
@@ -1647,7 +1706,7 @@ public:
 			total += totalS[v[1]][v[2]][grafResult[i].x.betsize][v[4]][grafResult[i].x.VPIP][grafResult[i].x.PFR][grafResult[i].x.AF][grafResult[i].x.flopPotSize];
 			res += probabilityHS[v[0]][v[1]][v[2]][grafResult[i].x.betsize][v[4]][grafResult[i].x.VPIP][grafResult[i].x.PFR][grafResult[i].x.AF][grafResult[i].x.flopPotSize];
 
-			//printf("GENERALIZE: %d %d %d %d %d %d %d %d\n", v[1], v[2], grafResult[i].x.betsize, v[4], grafResult[i].x.VPIP, grafResult[i].x.PFR, grafResult[i].x.AF, grafResult[i].x.flopPotSize);
+			printf("GENERALIZE: %d %d %d %d %d %d %d %d\n", v[1], v[2], grafResult[i].x.betsize, v[4], grafResult[i].x.VPIP, grafResult[i].x.PFR, grafResult[i].x.AF, grafResult[i].x.flopPotSize);
 			if (x <= total) return (double) res / (double) total;
 		}
 
@@ -1716,6 +1775,7 @@ public:
 
 	PlayerRange getRange(int v[], vector<Card>& cards, Hand own, int x)
 	{
+		printf("GETTING RANGE\n");
 		PlayerRange res;
 
 		double HS[10];
@@ -1723,6 +1783,7 @@ public:
 		{
 			v[0] = i;
 			HS[i] = getProbabilityHS(v, x);
+			printf("HS(%d) = %lf\n", i, HS[i]);
 			//HACK
 			if (HS[i] < 0)
 			{
@@ -1746,7 +1807,7 @@ public:
 		return res;
 	}
 
-	PlayerRange getCallRaiseRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, double flop_potcommon, vector<Card>& cards, Hand own, int x)
+	PlayerRange getCallRaiseRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, double flop_potcommon, vector<Card>& cards, Hand own, int x, bool allIn = false)
 	{
 		PlayerRange res;
 
@@ -1763,49 +1824,59 @@ public:
 		v[8] = normalizePotSize(2, flop_potcommon, bblind);
 
 		PlayerRange callingRange = getRange(v, cards, own, x);
-		PlayerRange raiseRangeTotal;
-
-		v[4] = 1;
 		
-		int aktBetSize = nBetSize + 1;
-		if (aktBetSize < 4) aktBetSize = 4;
+		if (!allIn)
+		{
+			PlayerRange raiseRangeTotal;
 
-		for (int i = aktBetSize; i < PLAYER_BET_SIZE_NUM; ++i)
-		{
-			v[3] = i;
-			PlayerRange raiseRange = getRange(v, cards, own, x);
-			raiseRangeTotal = RangeUtils::addRange(raiseRangeTotal, raiseRange);
+			v[4] = 1;
+		
+			int aktBetSize = nBetSize + 1;
+			if (aktBetSize < 4) aktBetSize = 4;
+
+			double effectiv = stackSize - potcommon / 3;
+			int maxBetSize = 0;
+			if (effectiv > potcommon * 1) maxBetSize = 4;
+			if (effectiv > potcommon * 2) maxBetSize = 5;
+			if (effectiv > potcommon * 4) maxBetSize = 6;
+			if (effectiv > potcommon * 10) maxBetSize = 7;
+
+			for (int i = aktBetSize; i < maxBetSize; ++i)
+			{
+				v[3] = i;
+				PlayerRange raiseRange = getRange(v, cards, own, x);
+				raiseRangeTotal = RangeUtils::addRange(raiseRangeTotal, raiseRange);
+			}
+
+			raiseRangeTotal = raiseRangeTotal.normalize();
+
+			double weight = 0;
+
+			if (AF <= 1)
+			{
+				weight = 0.90;
+			}
+			else if (AF <= 2)
+			{
+				weight = 0.80;
+			}
+			else if (AF <= 3)
+			{
+				weight = 0.75;
+			}
+			else if (AF <= 5)
+			{
+				weight = 0.70;
+			}
+			else
+			{
+				weight = 0.70;
+			}
+
+			callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, weight);
 		}
 
-		raiseRangeTotal = raiseRangeTotal.normalize();
-
-		double weight = 0;
-
-		if (AF <= 1)
-		{
-			weight = 0.95;
-		}
-		else if (AF <= 2)
-		{
-			weight = 0.85;
-		}
-		else if (AF <= 3)
-		{
-			weight = 0.80;
-		}
-		else if (AF <= 5)
-		{
-			weight = 0.75;
-		}
-		else
-		{
-			weight = 0.75;
-		}
-
-		callingRange = RangeUtils::addRange(callingRange, raiseRangeTotal, weight);
 		callingRange = callingRange.normalize();
-
-
 		return callingRange;
 	}
 
@@ -1823,21 +1894,8 @@ public:
 		v[7] = normalizeAF(AF);
 		v[8] = normalizePotSize(2, flop_potcommon, bblind);
 		
-		PlayerRange raiseRangeTotal;
-		
-		int aktBetSize = nBetSize + 1;
-		if (aktBetSize < 4) aktBetSize = 4;
-
-		for (int i = aktBetSize; i < PLAYER_BET_SIZE_NUM; ++i)
-		{
-			v[3] = i;
-			PlayerRange raiseRange = getRange(v, cards, own, x);
-			raiseRangeTotal = RangeUtils::addRange(raiseRangeTotal, raiseRange);
-		}
-
-		raiseRangeTotal = raiseRangeTotal.normalize();
-
-		return raiseRangeTotal;
+		PlayerRange raiseRange = getRange(v, cards, own, x);
+		return raiseRange;
 	}
 
 	double getProbabilityHS(int v[])
@@ -1869,7 +1927,7 @@ public:
 		{
 			if (v[8] == i) continue;
 			total += totalFE[v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][i];
-			res += probabilityFE[v[0]][v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]][i];
+			res += probabilityFE[0][v[1]][v[2]][v[3]][v[4]][v[5]][v[6]][v[7]][i];
 		}
 		if (x <= total) return (double) res / (double) total;
 

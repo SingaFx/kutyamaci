@@ -1,4 +1,4 @@
-##2013-02-11 20:54:58##
+##2013-02-12 18:06:00##
 
 ##notes##
 
@@ -23,7 +23,7 @@
 
 ##f$swag##
 dll$swag == -1 ?
-	f$mySrai ? 
+	 br == 1 && f$PreflopUnopened && f$mySrai? 
 		f$BetSize > 0.4 * f$ActualStack ? f$TotalBalance
 		 :((f$BetSize/sblind)^0)*sblind
 	:0
@@ -32,7 +32,7 @@ dll$swag == -1 ?
 	:0
 
 ##f$srai##
-dll$srai == -1 ? f$mySrai : dll$srai
+dll$srai == -1 ? br == 1 && f$PreflopUnopened && f$mySrai : dll$srai
 
 ##f$rais##
 
@@ -40,7 +40,9 @@ dll$srai == -1 ? f$mySrai : dll$srai
 ##f$call##
 dll$srai == 1 
 ||
-(dll$call == -1 ? f$myCall : dll$call)
+(dll$call == -1 ? 
+		br == 1 && f$PreflopUnopened ? f$myCall : 0
+:dll$call)
 
 ##f$prefold##
 br == 1 && dll$PREFOLD ? 

@@ -8,8 +8,30 @@
 
 #ce ----------------------------------------------------------------------------
 
+Local $lobby = "Notepad"
 
+WinActivate($lobby)
+AutoItSetOption("WinTitleMatchMode", 2)
+$lobby_hwnd = WinGetHandle($lobby)
+WinKill($lobby_hwnd)
 
+Exit
+
+;WPT.exe
+;PartyGaming.exe 
+;bwin.exe 
+
+Local $lobby = "WPT"
+
+WinActivate($lobby)
+AutoItSetOption("WinTitleMatchMode", 2)
+$lobby_hwnd = WinGetHandle($lobby)
+WinKill($lobby_hwnd)
+Local $lobbyWindow = WinGetPos($lobby_hwnd)
+Sleep(10000)
+MouseClick("left", $lobbyWindow[0] + 465, $lobbyWindow[1] + 400, 1, 10)
+
+Exit
 
 ;_DllScrape_clickRegion("OpenScrapeExampleTM.tm", WinGetHandle($winTittle), "normal", "OpenScrapeDLL.dll", 1)
 

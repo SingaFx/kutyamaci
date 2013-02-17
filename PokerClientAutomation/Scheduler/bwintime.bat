@@ -1,0 +1,1 @@
+control timedate.cpl,,/Z (GMT+04:30) Kabul

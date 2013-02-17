@@ -45,12 +45,18 @@
 		MsgBox(0, "Error TCPRecv", "Received not a command !")
     Else
 		 If ($recv == "START_BWIN") Then
+			Run("bwintime.bat")
+			Sleep(1000)
 			Run("C:\kutya\client_bwin\client.exe", "C:\kutya\client_bwin\")
 		 EndIf
 		 If ($recv == "START_PARTY") Then
+			Run("Partyime.bat")
+			Sleep(1000)
 			Run("C:\kutya\client_party\client.exe", "C:\kutya\client_party\")
 		 EndIf
 		 If ($recv == "START_WPT") Then
+			Run("WPTtime.bat")
+			Sleep(1000)
 			Run("C:\kutya\client_wpt\client.exe", "C:\kutya\client_wpt\")
 		 EndIf
 		 If ($recv == "CLOSE_BWIN") Then
@@ -93,7 +99,7 @@ Func closeSession($lobby)
    
    for $k = 1 to $array[0][0]
 	  $text = ''
-	  While $text <> 'imback'
+	  While $text <> 'iabk'
 		 MouseMove(1, 1, 1)
 		 $text = _DllScrape_scrapeRegion($tablemap, $array[$k][1], "imback", "OpenScrapeDLL.dll",20)
 		 Sleep(5000)
@@ -101,21 +107,44 @@ Func closeSession($lobby)
    Next
 
    for $k = 1 to $array[0][0]
-	  WinClose($array[$k][1])
 	  Local $table = WinGetPos($array[$k][1])
-	  Sleep(1000)
-	  MouseClick("left", $table[0] + 200, $table[1] + 213, 1, 1)
+	  WinClose($array[$k][1])
+	  WinActivate($array[$k][1])
+	  If IsArray($table) Then
+		 Sleep(1000)
+		 MouseClick("left", $table[0] + 200, $table[1] + 213, 1, 10)
+		 MouseClick("left", $table[0] + 204, $table[1] + 213, 1, 10)
+		 MouseClick("left", $table[0] + 200, $table[1] + 216, 1, 10)
+		 MouseClick("left", $table[0] + 196, $table[1] + 213, 1, 10)
+		 MouseClick("left", $table[0] + 196, $table[1] + 216, 1, 10)
+	  Else
+		 WinKill($array[$k][1])
+;~ 		 MsgBox(0, "Error", "Couldn't get the position of the window")
+	  EndIf
    Next
    
-   Sleep(5000)
+   Sleep(10000)
    
    WinActivate($lobby)
    AutoItSetOption("WinTitleMatchMode", 2)
-   $array = WinList($lobby)
-   WinClose($array[1][1])
-   Local $lobbyWindow = WinGetPos($array[1][1])
-   MouseClick("left", $lobbyWindow[0] + 465, $lobbyWindow[1] + 400, 1)
+   $lobby_hwnd = WinGetHandle($lobby)
+   WinKill($lobby_hwnd)
    
+   Local $lobbyWindow = WinGetPos($lobby_hwnd)
+   if IsArray($lobbyWindow) Then
+	  Sleep(1000)
+	  MouseClick("left", $lobbyWindow[0] + 465, $lobbyWindow[1] + 400, 1, 10)
+	  MouseClick("left", $lobbyWindow[0] + 460, $lobbyWindow[1] + 400, 1, 10)
+	  MouseClick("left", $lobbyWindow[0] + 470, $lobbyWindow[1] + 400, 1, 10)
+	  MouseClick("left", $lobbyWindow[0] + 465, $lobbyWindow[1] + 395, 1, 10)
+	  MouseClick("left", $lobbyWindow[0] + 465, $lobbyWindow[1] + 405, 1, 10)
+   Endif
+   
+   Sleep(5000)
+   
+   ProcessClose("bwin.exe")
+   ProcessClose("WPT.exe")
+   ProcessClose("PartyGaming.exe")
    ProcessClose("updater.exe")
    ProcessClose("client.exe")
    

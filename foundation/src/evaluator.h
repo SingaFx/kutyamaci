@@ -1828,7 +1828,15 @@ public:
 			}
 
 			if (turnVeryDangerousBoard(board))
+			{
+				if (h1.getRank() == h2.getRank() && h1.getRank() > board[3].getRank() && suitedNumber(board) < 4)
+				{
+					if (h1.getRank() >= 10)
+						return 2;
+					return 3;
+				}
 				return 4;
+			}
 
 			if (h1.getRank() == h2.getRank())
 			{
@@ -1848,6 +1856,13 @@ public:
 				}
 				if (h1.getRank() > board[2].getRank())
 					return 2;
+
+				if (turnStrongFlushDraw(h1,h2,board) && (turnGutShot(h1,h2,b1,b2,b3,b4) || turnOESD(h1,h2,b1,b2,b3,b4)))
+					return 7;
+				if (turnStrongFlushDraw(h1,h2,board) || (turnStrongOESD(h1,h2,b1,b2,b3,b4) && turnSuitedNumber(b1,b2,b3,b4) < 3))
+					return 6;
+				if (turnGutShot(h1,h2,b1,b2,b3,b4) || turnOESD(h1,h2,b1,b2,b3,b4))
+					return 5;
 				return 4;
 			}
 
@@ -2150,7 +2165,7 @@ public:
 		else if (riverStraight(cards))
 		{
 			if (riverSuitedNumber(b1,b2,b3,b4,b5) == 4)
-				return 4;
+				return 3;
 
 			if (flopStraight(b1,b2,b3,b4,b5))
 			{
@@ -2338,7 +2353,11 @@ public:
 			}
 
 			if (riverFuckedUpBoard(board))
-				return 4;
+			{
+				if (suitedNumber(board) < 4 && h1.getRank() == h2.getRank() && h1.getRank() > board[4].getRank() && h1.getRank() >= 10)
+					return 2;
+				return 3;
+			}
 
 			if (!riverDoubleBoard(board))
 			{
@@ -2385,7 +2404,7 @@ public:
 
 			Card kicker = h1;
 			Card pair = h2;
-			if (existsOnBoard(h1.getRank(),board))
+			if (existsOnBoard(h1.getRank(),board) && (!existsOnBoard(h2.getRank(), board) || (h1.getRank() > h2.getRank())))
 			{
 				kicker = h2;
 				pair = h1;
@@ -2425,7 +2444,15 @@ public:
 				return 4;
 
 			if (riverFuckedUpBoard(board))
+			{
+				if (suitedNumber(board) < 4 && h1.getRank() == h2.getRank() && h1.getRank() > board[4].getRank())
+				{
+					if (h1.getRank() >= 10)
+						return 2;
+					return 3;
+				}
 				return 4;
+			}
 
 			if (h1.getRank() == h2.getRank())
 			{
@@ -2452,7 +2479,7 @@ public:
 
 			Card pair = h2;
 			Card kicker = h1;
-			if (existsOnBoard(h1.getRank(),board) && (!(existsOnBoard(h2.getRank(), board) || (h1.getRank() > h2.getRank()))))
+			if (existsOnBoard(h1.getRank(),board))
 			{
 				kicker = h2;
 				pair = h1;

@@ -41,16 +41,17 @@ If $socket = -1 Then
    MsgBox(4096, "", "Cannot connect to server fool!")
    Exit
 EndIf
+SRandom(@MSEC)
 
 While 1
-   playSession(0, Random(5400, 9000, 1))
-   playSession(1, Random(5400, 9000, 1))
-   playSession(2, Random(5400, 9000, 1))
+   playSession(2, Random(3600, 4000, 1))
+   playSession(1, Random(3600, 4000, 1))
+   playSession(0, Random(3600, 4000, 1))
 WEnd
 
 Func playSession($id, $time)
+   DbgOut("Starting session: " & $id)
    Run($script_dir[$id] & $script[$id], $script_dir[$id])
-   Sleep(20000)
    TCPSend($socket, $start_command[$id])
    
    Sleep(60000)
@@ -65,21 +66,24 @@ Func playSession($id, $time)
    Next
    ;CLICK I'M BACK
    
+   DbgOut("Sitting out session: " & $id)
    Local $k
-   for $k = 1 to 10
+   for $k = 1 to 15
 	  ClickSitout($id)
 	  Sleep(100)
    Next
    
    TCPSend($socket, $end_command[$id])
+   
    Sleep(200000)
-   ;BACKUP PLAN
 
    While ProcessExists("OpenHoldem.exe")
 	  ProcessClose("OpenHoldem.exe")
    WEnd
    
    ProcessClose($script[$id])
+   DbgOut("Finished session: " & $id)
+   Sleep(20000)
 EndFunc
 
 Func ClickSitout($id)
@@ -110,7 +114,7 @@ Func check($id)
    Local $array = WinList("[REGEXPTITLE:" & $name & "]")
    for $k = 1 to $array[0][0]
 	  Local $text = _DllScrape_scrapeRegion($tablemap, $array[$k][1], "imback", "OpenScrapeDLL.dll",20)
-	  if $text = 'imback' Then
+	  if $text = 'iabk' Then
 		 MutexLock()
 		 _DllScrape_clickRegion($tablemap, $array[$k][1], "imback", "OpenScrapeDLL.dll",1)
 		 MutexUnlock()

@@ -2,7 +2,7 @@
 
 // OpenScrape 2.0.0
 
-// 2013-02-09 20:46:37
+// 2013-02-14 21:02:01
 // 32 bits per pixel
 
 //
@@ -27,6 +27,7 @@ s$swagdeletionmethod        Delete
 s$swagselectionmethod       Dbl Click
 s$swagtextmethod            3
 s$titletext                 NL
+s$ttlimits                  ^*$^s/^b
 
 //
 // regions
