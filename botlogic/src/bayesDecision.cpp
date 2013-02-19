@@ -445,8 +445,15 @@ double manipulateEQRaiseAllIn(double EQ, double betsize, CurrentGameInfo& game)
 	//HA REGULAR LEHUZZUK RAISE-nel
 	if (isRegular(game) && maxStackSize >= 100) 
 	{
-		logger.logExp("\t\t\tModifying AI: REG in play EQ 10%", BOT_LOGIC);
-		EQ = modifyValue(EQ, -0.15);
+		logger.logExp("\t\t\tModifying AI: REG in play EQ 15%", BOT_LOGIC);
+		if (game.getFlopPotSize() < 20 && effectiv < 200)
+		{
+			EQ = modifyValue(EQ, -0.05);
+		}
+		else
+		{
+			EQ = modifyValue(EQ, -0.15);
+		}
 	}
 	if (isTightRegular(game))
 	{
@@ -2011,7 +2018,14 @@ Action BayesDecision::makeDecision(CurrentGameInfo& game, vector<PlayerRange>& r
 
 				logger.logExp("MaxRaiseSize= ", maxRaiseSize, BOT_LOGIC);
 
-				res.setAction('r', maxRaiseSize);
+				if (abs(maxRaiseSize - (game.getHero().getBetsize() * game.getBblind() + game.getAmountToCall() * game.getBblind())) < 5 * game.getBblind())
+				{
+					res.setAction('c', 0);
+				}
+				else
+				{
+					res.setAction('r', maxRaiseSize);
+				}
 				if (bluffing) res.setBluff(true);
 			}
 		}
