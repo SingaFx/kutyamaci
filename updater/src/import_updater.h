@@ -12,12 +12,25 @@ using namespace std;
 class ImportUpdater : public Updater
 {
 	int nrofhands;
+	set<string>* Players;
+	map<string, double>* VPIP;
+	map<string, double>* PFR;
+	map<string, int>* aggrM;
+	map<string, int>* passM;
+	map<string, int>* handnr;
 public:
 	ImportUpdater(string folder, Database* database)
 	{
 		this->database = database;
 		this->folder = folder;
 		this->nrofhands = 0;
+		
+		Players = new set<string>();
+		VPIP = new map<string, double>();
+		PFR = new map<string, double>();
+		aggrM = new map<string, int>();
+		passM = new map<string, int>();
+		handnr = new map<string, int>();
 	}
 
 	void run()
@@ -41,7 +54,7 @@ public:
 			}
 			else
 			{
-				//_tprintf(TEXT("%s\n"), ffd.cFileName);
+				_tprintf(TEXT("%s\n"), ffd.cFileName);
 
 				//give it to the parser!
 				//update the database according to the parser!
@@ -55,6 +68,30 @@ public:
 		}
 		while (FindNextFile(hFind, &ffd) != 0);
 		FindClose(hFind);
+
+		cout << "BEGIN UPDATE" << endl;
+
+		for (set<string>::iterator it = Players->begin(); it != Players->end(); ++it)
+		{
+			if (!database->isUser(*it))
+			{
+				database->insertUser(*it);
+			}
+			database->setAGGR((*aggrM)[*it], *it);
+			database->setPASS((*passM)[*it], *it);
+			database->setPFR((*PFR)[*it], (*handnr)[*it], *it);
+			database->setVPIP((*VPIP)[*it], (*handnr)[*it], *it);
+			database->incHandnr((*handnr)[*it], *it);
+		}
+
+		delete Players;
+		delete aggrM;
+		delete passM;
+		delete VPIP;
+		delete PFR;
+		delete handnr;
+
+		cout << "FINISHED UPDATE" << endl;
 		//cout << "Number of hands at showdown : " << this->nrofhands << endl;
 	}
 
@@ -62,30 +99,26 @@ public:
 	{
 		//cout << "Parsing file: " << filename << endl;
 
-		set<string>* Players = new set<string>();
-		map<string, double>* VPIP = new map<string, double>();
-		map<string, double>* PFR = new map<string, double>();
-		map<string, int>* aggrM = new map<string, int>();
-		map<string, int>* passM = new map<string, int>();
-		map<string, int>* handnr = new map<string, int>();
-
         ifstream fileHandle;
 
-        BwinPartyParser parser(PARSER_TYPE::IMPORT_PARSER, fileHandle);
-        parser.openFileForParsing(filename);
-		vector<HandHistory> history =  parser.parse();
-        parser.closeFileAfterParsing();
+		OnGameParser parser;
+        //BwinPartyParser parser(PARSER_TYPE::IMPORT_PARSER, fileHandle);
+        //parser.openFileForParsing(filename);
+		vector<HandHistory> history =  parser.parse(filename);
+        //parser.closeFileAfterParsing();
 		//nrofhands += HandHistoryUtils::exportToFile(history, "hh.txt");
 		//HandHistoryUtils::detailedExportToFile(history,"dhh.txt");
 
 		for (int i = 0; i < history.size(); ++i)
 		{
-			if (database->isHand(history[i].getId())) continue;
-				database->insertHand(history[i].getId());
+			//if (database->isHand(history[i].getId())) continue;
+			//	database->insertHand(history[i].getId());
 
 			for (int j = 0; j < history[i].getPlayerHistories().size(); ++j)
 			{
 				PlayerHistory player = history[i].getPlayerHistories()[j];
+				
+				//printf("%s\n", player.getPlayerName().c_str());
 				/*
 				if (!database->isUser(player.getPlayerName()))
 				{
@@ -154,26 +187,6 @@ public:
 				(*handnr)[player.getPlayerName()]++;
 			}
 		}
-
-		for (set<string>::iterator it = Players->begin(); it != Players->end(); ++it)
-		{
-			if (!database->isUser(*it))
-			{
-				database->insertUser(*it);
-			}
-			database->setAGGR((*aggrM)[*it], *it);
-			database->setPASS((*passM)[*it], *it);
-			database->setPFR((*PFR)[*it], (*handnr)[*it], *it);
-			database->setVPIP((*VPIP)[*it], (*handnr)[*it], *it);
-			database->incHandnr((*handnr)[*it], *it);
-		}
-
-		delete Players;
-		delete aggrM;
-		delete passM;
-		delete VPIP;
-		delete PFR;
-		delete handnr;
 	}
 
 	void parseAndUpdate2(string filename)

@@ -1283,14 +1283,14 @@ public:
 						 return 0;
 					 if (pocketNotDoubledCard.getRank() >= 10)
 						 return 1;
-					 return 2;
+					 return 1;
 				 }
 
 				 if (pocketNotDoubledCard.getRank() == 13)
 					 return 0;
 				 if (pocketNotDoubledCard.getRank() >= 10)
 					 return 1;
-				 return 2;
+				 return 1;
 			 }
 
 			 if ((h1.getRank() == 14) || (h2.getRank() == 14))
@@ -1305,8 +1305,8 @@ public:
 			 {
 				 // top2 pair
 				 if ((pocket[0].getRank() == board[1].getRank()) && (pocket[1].getRank() == board[2].getRank()))
-					 return 1;
-				 return 2;
+					 return 0;
+				 return 1;
 			 }
 
 			 if (flopSingleBoard(b1,b2,b3))
@@ -1321,28 +1321,44 @@ public:
 			 {
 				 if (flopTwoOverCards(h1,h2,b1,b2,b3))
 				 {
-					 if (h1.getRank() >= 12)
+					 if (h1.getRank() >= 10)
 						 return 1;
-					 if (h1.getRank() >= 8)
+					 if (h1.getRank() >= 7)
 						 return 2;
-					 return 3;
+					 return 2;
 				 }
 				 return 3;
 			 }
 
 			 Card pair = ((h1.getRank() == board[0].getRank()) || (h1.getRank() == board[2].getRank())) ? h1 : h2;
 			 Card kicker = ((h1.getRank() == board[0].getRank()) || (h1.getRank() == board[2].getRank())) ? h2 : h1;
+			 if (pair.getRank() > board[1].getRank())
+			 {
+				 if (pair.getRank() >= 10)
+				 {
+					 if ((kicker.getRank() == 14) || (pair.getRank() == 14 && kicker.getRank() == 13))
+						 return 1;
+					 if (kicker.getRank() >= 11)
+						 return 1;
+					 return 2;
+				 }
+
+				 if (kicker.getRank() >= 11)
+					 return 2;
+				 return 2;
+			 }
+
 			 if (pair.getRank() >= 10)
 			 {
 				 if ((kicker.getRank() == 14) || (pair.getRank() == 14 && kicker.getRank() == 13))
-					 return 1;
+				 	 return 2;
 				 if (kicker.getRank() >= 11)
 					 return 2;
-				 return 3;
+				 return 2;
 			 }
 
 			 if (kicker.getRank() >= 11)
-				 return 2;
+				 return 3;
 			 return 3;
 		 }
 		 if (flopOnePair(cards))
@@ -1359,21 +1375,21 @@ public:
 				 if ((h1.getRank() == board[2].getRank()))
 				 {
 					 if (h2.getRank() >= 11)
-						 return 1;
-					 return 2;
+						 return 0;
+					 return 1;
 				 }
 
 				 if ((h2.getRank() == board[2].getRank()))
 				 {
 					 if (h1.getRank() >= 11)
-						 return 1;
-					 return 2;
+						 return 0;
+					 return 1;
 				 }
 
 				 if ((h1.getRank() == board[1].getRank()) || (h2.getRank() == board[1].getRank()))
-					 return 2;
+					 return 1;
 
-				 return 6;
+				 return 7;
 			 }
 
 			 if (flopDangerousBoard(b1,b2,b3))
@@ -1381,22 +1397,22 @@ public:
 				 if (h1.getRank() == h2.getRank())
 				 {
 					 if (flopTwoOverCards(h1,h2,b1,b2,b3))
-						return 2;
+						return 1;
 					 return 3;
 				 }
 
 				 if ((h1.getRank() == board[2].getRank()))
 				 {
 					 if (h2.getRank() >= 11)
-						 return 2;
-					 return 3;
+						 return 1;
+					 return 2;
 				 }
 
 				 if ((h2.getRank() == board[2].getRank()))
 				 {
 					 if (h1.getRank() >= 11)
-						 return 2;
-					 return 3;
+						 return 1;
+					 return 2;
 				 }
 
 				 if ((h1.getRank() == board[1].getRank()) || (h2.getRank() == board[1].getRank()))
@@ -1411,7 +1427,7 @@ public:
 			 {
 				 if (flopTwoOverCards(h1,h2,b1,b2,b3))
 				 {
-					 if (h1.getRank() >= 11)
+					 if (h1.getRank() >= 10)
 						return 1;
 					 return 2;
 				 }
@@ -1423,8 +1439,8 @@ public:
 				 if ((h2.getRank() == 14) || ((h1.getRank() == 14) && (h2.getRank() == 13)))
 					 return 1;
 				 if (h2.getRank() >= 11)
-					 return 2;
-				 return 3;
+					 return 1;
+				 return 2;
 			 }
 
 			 if ((h2.getRank() == board[2].getRank()))
@@ -1432,8 +1448,8 @@ public:
 				 if ((h1.getRank() == 14) || ((h2.getRank() == 14) && (h1.getRank() == 13)))
 					 return 1;
 				 if (h1.getRank() >= 11)
-					 return 2;
-				 return 3;
+					 return 1;
+				 return 2;
 			 }
 
 			 if ((h1.getRank() == board[1].getRank()) || (h2.getRank() == board[1].getRank()))
@@ -1585,7 +1601,7 @@ public:
 				return 0;
 			}
 
-			if (suitedCard.getRank() >= 11)
+			if (suitedCard.getRank() >= 10)
 				return 1;
 
 			return 3;
@@ -1835,6 +1851,24 @@ public:
 						return 2;
 					return 3;
 				}
+
+				if (suitedNumber(board) < 4 && (h1.getRank() == board[3].getRank() || h2.getRank() == board[3].getRank()))
+				{
+					Card pair = h2;
+					Card kicker = h1;
+					if (existsOnBoard(h1.getRank(),board))
+					{
+						kicker = h2;
+						pair = h1;
+					}
+
+					if (pair.getRank() >= 11 && kicker.getRank() >= 10)
+					{
+						return 2;
+					}
+					return 3;
+				}
+
 				return 4;
 			}
 
@@ -2111,7 +2145,7 @@ public:
 				if ((h1.getSuit() == b1.getSuit()) || (h2.getSuit() == b2.getSuit()))
 				{
 					Card suitedCard = (h1.getSuit() == b1.getSuit() && (h2.getSuit() != b1.getSuit() || h2.getRank() < h1.getRank())) ? h1 : h2;
-					if (suitedCard.getRank() >= 11)
+					if (suitedCard.getRank() >= 10)
 						return 3;
 					return 4;
 				}
@@ -2158,7 +2192,7 @@ public:
 				return 0;
 			}
 
-			if (suitedCard.getRank() >= 11)
+			if (suitedCard.getRank() >= 10)
 				return 2;
 			return 3;
 		}
@@ -2356,6 +2390,21 @@ public:
 			{
 				if (suitedNumber(board) < 4 && h1.getRank() == h2.getRank() && h1.getRank() > board[4].getRank() && h1.getRank() >= 10)
 					return 2;
+				if (suitedNumber(board) < 4 && (h1.getRank() == board[4].getRank() || h2.getRank() == board[4].getRank()))
+				{
+					Card pair = h2;
+					Card kicker = h1;
+					if (h1.getRank() == board[4].getRank())
+					{
+						kicker = h2;
+						pair = h1;
+					}
+
+					if (pair.getRank() >= 11 && kicker.getRank() >= 10)
+						return 2;
+					return 3;
+				}
+
 				return 3;
 			}
 
@@ -2448,6 +2497,21 @@ public:
 				if (suitedNumber(board) < 4 && h1.getRank() == h2.getRank() && h1.getRank() > board[4].getRank())
 				{
 					if (h1.getRank() >= 10)
+						return 2;
+					return 3;
+				}
+
+				if (suitedNumber(board) < 4 && (h1.getRank() == board[4].getRank() || h2.getRank() == board[4].getRank()))
+				{
+					Card pair = h2;
+					Card kicker = h1;
+					if (existsOnBoard(h1.getRank(),board))
+					{
+						kicker = h2;
+						pair = h1;
+					}
+
+					if (pair.getRank() >= 11 && kicker.getRank() >= 10)
 						return 2;
 					return 3;
 				}

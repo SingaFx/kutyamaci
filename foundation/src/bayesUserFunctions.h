@@ -748,7 +748,7 @@ public:
 			total += totalS[v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]];
 			res += probabilityHS[v[0]][v[1]][i][v[3]][v[4]][v[5]][v[6]][v[7]];
 		}
-		//printf("Total %d\n", total);
+		printf("Total %d\n", total);
 		if (x <= total) return (double) res / (double) total;
 
 		createGrafResult(v);
@@ -759,7 +759,7 @@ public:
 			total += totalS[v[1]][v[2]][grafResult[i].x.betsize][v[4]][grafResult[i].x.VPIP][grafResult[i].x.PFR][grafResult[i].x.AF];
 			res += probabilityHS[v[0]][v[1]][v[2]][grafResult[i].x.betsize][v[4]][grafResult[i].x.VPIP][grafResult[i].x.PFR][grafResult[i].x.AF];
 
-			//printf("GENERALIZE: %d %d %d %d %d %d %d\n", v[1], v[2], grafResult[i].x.betsize, v[4], grafResult[i].x.VPIP, grafResult[i].x.PFR, grafResult[i].x.AF);
+			printf("GENERALIZE: %d %d %d %d %d %d %d\n", v[1], v[2], grafResult[i].x.betsize, v[4], grafResult[i].x.VPIP, grafResult[i].x.PFR, grafResult[i].x.AF);
 			if (x <= total) return (double) res / (double) total;
 		}
 

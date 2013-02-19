@@ -1,4 +1,5 @@
 #include "Hand.h"
+#include "bayesUtils.h"
 
 Hand::Hand()
  : card1()
@@ -203,7 +204,7 @@ bool Hand::isQJ()
 
 bool Hand::isOOP3Bet()
 {
-	if (isAK() || isAQ() || (isPocket() && card1.isBroadway())) return true;
+	if (isAK() || isAQ() || (isPocket() && card1.isBroadway() && card1.getRank() != 'T')) return true;
 
 	return false;
 }
@@ -228,7 +229,10 @@ bool Hand::isBigSC()
 bool Hand::isAxs()
 {
 	if (card1.getSuit() != card2.getSuit()) return false;
-	if (card1.getRank() == 'A' || card2.getRank() == 'A') return true; 
+	
+	int rank1 = convertRankToNumbers(card1);
+	int rank2 = convertRankToNumbers(card2);
+	if ((rank1 == 14 && rank2 > 10) || (rank2 == 14 && rank1 > 10)) return true; 
 
 	return false;
 }

@@ -883,7 +883,7 @@ double process_query(const char* pquery)
 
 	if (!strcmp(pquery,"dll$PREFOLD"))
 	{
-		if (scrape_cycle > 2) return 1;
+		if (scrape_cycle > 3) return 1;
 		return 0;
 	}
 

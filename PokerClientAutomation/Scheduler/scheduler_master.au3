@@ -44,9 +44,9 @@ EndIf
 SRandom(@MSEC)
 
 While 1
-   playSession(2, Random(3600, 4000, 1))
    playSession(1, Random(3600, 4000, 1))
    playSession(0, Random(3600, 4000, 1))
+   playSession(2, Random(3600, 4000, 1))
 WEnd
 
 Func playSession($id, $time)

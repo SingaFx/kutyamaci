@@ -19,8 +19,8 @@ Updater* updater=NULL;
 
 int main(int argc, char *argv[])
 {
-	HWND hWnd = GetConsoleWindow();
-	ShowWindow( hWnd, SW_HIDE );
+	//HWND hWnd = GetConsoleWindow();
+	//ShowWindow( hWnd, SW_HIDE );
 
 	po::options_description desc("Allowed options");
 	desc.add_options()

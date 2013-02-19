@@ -54,8 +54,6 @@ Global $run_path = IniRead($datafile, "startup", "runpath", "-1")
 Global $run = IniRead($datafile, "startup", "run", "-1")
 Global $casinoname = IniRead($datafile, "startup", "casinoname", "-1")
 
-
-
 dbgOut($run_path&$run)
 
 Run($run_path&$run)
@@ -83,7 +81,9 @@ Global $nrclicks = IniRead($datafile, "startup", "nrclicks", "-1")
 For $i = 1 To $nrclicks
     ClickRegionWithoutScrape(WinGetHandle($casinoname), IniRead($datafile, "startup", "coord" & $i & "x", "-1"), IniRead($datafile, "startup", "coord" & $i & "y", "-1"), 1)
     sleep(IniRead($datafile, "startup", "sleep" & $i , "-1"))
-Next
+ Next
+ 
+ Send("{TAB}{TAB}{ENTER}")
 
 ;~    SO AFTER SITTING TO TABLES THIS SHOULD RESIZE THE WINDOWS, MOVE THEM
 ;~    SO THEY ARE NOT ON EACH OTHER AND ALSO SEND THEIR HANDLES TO THE 
@@ -108,6 +108,9 @@ Do
    Sleep(100)
 Until $array[0][0] == 4
 
+While ProcessExists("chrome.exe")
+	  ProcessClose("chrome.exe")
+WEnd
 ; ~    $array[0][0] = number of windows found
 ; ~    $array[$i][1] = table handle (unique!) for the $ith window
 

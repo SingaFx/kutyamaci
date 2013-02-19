@@ -77,7 +77,7 @@ void parseHands(string filename)
 	{
 		std::vector<HandHistory> history = HandHistoryUtils::importFromFile(f, historyNumber);
 		total += history.size();
-		//printf("Total number of parsed hands = %d\n", total);
+		printf("Total number of parsed hands = %d\n", total);
 		//if (total < 110000) continue;
 		for (int i = 0; i < history.size(); ++i)
 		{

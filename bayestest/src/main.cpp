@@ -69,6 +69,9 @@ void testTurnFE()
 	//                                  VPIP,     PFR,       AF,        stacksize,          line,         betsize,         bblind,         potcommon,          flop potcommon
 		   FE = turn.getProbabilityFE(   20,       18,        3,           4,                 1,             1.6,           0.04,               1,                   0.4,              10);
 	printf("turn emelt pot regular ellen 3bet								= %lf\n", FE);
+	//                                  VPIP,     PFR,       AF,        stacksize,          line,         betsize,         bblind,         potcommon,          flop potcommon
+		   FE = turn.getProbabilityFE(   26,       19,        3,        61.25 * 0.04,         2,             0,            0.04,               42 * 0.04,         21.5 * 0.04,              15);
+	printf("turn emelt pot regular ellen 3bet								= %lf\n", FE);
 
 	printf("-----------------------------end of turn tests------------------------------\n");
 }
@@ -507,6 +510,67 @@ void testRiverRange6()
 	range.printHS(board);
 }
 
+void testRiverRange7()
+{
+	int v[8];
+
+	double potSize = 27.75 * 0.04;
+	double stackSize = 325.5 * 0.04;
+	double betSize = 311.1 * 0.04;
+	int line = 1;
+	double VPIP = 20;
+	double PFR = 15;
+	double AF = 2.5;
+	//double flopPotSize = 7.75 * 0.04;
+
+	v[1] = normalizePotSize(2, potSize, 0.04);
+	v[2] = normalizeStackSize(stackSize, 0.04);
+	v[3] = normalizeBetSize(2, betSize, potSize, 0.04);
+	v[4] = line;
+	v[5] = normalizeVPIP(VPIP);
+	v[6] = normalizePFR(PFR);
+	v[7] = normalizeAF(AF);
+	//v[8] = normalizePotSize(2, flopPotSize, 0.04);
+
+	printf("\n--------------------------------------BLA--------------------------------------------\n");
+
+	//PAIRED BOARD RIVER TUL LAZA RANGEK!
+
+	vector<Card> board;
+	board.push_back(Card('4','s'));
+	board.push_back(Card('J','d'));
+	board.push_back(Card('9','c'));
+	/*board.push_back(Card('2','c'));
+	board.push_back(Card('8','d'));*/
+
+	Hand own;
+	own.setHand(Card('K','s'),Card('K','c'));
+
+	//river.printRange(v);
+
+	PlayerRange range = flop.getRange(VPIP, PFR, AF, stackSize, line, betSize, 0.04, potSize, board, own, 500);
+	range.printHS(board);
+	range.printRange();
+
+	PlayerRange base;
+	base = base.create100();
+
+	range = RangeUtils::mergeRange(base, range, board, own);
+	range.printHS(board);
+
+	EqCalculator calc;
+	
+	PlayerRange ownRange;
+	ownRange.range.insert(make_pair(own, 1));
+	vector<PlayerRange> ranges;
+	ranges.push_back(ownRange);
+	ranges.push_back(range);
+
+	double EQ = calc.calculate(ranges, board, 5000);
+	printf("EQ = %lf\n", EQ);
+
+	
+}
 
 void testEvaluator1()
 {
@@ -602,6 +666,98 @@ void testEvaluator5()
 	printf("--------------------------------------end of FLOP 99 on JT2---------------------------------------\n");
 }
 
+void testEvaluator6()
+{
+	printf("\n--------------------------------------FLOP KT on KK485--------------------------------------------\n");
+
+	vector<Card> board;
+	board.push_back(Card('5','c'));
+	board.push_back(Card('T','d'));
+	board.push_back(Card('Q','h'));
+	board.push_back(Card('K','s'));
+	board.push_back(Card('Q','s'));
+
+	Hand hand;
+	hand.setHand(Card('A','h'),Card('J','d'));
+
+	printf("handstrength : %d", Evaluator::cardStrength(hand.getCard1(), hand.getCard2(), board));
+
+	printf("--------------------------------------end of FLOP KT on KK485---------------------------------------\n");
+}
+
+void testEvaluator7()
+{
+	printf("\n--------------------------------------RIVER KQ on T423K--------------------------------------------\n");
+
+	vector<Card> board;
+	board.push_back(Card('T','d'));
+	board.push_back(Card('4','c'));
+	board.push_back(Card('2','c'));
+	board.push_back(Card('3','h'));
+	board.push_back(Card('K','d'));
+
+	Hand hand;
+	hand.setHand(Card('K','c'),Card('Q','d'));
+
+	printf("handstrength : %d", Evaluator::cardStrength(hand.getCard1(), hand.getCard2(), board));
+
+	printf("--------------------------------------end of RIVER KQ on T423K---------------------------------------\n");
+}
+
+void testEvaluator8()
+{
+	printf("\n--------------------------------------TURN JJ on K5TA--------------------------------------------\n");
+
+	vector<Card> board;
+	board.push_back(Card('K','c'));
+	board.push_back(Card('5','s'));
+	board.push_back(Card('T','c'));
+	board.push_back(Card('A','h'));
+
+	Hand hand;
+	hand.setHand(Card('J','s'),Card('J','h'));
+
+	printf("handstrength : %d", Evaluator::cardStrength(hand.getCard1(), hand.getCard2(), board));
+
+	printf("--------------------------------------end of TURN JJ on K5TA---------------------------------------\n");
+}
+
+void testEvaluator9()
+{
+	printf("\n--------------------------------------TURN Top pair on fucked up board----------------------------\n");
+
+	vector<Card> board;
+	board.push_back(Card('K','c'));
+	board.push_back(Card('Q','s'));
+	board.push_back(Card('9','c'));
+	board.push_back(Card('T','h'));
+	board.push_back(Card('2','h'));
+
+	Hand hand;
+	hand.setHand(Card('A','s'),Card('K','h'));
+
+	printf("handstrength : %d", Evaluator::cardStrength(hand.getCard1(), hand.getCard2(), board));
+
+	printf("--------------------------------------end of TURN Top pair on fucked up board------------------------\n");
+}
+
+void testEvaluator10()
+{
+	printf("\n--------------------------------------FLOP AA on 375--------------------------------------------\n");
+
+	vector<Card> board;
+	board.push_back(Card('3','h'));
+	board.push_back(Card('7','c'));
+	board.push_back(Card('5','c'));
+
+	Hand hand;
+	hand.setHand(Card('A','d'),Card('A','h'));
+
+	printf("handstrength : %d", Evaluator::cardStrength(hand.getCard1(), hand.getCard2(), board));
+
+	printf("--------------------------------------end of FLOP 35 on 375----------------------------------------\n");
+}
+
 void testEQCalculator()
 {
 	printf("\n--------------------------------------EQ calculation --------------------------------------------\n");
@@ -637,18 +793,21 @@ int main()
 		//PlusEVBotLogic botlogic;
 		//BayesDecision decision;
 
-		river.read("riverBayes");
+		
 
-		/*preflop.read("preflopBayes");
+		
+		preflop.read("preflopBayes");
 		flop.read("flopBayes");
 		turn.read("turnBayes");
+		river.read("riverBayes");
+		
 
-
-		testPreflopFE();
+		/*testPreflopFE();
 		testFlopFE();
 		testTurnFE();
-		testRiverFE();
+		testRiverFE();*/
 
+		/*
 		testBoardType();
 		testBoardType2();
 		testBoardType3();*/
@@ -660,7 +819,15 @@ int main()
 
 		//testEvaluator2();
 
-		testEvaluator5();
+		//testEvaluator6();
+
+		//testEvaluator7();
+
+		//testEvaluator8();
+
+		//testEvaluator9();
+
+		//testEvaluator10();
 
 		//testEQCalculator();
 
@@ -670,6 +837,9 @@ int main()
 		//testRiverRange4();
 		//testRiverRange5();
 		//testRiverRange6();
+		testRiverRange7();
+
+
 
 		//testPreflopRange1();
 		//testPreflopRange2();

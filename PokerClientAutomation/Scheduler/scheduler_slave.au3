@@ -107,9 +107,9 @@ Func closeSession($lobby)
    Next
 
    for $k = 1 to $array[0][0]
+	  WinActivate($array[$k][1])
 	  Local $table = WinGetPos($array[$k][1])
 	  WinClose($array[$k][1])
-	  WinActivate($array[$k][1])
 	  If IsArray($table) Then
 		 Sleep(1000)
 		 MouseClick("left", $table[0] + 200, $table[1] + 213, 1, 10)
@@ -143,6 +143,7 @@ Func closeSession($lobby)
    Sleep(5000)
    
    ProcessClose("bwin.exe")
+   ProcessClose("bwincom.exe")
    ProcessClose("WPT.exe")
    ProcessClose("PartyGaming.exe")
    ProcessClose("updater.exe")

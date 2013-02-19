@@ -166,7 +166,9 @@ Action PlusEVBotLogic::makeDecision(CurrentGameInfo& gameInfo, vector<PlayerRang
 		double currentbet = gameInfo.getOpponentsInfo()[0].getBetsize() * gameInfo.getBblind();
 		if (gameInfo.getOpponentsInfo().size() == 1 && gameInfo.getOpponentsInfo()[0].getPoz() == 1 && currentbet <= gameInfo.getBblind() + 0.01)
 		{
-			return Action('r', 4 * gameInfo.getBblind());
+			if (gameInfo.getHand().isOOP3Bet() || gameInfo.getHand().isAxs() || gameInfo.getHand().isStrongBroadway() || gameInfo.getHand().isSuitedBroadway() || gameInfo.getHand().isPocket() || gameInfo.getHand().isBigSC())
+				return Action('r', 4 * gameInfo.getBblind());
+			return Action('n', 0);
 		}
 
 		logger.logExp("PREFLOP game street: ", gameInfo.getStreet(), LOGGER_TYPE::BOT_LOGIC);
