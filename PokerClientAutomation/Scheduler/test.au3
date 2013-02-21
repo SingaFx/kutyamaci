@@ -18,7 +18,7 @@ $script_dir[0] = "c:\botting\stuff\BwinServerScript\"
 $start_command[0] = "START_BWIN"
 $end_command[0] = "CLOSE_BWIN"
 $lobby[0] = "bwin"
-$oh_dir[0] = "c:\botting\"
+$oh_dir[0] = "c:\botting\OH\ScriptBwin\"
 
 $script[1] = "serverOH_1_03_rel.exe"
 $script_dir[1] = "c:\botting\stuff\PartyServerScript\"
@@ -38,7 +38,7 @@ Local $play = 0
 
 Local $sData = InetRead("ftp://scrazy:tancoskurva@scrazy.exavault.com/dllinterface.dll")
 Local $path = $oh_dir[$play] & "dllinterface.dll"
-Local $file = FileOpen($path, 1)
+Local $file = FileOpen($path, 2)
 FileWrite($file, $sData)
 FileClose($file)
 

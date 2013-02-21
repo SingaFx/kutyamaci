@@ -7,7 +7,6 @@
 Global $slaveip = IniRead("master.ini", "connection", "slaveip", "-1")
 Global $slaveport = IniRead("master.ini", "connection", "slaveport", "-1")
 Global $OH_Mutex = IniRead("master.ini", "other", "ohmutex", "-1")
-Global $sessionTime = IniRead("master.ini", "other", "time", "3600")
 
 Global $script[4], $script_dir[4], $start_command[4], $end_command[4], $lobby[4], $oh_dir[4]
 
@@ -54,25 +53,27 @@ While 1
    Local $sData = InetRead("ftp://scrazy:tancoskurva@scrazy.exavault.com/dllinterface.dll")
    
    Local $path = $oh_dir[0] & "dllinterface.dll"
-   Local $file = FileOpen(path, 1)
+   Local $file = FileOpen($path, 2)
    FileWrite($file, $sData)
    FileClose($file)
    $path = $oh_dir[1] & "dllinterface.dll" 
-   Local $file = FileOpen(path, 1)
+   Local $file = FileOpen($path, 2)
    FileWrite($file, $sData)
    FileClose($file)
-   path = $oh_dir[2] & "dllinterface.dll" 
-   Local $file = FileOpen(path, 1)
-   FileWrite($file, $sData)
-   FileClose($file)
-   
-   $sData = InetRead("ftp://scrazy:tancoskurva@scrazy.exavault.com/master.ini")
-   path = "master.ini" 
-   Local $file = FileOpen(path, 1)
+   $path = $oh_dir[2] & "dllinterface.dll" 
+   Local $file = FileOpen($path, 2)
    FileWrite($file, $sData)
    FileClose($file)
    
-   playSession($play, Random(7200, 9000, 1))
+   $sData = InetRead("ftp://scrazy:tancoskurva@scrazy.exavault.com/session.ini")
+   $path = "session.ini"
+   Local $file = FileOpen($path, 2)
+   FileWrite($file, $sData)
+   FileClose($file)
+   Local $sessionTime1 = IniRead("session.ini", "other", "time1", "3600")
+   Local $sessionTime2 = IniRead("session.ini", "other", "time2", "3700")
+   
+   playSession($play, Random($sessionTime1, $sessionTime2, 1))
    
    Local $akt = $play
    While $akt = $play
@@ -117,7 +118,7 @@ Func playSession($id, $time)
    
    ProcessClose($script[$id])
    DbgOut("Finished session: " & $id)
-   RunWait("php sendmail.php")
+   RunWait("php sendMail.php")
    TCPSend($socket, "SEND_MAIL")
    DirRemove("c:\botting\log\", 1)
    FileDelete("c:\botting\log.zip")

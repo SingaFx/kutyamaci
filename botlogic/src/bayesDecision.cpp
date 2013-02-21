@@ -395,8 +395,8 @@ double manipulateEQRaise(double EQ, double betsize, CurrentGameInfo& game)
 		}
 
 		if (isRegular(game) && !game.getHand().isOOP3Bet()) EQ = modifyValue(EQ, -0.2);
-		if (betsize < 12 && game.getHand().isOOP3Bet()) EQ = modifyValue(EQ, 0.05);
-		if (game.getHand().is100BBStackOff()) EQ = modifyValue(EQ, 0.05);
+		if (betsize < 12 && game.getHand().isOOP3Bet()) EQ = modifyValue(EQ, 0.02);
+		if (game.getHand().is100BBStackOff()) EQ = modifyValue(EQ, 0.03);
 	}
 	else if (game.getStreet() == 1)
 	{
@@ -707,7 +707,7 @@ double manipulateEQCall(double EQ, CurrentGameInfo& game)
 
 		EQ = modifyValue(EQ, -0.07);
 		if (game.getPotcommon() > 40) EQ = modifyValue(EQ, -0.06);
-		if (game.getPotcommon() > 70 && 2.5 * game.getBiggestBet() > game.getPotcommon()) EQ = modifyValue(EQ, -0.17);
+		if (game.getPotcommon() > 70 && 2.5 * game.getBiggestBet() > game.getPotcommon() && str != 0 && isFullStackRegular(game)) EQ = modifyValue(EQ, -0.10);
 		if (game.getPotcommon() * 0.1 > game.getBiggestBet()) EQ = modifyValue(EQ, 0.10);
 	
 		if (abs(game.getAmountToCall() - 0) < 0.001)
