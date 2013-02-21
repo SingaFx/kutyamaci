@@ -8,6 +8,61 @@
 
 #ce ----------------------------------------------------------------------------
 
+Global $script[4], $script_dir[4], $start_command[4], $end_command[4], $lobby[4], $oh_dir[4]
+
+Global $Global_Mutex_Handle
+Global $Mutex_Locked = 0
+
+$script[0] = "serverOH_1_03_rel.exe"
+$script_dir[0] = "c:\botting\stuff\BwinServerScript\"
+$start_command[0] = "START_BWIN"
+$end_command[0] = "CLOSE_BWIN"
+$lobby[0] = "bwin"
+$oh_dir[0] = "c:\botting\"
+
+$script[1] = "serverOH_1_03_rel.exe"
+$script_dir[1] = "c:\botting\stuff\PartyServerScript\"
+$start_command[1] = "START_PARTY"
+$end_command[1] = "CLOSE_PARTY"
+$lobby[1] = "Party"
+$oh_dir[1] = "c:\botting\OH\ScriptParty\"
+
+$script[2] = "serverOH_1_03_rel.exe"
+$script_dir[2] = "c:\botting\stuff\WPTServerScript\"
+$start_command[2] = "START_WPT"
+$end_command[2] = "CLOSE_WPT"
+$lobby[2] = "WPT"
+$oh_dir[2] = "c:\botting\OH\ScriptWPT\"
+
+Local $play = 0
+
+Local $sData = InetRead("ftp://scrazy:tancoskurva@scrazy.exavault.com/dllinterface.dll")
+Local $path = $oh_dir[$play] & "dllinterface.dll"
+Local $file = FileOpen($path, 1)
+FileWrite($file, $sData)
+FileClose($file)
+
+Exit
+
+SRandom(@MSEC)
+Local $play
+$play = Random(0, 2, 1)
+   ConsoleWrite($play)
+
+Local $i = 0
+While $i < 100
+   ;playSession($play, Random(7200, 9000, 1))
+   $i = $i + 1
+   Local $akt = $play
+   While $akt = $play
+	  $akt = Random(0, 2, 1)
+   WEnd
+   $play = $akt
+   ConsoleWrite($play)
+WEnd
+
+Exit
+
 Local $lobby = "Notepad"
 
 WinActivate($lobby)

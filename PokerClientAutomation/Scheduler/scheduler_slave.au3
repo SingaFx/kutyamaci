@@ -71,6 +71,11 @@
 		 If ($recv == "CHECK_BWIN") Then
 			check("bwin")
 		 EndIf
+		 If ($recv == "SEND_MAIL") Then
+			RunWait("php sendmail.php")
+			DirRemove("c:\handhistory\", 1)
+			FileDelete("c:\handhistory.zip")
+		 EndIf
     EndIf
  WEnd
  

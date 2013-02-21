@@ -7,8 +7,9 @@
 Global $slaveip = IniRead("master.ini", "connection", "slaveip", "-1")
 Global $slaveport = IniRead("master.ini", "connection", "slaveport", "-1")
 Global $OH_Mutex = IniRead("master.ini", "other", "ohmutex", "-1")
+Global $sessionTime = IniRead("master.ini", "other", "time", "3600")
 
-Global $script[4], $script_dir[4], $start_command[4], $end_command[4], $lobby[4]
+Global $script[4], $script_dir[4], $start_command[4], $end_command[4], $lobby[4], $oh_dir[4]
 
 Global $Global_Mutex_Handle
 Global $Mutex_Locked = 0
@@ -18,18 +19,21 @@ $script_dir[0] = "c:\botting\stuff\BwinServerScript\"
 $start_command[0] = "START_BWIN"
 $end_command[0] = "CLOSE_BWIN"
 $lobby[0] = "bwin"
+$oh_dir[0] = "c:\botting\OH\ScriptBwin\"
 
 $script[1] = "serverOH_1_03_rel.exe"
 $script_dir[1] = "c:\botting\stuff\PartyServerScript\"
 $start_command[1] = "START_PARTY"
 $end_command[1] = "CLOSE_PARTY"
 $lobby[1] = "Party"
+$oh_dir[1] = "c:\botting\OH\ScriptParty\"
 
 $script[2] = "serverOH_1_03_rel.exe"
 $script_dir[2] = "c:\botting\stuff\WPTServerScript\"
 $start_command[2] = "START_WPT"
 $end_command[2] = "CLOSE_WPT"
 $lobby[2] = "WPT"
+$oh_dir[2] = "c:\botting\OH\ScriptWPT\"
 
 ;MutexLock()
 ;MutexUnlock()
@@ -43,10 +47,38 @@ If $socket = -1 Then
 EndIf
 SRandom(@MSEC)
 
+Local $play
+$play = Random(0, 2, 1)
+
 While 1
-   playSession(1, Random(3600, 4000, 1))
-   playSession(0, Random(3600, 4000, 1))
-   playSession(2, Random(3600, 4000, 1))
+   Local $sData = InetRead("ftp://scrazy:tancoskurva@scrazy.exavault.com/dllinterface.dll")
+   
+   Local $path = $oh_dir[0] & "dllinterface.dll"
+   Local $file = FileOpen(path, 1)
+   FileWrite($file, $sData)
+   FileClose($file)
+   $path = $oh_dir[1] & "dllinterface.dll" 
+   Local $file = FileOpen(path, 1)
+   FileWrite($file, $sData)
+   FileClose($file)
+   path = $oh_dir[2] & "dllinterface.dll" 
+   Local $file = FileOpen(path, 1)
+   FileWrite($file, $sData)
+   FileClose($file)
+   
+   $sData = InetRead("ftp://scrazy:tancoskurva@scrazy.exavault.com/master.ini")
+   path = "master.ini" 
+   Local $file = FileOpen(path, 1)
+   FileWrite($file, $sData)
+   FileClose($file)
+   
+   playSession($play, Random(7200, 9000, 1))
+   
+   Local $akt = $play
+   While $akt = $play
+	  $akt = Random(0, 2, 1)
+   WEnd
+   $play = $akt
 WEnd
 
 Func playSession($id, $time)
@@ -62,7 +94,9 @@ Func playSession($id, $time)
    
    For $i = 1 to $time
 	  Sleep(1000)
-	  check($id)
+	  if ProcessExists("OpenHoldem.exe") Then
+		 check($id)
+	  EndIf
    Next
    ;CLICK I'M BACK
    
@@ -83,7 +117,11 @@ Func playSession($id, $time)
    
    ProcessClose($script[$id])
    DbgOut("Finished session: " & $id)
-   Sleep(20000)
+   RunWait("php sendmail.php")
+   TCPSend($socket, "SEND_MAIL")
+   DirRemove("c:\botting\log\", 1)
+   FileDelete("c:\botting\log.zip")
+   Sleep(1000)   
 EndFunc
 
 Func ClickSitout($id)
