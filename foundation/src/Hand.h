@@ -35,6 +35,7 @@ public:
 	bool isAQ();
 	bool isOOP3Bet();
 	bool is100BBStackOff();
+	bool isKingsPlus();
 	
 	bool isAJ();
 	bool isKQ();
