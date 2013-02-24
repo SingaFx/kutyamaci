@@ -192,7 +192,7 @@ CurrentPlayerInfo PlusEVBotLogic::setStandardPlayerType(CurrentPlayerInfo& playe
 {
 	CurrentPlayerInfo result = playerInfo;
 
-	if (playerInfo.getStacksize() < 100)
+	if (playerInfo.getStacksize() < 90)
 	{
 		result.setVPIP(40);
 		result.setPFR(10);

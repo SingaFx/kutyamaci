@@ -855,7 +855,7 @@ double AnyVPIP(int index)
 	}
 	else
 	{
-		VPIP = 20;
+		VPIP = 25;
 	}
 
 	return VPIP;
