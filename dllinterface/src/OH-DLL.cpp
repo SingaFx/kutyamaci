@@ -844,7 +844,7 @@ double AnyVPIP(int index)
 	string name = gamestateManager.getPlayerNameByPos(idx);
 	
 	logger.logExp("DETECTED Query " + name,DLL_DECISION_LOGGER);
-	if (name == "") return 20;
+	if (name == "") return 25;
 
 	double VPIP = 0;
 
@@ -955,7 +955,7 @@ double process_query(const char* pquery)
 		if (ranges.size() == 1)
 		{
 			logger.logExp("Waiting for hero's balance", DLL_DECISION_LOGGER);
-			Sleep(1000);
+			Sleep(5000);
 			process_state(NULL);
 		}
 
@@ -966,6 +966,7 @@ double process_query(const char* pquery)
 		}
 
 		CurrentGameInfo* cgi = gamestateManager.getCurrentGameInfo();
+		cgi->getOpponentsInfo().clear();
 		vector<double> currentBets(6);
 		getCurrentBets(currentBets, cgi->getBblind());
 		

@@ -854,6 +854,16 @@ public:
 		return res;
 	}
 
+	bool isRegFish(int v[])
+	{
+		return v[5] <= 2;
+	}
+
+	bool isRegular(int v[])
+	{
+		return v[5] <= 2 && !(v[5] == 2 && v[6] == 0) && !(v[5] == 2 && v[6] == 1);
+	}
+
 	PlayerRange getRange(int v[], vector<Card>& cards, Hand own, int x)
 	{
 		PlayerRange res;
@@ -863,7 +873,7 @@ public:
 		{
 			v[0] = i;
 			HS[i] = getProbabilityHS(v, x);
-			//HACK
+
 			if (HS[i] < 0)
 			{
 				memset(HS, 0, sizeof(HS));
@@ -878,7 +888,81 @@ public:
 				}
 				break;
 			}
-			//if (HS[i] < 0) return res;
+		}
+
+		if (v[1] <= 4 && isRegular(v) && v[3] > 3)
+		{
+			//REGULAR emelet potban nagy call/raise
+			if (v[2] > 2)
+			{
+				memset(HS, 0, sizeof(HS));
+				HS[0] = 0.9;
+				HS[7] = 0.1;
+			}
+			else
+			{
+				HS[5] = 0;
+				HS[4] = 0;
+				HS[3] = 0;
+				HS[2] = 0;
+
+				double total = 0;
+				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+				{
+					total += HS[i];
+				}
+				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+				{
+					HS[i] = (1 / total) * HS[i]; 
+				}
+			}
+		}
+		else if (v[1] > 4 && isRegular(v) && v[3] > 3)
+		{
+			HS[5] = 0;
+			HS[4] = 0;
+			HS[3] = 0;
+			HS[2] = 0;
+			double total = 0;
+			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			{
+				total += HS[i];
+			}
+			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			{
+				HS[i] = (1 / total) * HS[i]; 
+			}
+		}
+		else if (v[1] > 4 && isRegFish(v) && v[3] > 3)
+		{
+			HS[5] = 0;
+			HS[4] = 0;
+			HS[3] = 0;
+			HS[2] = 0;
+			double total = 0;
+			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			{
+				total += HS[i];
+			}
+			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			{
+				HS[i] = (1 / total) * HS[i]; 
+			}
+		}
+
+		if (v[3] > 3)
+		{
+			HS[4] = 0;
+			HS[3] = 0.5 * HS[3];
+			double total = 0;
+			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			{
+				total += HS[i];
+			}
+			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			{
+				HS[i] = (1 / total) * HS[i]; 
+			}
 		}
 
 		res = RangeUtils::createRange(8, HS, cards, own);
@@ -1336,6 +1420,16 @@ public:
 		return res;
 	}
 
+	bool isRegFish(int v[])
+	{
+		return v[5] <= 2;
+	}
+
+	bool isRegular(int v[])
+	{
+		return v[5] <= 2 && !(v[5] == 2 && v[6] == 0);
+	}
+
 	PlayerRange getRange(int v[], vector<Card>& cards, Hand own, int x)
 	{
 		PlayerRange res;
@@ -1361,6 +1455,100 @@ public:
 				break;
 			}
 			//if (HS[i] < 0) return res;
+		}
+
+		if (v[8] <= 4 && isRegular(v) && v[3] > 3)
+		{
+			//REGULAR emelet potban nagy call/raise
+			if (v[2] > 2)
+			{
+				memset(HS, 0, sizeof(HS));
+				HS[0] = 0.9;
+				HS[7] = 0.1;
+			}
+			else
+			{
+				HS[5] = 0;
+				HS[4] = 0;
+				HS[3] = 0;
+				HS[2] = 0.5 * HS[2];
+
+				double total = 0;
+				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+				{
+					total += HS[i];
+				}
+				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+				{
+					HS[i] = (1 / total) * HS[i]; 
+				}
+			}
+		}
+		else if (v[8] > 4 && isRegular(v) && v[3] > 3)
+		{
+			HS[5] = 0;
+			HS[4] = 0;
+			HS[3] = 0;
+			HS[2] = 0;
+			double total = 0;
+			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			{
+				total += HS[i];
+			}
+			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			{
+				HS[i] = (1 / total) * HS[i]; 
+			}
+		}
+		else if (isRegular(v) && v[4] != 2 && v[3] <= 3)
+		{
+			HS[4] = 0;
+			double total = 0;
+			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			{
+				total += HS[i];
+			}
+			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			{
+				HS[i] = (1 / total) * HS[i]; 
+			}
+		}
+		else if (v[8] > 4 && isRegFish(v) && v[3] > 3)
+		{
+			HS[5] = 0;
+			HS[4] = 0;
+			HS[3] = 0;
+			HS[2] = 0;
+			double total = 0;
+			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			{
+				total += HS[i];
+			}
+			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			{
+				HS[i] = (1 / total) * HS[i]; 
+			}
+		}
+
+		if (v[3] >= 0)
+		{
+			HS[2] += HS[4];
+			HS[4] = 0;
+		}
+
+		if (v[3] > 3)
+		{
+			HS[4] = 0;
+			HS[3] = 0.5 * HS[3];
+			double total = 0;
+			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			{
+				total += HS[i];
+			}
+			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			{
+				HS[i] = (1 / total) * HS[i]; 
+			}
 		}
 
 		res = RangeUtils::createRange(8, HS, cards, own);
@@ -1773,6 +1961,16 @@ public:
 		return res;
 	}
 
+	bool isRegFish(int v[])
+	{
+		return v[5] <= 2;
+	}
+
+	bool isRegular(int v[])
+	{
+		return v[5] <= 2 && !(v[5] == 2 && v[6] == 0);
+	}
+
 	PlayerRange getRange(int v[], vector<Card>& cards, Hand own, int x)
 	{
 		printf("GETTING RANGE\n");
@@ -1800,6 +1998,100 @@ public:
 				break;
 			}
 			//if (HS[i] < 0) return res;
+		}
+
+		if (v[8] <= 4 && isRegular(v) && v[3] > 3)
+		{
+			//REGULAR emelet potban nagy call/raise
+			if (v[2] > 2)
+			{
+				memset(HS, 0, sizeof(HS));
+				HS[0] = 1;
+			}
+			else
+			{
+				HS[5] = 0;
+				HS[4] = 0;
+				HS[3] = 0;
+				HS[2] = 0;
+
+				double total = 0;
+				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+				{
+					total += HS[i];
+				}
+				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+				{
+					HS[i] = (1 / total) * HS[i]; 
+				}
+			}
+		}
+		else if (v[8] > 4 && isRegular(v) && v[3] > 3)
+		{
+			HS[5] = 0;
+			HS[4] = 0;
+			HS[3] = 0;
+			HS[2] = 0;
+			double total = 0;
+			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			{
+				total += HS[i];
+			}
+			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			{
+				HS[i] = (1 / total) * HS[i]; 
+			}
+		}
+		else if (isRegular(v) && v[4] != 2 && v[3] <= 3)
+		{
+			HS[4] = 0;
+			double total = 0;
+			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			{
+				total += HS[i];
+			}
+			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			{
+				HS[i] = (1 / total) * HS[i]; 
+			}
+		}
+		else if (v[8] > 4 && isRegFish(v) && v[3] > 3)
+		{
+			HS[5] = 0;
+			HS[4] = 0;
+			HS[3] = 0;
+			HS[2] = 0;
+			double total = 0;
+			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			{
+				total += HS[i];
+			}
+			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			{
+				HS[i] = (1 / total) * HS[i]; 
+			}
+		}
+
+		if (v[3] >= 0)
+		{
+			HS[2] += HS[4];
+			HS[4] = 0;
+		}
+
+		if (v[3] > 3)
+		{
+			HS[1] += HS[4];
+			HS[4] = 0;
+		}
+
+		if (v[3] > 4)
+		{
+			HS[1] += HS[2];
+			HS[1] += HS[3];
+			HS[1] += HS[4];
+			HS[4] = 0;
+			HS[3] = 0;
+			HS[2] = 0;
 		}
 
 		res = RangeUtils::createRange(8, HS, cards, own);
