@@ -950,9 +950,18 @@ double process_query(const char* pquery)
 	{
 		vector<int> postflopRelatives;
 		calculateRelativPositions(postflopRelatives, gamestateManager.getDealerPosition(), true);
+		bool oop = false;
+
+		for (int idx = 1; idx <=5; ++idx)
+		{
+			if (isBitSet((int)playersplayingbits, idx) && gamestateManager.isCurrentPlayerInfoSet(idx))
+			{
+				if (postflopRelatives[idx] > postflopRelatives[0]) oop = true;
+			}
+		}
 
 		// wait for hero's balance when the action before was raise and we are oop against 1 opponent
-		if (ranges.size() == 1)
+		if (ranges.size() == 1 && oop)
 		{
 			logger.logExp("Waiting for hero's balance", DLL_DECISION_LOGGER);
 			Sleep(5000);

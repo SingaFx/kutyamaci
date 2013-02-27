@@ -258,7 +258,7 @@ static int normalizePotSize(int street, double potcommon, double bblind)
 			return 3;
 		}
 
-		if (potcommon <= 20 * bblind) 
+		if (potcommon <= 19 * bblind) 
 		{
 			return 4;
 		}

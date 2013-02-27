@@ -896,8 +896,9 @@ public:
 			if (v[2] > 2)
 			{
 				memset(HS, 0, sizeof(HS));
-				HS[0] = 0.9;
+				HS[0] = 0.8;
 				HS[7] = 0.1;
+				HS[1] = 0.1;
 			}
 			else
 			{
@@ -952,7 +953,15 @@ public:
 
 		if (v[3] > 3)
 		{
-			HS[4] = 0;
+			if (v[3] == 4)
+			{
+				HS[4] = 0;
+				HS[2] += HS[4];
+			}
+			else
+			{
+				HS[4] = 0;
+			}
 			HS[3] = 0.5 * HS[3];
 			double total = 0;
 			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
@@ -1463,8 +1472,9 @@ public:
 			if (v[2] > 2)
 			{
 				memset(HS, 0, sizeof(HS));
-				HS[0] = 0.9;
+				HS[0] = 0.8;
 				HS[7] = 0.1;
+				HS[1] = 0.1;
 			}
 			else
 			{
@@ -1530,7 +1540,7 @@ public:
 			}
 		}
 
-		if (v[3] >= 0)
+		if (v[3] >= 0 && v[4] == 0)
 		{
 			HS[2] += HS[4];
 			HS[4] = 0;
@@ -1538,7 +1548,15 @@ public:
 
 		if (v[3] > 3)
 		{
-			HS[4] = 0;
+			if (v[3] == 4)
+			{
+				HS[4] = 0;
+				HS[2] += HS[4];
+			}
+			else
+			{
+				HS[4] = 0;
+			}
 			HS[3] = 0.5 * HS[3];
 			double total = 0;
 			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
@@ -2006,7 +2024,8 @@ public:
 			if (v[2] > 2)
 			{
 				memset(HS, 0, sizeof(HS));
-				HS[0] = 1;
+				HS[0] = 0.9;
+				HS[1] = 0.1;
 			}
 			else
 			{
@@ -2072,7 +2091,7 @@ public:
 			}
 		}
 
-		if (v[3] >= 0)
+		if (v[3] >= 0 && v[4] == 0)
 		{
 			HS[2] += HS[4];
 			HS[4] = 0;
@@ -2080,8 +2099,16 @@ public:
 
 		if (v[3] > 3)
 		{
-			HS[1] += HS[4];
-			HS[4] = 0;
+			if (v[3] == 4)
+			{
+				HS[4] = 0;
+				HS[2] += HS[4];
+			}
+			else
+			{
+				HS[4] = 0;
+			}
+			HS[3] = 0.5 * HS[3];
 		}
 
 		if (v[3] > 4)
