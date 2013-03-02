@@ -263,53 +263,136 @@ char convertRankToChar(int rank)
     return map[rank];
 }
 
+bool isBitSet(int toTest, int bitNumber)
+{
+    int bitposition = 1 << bitNumber;
+    return (toTest & bitposition) == bitposition;
+}
+
 int nextPosition(int position)
 {
+	double playersseatedbits = gws("playersseatedbits");
+	double playersactivebits = gws("playersactivebits");
+
     int result = position + 1;
     if (result >= 6)
     {
         result -= 6;
     }
 
+	while (!isBitSet((int)playersseatedbits, result) || !isBitSet((int)playersactivebits, result))
+	{
+		result = result + 1;
+		if (result >= 6)
+		{
+			result -= 6;
+		}
+	}
+
     return result;
 }
 
 void calculateRelativPositions(vector<int>& relativPositions, int dealerPosition, bool usePostFlopRelatives = false)
 {    
-    int absolutePositionsMap[6];
+    vector<int> absolutePositionsMap;
         
     int pos = dealerPosition;
     for (int idx = 0; idx <= 5; ++idx)
     {
-        absolutePositionsMap[pos] = idx;
+		absolutePositionsMap.push_back(pos);
         pos = nextPosition(pos);        
+    }
+
+	double playersseatedbits = gws("playersseatedbits");
+	double playersactivebits = gws("playersactivebits");
+	
+	int numberOfPlayers = 0;
+	for (int idx = 0; idx <= 5; ++idx)
+    {
+		if (isBitSet((int)playersseatedbits, idx) && isBitSet((int)playersactivebits, idx))
+		{
+			numberOfPlayers++;
+		}
     }
 
     int relposMap[6];
     if (!usePostFlopRelatives)
     {
-        relposMap[0] = 0;
-        relposMap[1] = 1;
-        relposMap[2] = 2;
-        relposMap[3] = -3;
-        relposMap[4] = -2;
-        relposMap[5] = -1;
+		if (numberOfPlayers == 3)
+		{
+			relposMap[0] = 0;
+			relposMap[1] = 1;
+			relposMap[2] = 2;
+		}
+		else if (numberOfPlayers == 4)
+		{
+			relposMap[0] = 0;
+			relposMap[1] = 1;
+			relposMap[2] = 2;
+			relposMap[3] = -1;
+		}
+		else if (numberOfPlayers == 5)
+		{
+			relposMap[0] = 0;
+			relposMap[1] = 1;
+			relposMap[2] = 2;
+			relposMap[3] = -2;
+			relposMap[4] = -1;
+		}
+		else if (numberOfPlayers == 6)
+		{
+			relposMap[0] = 0;
+			relposMap[1] = 1;
+			relposMap[2] = 2;
+			relposMap[3] = -3;
+			relposMap[4] = -2;
+			relposMap[5] = -1;
+		}
     }
     else
     {
-        relposMap[0] = 0; // bu
-        relposMap[1] = -5; // sb
-        relposMap[2] = -4; // bb
-        relposMap[3] = -3; // utg
-        relposMap[4] = -2; // mp
-        relposMap[5] = -1; // guess what : co
+		if (numberOfPlayers == 3)
+		{
+			relposMap[0] = 0; // bu
+			relposMap[1] = -5; // sb
+			relposMap[2] = -4; // bb
+		}
+		else if (numberOfPlayers == 4)
+		{
+			relposMap[0] = 0; // bu
+			relposMap[1] = -5; // sb
+			relposMap[2] = -4; // bb
+			relposMap[3] = -1; // co
+		}
+		else if (numberOfPlayers == 5)
+		{
+			relposMap[0] = 0; // bu
+			relposMap[1] = -5; // sb
+			relposMap[2] = -4; // bb
+			relposMap[3] = -2; // mp
+			relposMap[4] = -1; // co
+		}
+		else if (numberOfPlayers == 6)
+		{
+			relposMap[0] = 0; // bu
+			relposMap[1] = -5; // sb
+			relposMap[2] = -4; // bb
+			relposMap[3] = -3; // utg
+			relposMap[4] = -2; // mp
+			relposMap[5] = -1; // guess what : co
+		}
     }
 
     relativPositions.clear();
-    for (int idx = 0; idx < 6; ++idx)
+	for (int idx = 0; idx < 6; ++idx)
+	{
+		relativPositions.push_back(-10);
+	}
+
+    for (int idx = 0; idx < numberOfPlayers; ++idx)
     {
         int key = absolutePositionsMap[idx];
-        relativPositions.push_back(relposMap[key]);
+        relativPositions[key] = relposMap[idx];
     }
 }
 
@@ -435,11 +518,7 @@ CurrentGameInfo* createCurrentGameInfo(bool& isValid)
     return currentGameInfo;
 }
 
-bool isBitSet(int toTest, int bitNumber)
-{
-    int bitposition = 1 << bitNumber;
-    return (toTest & bitposition) == bitposition;
-}
+
 
 bool isEqual(double d1, double d2)
 {
@@ -638,6 +717,7 @@ void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
     calculateRelativPositions(relativePositions, gamestateManager.getDealerPosition());
 
     double playersplayingbits = gws("playersplayingbits");
+
     for (int idx = 0; idx < 6; ++idx)
     {        
         if (isBitSet((int)playersplayingbits, idx))
@@ -865,7 +945,6 @@ double process_state(holdem_state* pstate);
 
 double process_query(const char* pquery)
 {
-
 	if (!strcmp(pquery,"dll$BUVPIP"))
 	{
 		return AnyVPIP(0);
@@ -910,12 +989,17 @@ double process_query(const char* pquery)
     BotManager& botManager = BotManager::getBotManager();
     AbstractBotLogic* botLogic = botManager.getPluggableBot();
 
-    GameStateManager& gamestateManager = GameStateManager::getGameStateManager();
+	GameStateManager& gamestateManager = GameStateManager::getGameStateManager();
     PlayerRangeManager& playerRangeManager = PlayerRangeManager::getPlayerRangeManager();
 
 	if (!gamestateManager.getHand().valid())
 	{
 		logger.logExp("Hand validation failed. Returning.", DLL_DECISION_LOGGER);
+		return 0;
+	}
+
+	if (gamestateManager.isFirstHand())
+	{
 		return 0;
 	}
 
@@ -961,12 +1045,14 @@ double process_query(const char* pquery)
 		}
 
 		// wait for hero's balance when the action before was raise and we are oop against 1 opponent
+		/*
 		if (ranges.size() == 1 && oop)
 		{
 			logger.logExp("Waiting for hero's balance", DLL_DECISION_LOGGER);
-			Sleep(5000);
+			Sleep(1000);
 			process_state(NULL);
 		}
+		*/
 
 		// TODO : implement advanced bluffing here
 		if (gamestateManager.isBluff())
@@ -1185,6 +1271,11 @@ double process_state(holdem_state* pstate)
     // testing new hand   
 	if (gamestateManager.IsHandReset(cgi->getHandNumber()))
     {
+		if (old_cgi != NULL && old_cgi->getHand() != cgi->getHand() && gamestateManager.isFirstHand())
+		{
+			gamestateManager.setFirstHand(false);
+		}
+
 		gamestateManager.setCache(false);
 		gamestateManager.setBluff(false);
 		//update database

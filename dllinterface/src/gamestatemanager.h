@@ -21,6 +21,8 @@ private:
     int bettingRound;
     Hand lastHand;
 
+	bool firstHand;
+
     //vector<double> currentBets;
     vector<string> players;
 
@@ -99,6 +101,9 @@ public:
 
 	void setBluff(bool);
 	bool isBluff();
+
+	void setFirstHand(bool);
+	bool isFirstHand();
 
 	Database* getDatabase();
 };

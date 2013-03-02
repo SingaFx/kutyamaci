@@ -214,7 +214,7 @@ static int normalizeBetSize(int street, double betsize, double potcommon, double
 			return 3;
 		}
 
-		if ((betsize/potcommon) <= 2)
+		if ((betsize/potcommon) <= 2.5)
 		{
 			return 4;
 		}
@@ -258,7 +258,7 @@ static int normalizePotSize(int street, double potcommon, double bblind)
 			return 3;
 		}
 
-		if (potcommon <= 19 * bblind) 
+		if (potcommon <= 17.5 * bblind) 
 		{
 			return 4;
 		}

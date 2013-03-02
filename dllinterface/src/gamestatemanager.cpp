@@ -16,6 +16,7 @@ GameStateManager::GameStateManager()
 	, cacheAvalaible(false)
 	, myStackSize(5.0)
 	, bluff(false)
+	, firstHand(true)
 {
 	FILE* f = fopen("dllconfig.ini", "r");
 	char s[100];
@@ -251,6 +252,16 @@ void GameStateManager::setBluff(bool bluff)
 bool GameStateManager::isBluff()
 {
 	return bluff;
+}
+
+void GameStateManager::setFirstHand(bool firstHand)
+{
+	this->firstHand = firstHand;
+}
+
+bool GameStateManager::isFirstHand()
+{
+	return firstHand;
 }
 
 Database* GameStateManager::getDatabase()

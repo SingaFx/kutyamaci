@@ -815,8 +815,6 @@ public:
 
 	PlayerRange getRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x)
 	{
-		PlayerRange res;
-
 		int v[8];
 		v[1] = normalizePotSize(2, potcommon, bblind);
 		v[2] = normalizeStackSize(stackSize, bblind);
@@ -826,32 +824,7 @@ public:
 		v[6] = normalizePFR(PFR);
 		v[7] = normalizeAF(AF);
 
-		double HS[10];
-		for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
-		{
-			v[0] = i;
-			HS[i] = getProbabilityHS(v, x);
-			//HACK
-			if (HS[i] < 0)
-			{
-				memset(HS, 0, sizeof(HS));
-				if (stackSize < 100 * bblind)
-				{
-					HS[0] = 0.5;
-					HS[1] = 0.5;
-				}
-				else
-				{
-					HS[0] = 1;
-				}
-				break;
-			}
-			//if (HS[i] < 0) return res;
-		}
-
-		res = RangeUtils::createRange(8, HS, cards, own);
-
-		return res;
+		return getRange(v, cards, own, x);
 	}
 
 	bool isRegFish(int v[])
@@ -867,6 +840,7 @@ public:
 	PlayerRange getRange(int v[], vector<Card>& cards, Hand own, int x)
 	{
 		PlayerRange res;
+		Logger& logger = Logger::getLogger(RANGE_LOGGER);
 
 		double HS[10];
 		for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
@@ -890,23 +864,55 @@ public:
 			}
 		}
 
-		if (v[1] <= 4 && isRegular(v) && v[3] > 3)
+		if (v[2] > 1)
 		{
-			//REGULAR emelet potban nagy call/raise
-			if (v[2] > 2)
+			if (v[1] <= 4 && isRegular(v) && v[3] > 3)
 			{
-				memset(HS, 0, sizeof(HS));
-				HS[0] = 0.8;
-				HS[7] = 0.1;
-				HS[1] = 0.1;
+				//REGULAR emelet potban nagy call/raise
+				if (v[2] > 2)
+				{
+					if (v[3] == 4)
+					{
+						memset(HS, 0, sizeof(HS));
+						HS[0] = 0.5;
+						HS[7] = 0.1;
+						HS[1] = 0.1;
+						HS[3] = 0.2;
+						HS[6] = 0.1;
+					}
+					else
+					{
+						memset(HS, 0, sizeof(HS));
+						HS[0] = 0.8;
+						HS[7] = 0.1;
+						HS[1] = 0.1;
+					}
+				}
+				else
+				{
+					HS[5] = 0;
+					HS[4] = 0;
+					if (v[3] > 4) HS[3] = 0;
+					if (v[3] > 4) HS[2] = 0;
+
+					double total = 0;
+					for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+					{
+						total += HS[i];
+					}
+					for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+					{
+						HS[i] = (1 / total) * HS[i]; 
+					}
+				}
 			}
-			else
+			/*
+			else if (v[1] > 4 && isRegular(v) && v[3] > 3)
 			{
 				HS[5] = 0;
 				HS[4] = 0;
-				HS[3] = 0;
-				HS[2] = 0;
-
+				if (v[3] > 4) HS[3] = 0;
+				if (v[3] > 4) HS[2] = 0;
 				double total = 0;
 				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
 				{
@@ -917,60 +923,44 @@ public:
 					HS[i] = (1 / total) * HS[i]; 
 				}
 			}
-		}
-		else if (v[1] > 4 && isRegular(v) && v[3] > 3)
-		{
-			HS[5] = 0;
-			HS[4] = 0;
-			HS[3] = 0;
-			HS[2] = 0;
-			double total = 0;
-			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			else if (v[1] > 4 && isRegFish(v) && v[3] > 3)
 			{
-				total += HS[i];
-			}
-			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
-			{
-				HS[i] = (1 / total) * HS[i]; 
-			}
-		}
-		else if (v[1] > 4 && isRegFish(v) && v[3] > 3)
-		{
-			HS[5] = 0;
-			HS[4] = 0;
-			HS[3] = 0;
-			HS[2] = 0;
-			double total = 0;
-			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
-			{
-				total += HS[i];
-			}
-			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
-			{
-				HS[i] = (1 / total) * HS[i]; 
-			}
-		}
-
-		if (v[3] > 3)
-		{
-			if (v[3] == 4)
-			{
+				HS[5] = 0;
 				HS[4] = 0;
-				HS[2] += HS[4];
+				if (v[3] > 4) HS[3] = 0;
+				if (v[3] > 4) HS[2] = 0;
+				double total = 0;
+				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+				{
+					total += HS[i];
+				}
+				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+				{
+					HS[i] = (1 / total) * HS[i]; 
+				}
 			}
-			else
+			*/
+			else if (v[3] > 3 && v[8] <= 4)
 			{
-				HS[4] = 0;
-			}
-			HS[3] = 0.5 * HS[3];
-			double total = 0;
-			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
-			{
-				total += HS[i];
-			}
-			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
-			{
-				HS[i] = (1 / total) * HS[i]; 
+				if (v[3] == 4)
+				{
+					HS[4] = 0;
+					HS[2] += HS[4];
+				}
+				else
+				{
+					HS[4] = 0;
+				}
+				HS[3] = 0.5 * HS[3];
+				double total = 0;
+				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+				{
+					total += HS[i];
+				}
+				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+				{
+					HS[i] = (1 / total) * HS[i]; 
+				}
 			}
 		}
 
@@ -1401,32 +1391,7 @@ public:
 		v[7] = normalizeAF(AF);
 		v[8] = normalizePotSize(2, flop_potcommon, bblind);
 
-		double HS[10];
-		for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
-		{
-			v[0] = i;
-			HS[i] = getProbabilityHS(v, x);
-			//HACK
-			if (HS[i] < 0)
-			{
-				memset(HS, 0, sizeof(HS));
-				if (stackSize < 100 * bblind)
-				{
-					HS[0] = 0.5;
-					HS[1] = 0.5;
-				}
-				else
-				{
-					HS[0] = 1;
-				}
-				break;
-			}
-			//if (HS[i] < 0) return res;
-		}
-
-		res = RangeUtils::createRange(8, HS, cards, own);
-
-		return res;
+		return getRange(v, cards, own, x);
 	}
 
 	bool isRegFish(int v[])
@@ -1441,6 +1406,8 @@ public:
 
 	PlayerRange getRange(int v[], vector<Card>& cards, Hand own, int x)
 	{
+		Logger& logger = Logger::getLogger(RANGE_LOGGER);
+
 		PlayerRange res;
 
 		double HS[10];
@@ -1466,23 +1433,42 @@ public:
 			//if (HS[i] < 0) return res;
 		}
 
-		if (v[8] <= 4 && isRegular(v) && v[3] > 3)
+		if (v[2] > 1)
 		{
-			//REGULAR emelet potban nagy call/raise
-			if (v[2] > 2)
+			if (v[8] <= 4 && isRegular(v) && v[3] > 3)
 			{
-				memset(HS, 0, sizeof(HS));
-				HS[0] = 0.8;
-				HS[7] = 0.1;
-				HS[1] = 0.1;
+				//REGULAR emelet potban nagy call/raise
+				if (v[2] > 2)
+				{
+					memset(HS, 0, sizeof(HS));
+					HS[0] = 0.8;
+					HS[7] = 0.1;
+					HS[1] = 0.1;
+				}
+				else
+				{
+					HS[5] = 0;
+					HS[4] = 0;
+					HS[3] = 0;
+					HS[2] = 0.5 * HS[2];
+
+					double total = 0;
+					for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+					{
+						total += HS[i];
+					}
+					for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+					{
+						HS[i] = (1 / total) * HS[i]; 
+					}
+				}
 			}
-			else
+			else if (v[8] > 4 && isRegular(v) && v[3] > 3)
 			{
 				HS[5] = 0;
 				HS[4] = 0;
 				HS[3] = 0;
-				HS[2] = 0.5 * HS[2];
-
+				HS[2] = 0;
 				double total = 0;
 				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
 				{
@@ -1493,60 +1479,42 @@ public:
 					HS[i] = (1 / total) * HS[i]; 
 				}
 			}
-		}
-		else if (v[8] > 4 && isRegular(v) && v[3] > 3)
-		{
-			HS[5] = 0;
-			HS[4] = 0;
-			HS[3] = 0;
-			HS[2] = 0;
-			double total = 0;
-			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			else if (isRegular(v) && v[4] != 2 && v[3] <= 3)
 			{
-				total += HS[i];
+				HS[4] = 0;
+				double total = 0;
+				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+				{
+					total += HS[i];
+				}
+				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+				{
+					HS[i] = (1 / total) * HS[i]; 
+				}
 			}
-			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			else if (v[8] > 4 && isRegFish(v) && v[3] > 3)
 			{
-				HS[i] = (1 / total) * HS[i]; 
+				HS[5] = 0;
+				HS[4] = 0;
+				HS[3] = 0;
+				HS[2] = 0;
+				double total = 0;
+				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+				{
+					total += HS[i];
+				}
+				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+				{
+					HS[i] = (1 / total) * HS[i]; 
+				}
 			}
-		}
-		else if (isRegular(v) && v[4] != 2 && v[3] <= 3)
-		{
-			HS[4] = 0;
-			double total = 0;
-			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			if (v[3] >= 0 && v[4] == 0)
 			{
-				total += HS[i];
-			}
-			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
-			{
-				HS[i] = (1 / total) * HS[i]; 
-			}
-		}
-		else if (v[8] > 4 && isRegFish(v) && v[3] > 3)
-		{
-			HS[5] = 0;
-			HS[4] = 0;
-			HS[3] = 0;
-			HS[2] = 0;
-			double total = 0;
-			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
-			{
-				total += HS[i];
-			}
-			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
-			{
-				HS[i] = (1 / total) * HS[i]; 
+				HS[5] += HS[4] * 0.3;
+				HS[6] += HS[4] * 0.7;
 			}
 		}
-
-		if (v[3] >= 0 && v[4] == 0)
-		{
-			HS[2] += HS[4];
-			HS[4] = 0;
-		}
-
-		if (v[3] > 3)
+		else if (v[3] > 3 && v[8] <= 4)
 		{
 			if (v[3] == 4)
 			{
@@ -1951,32 +1919,7 @@ public:
 		v[7] = normalizeAF(AF);
 		v[8] = normalizePotSize(2, flop_potcommon, bblind);
 
-		double HS[10];
-		for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
-		{
-			v[0] = i;
-			HS[i] = getProbabilityHS(v, x);
-			//HACK
-			if (HS[i] < 0)
-			{
-				memset(HS, 0, sizeof(HS));
-				if (stackSize < 100 * bblind)
-				{
-					HS[0] = 0.5;
-					HS[1] = 0.5;
-				}
-				else
-				{
-					HS[0] = 1;
-				}
-				break;
-			}
-			//if (HS[i] < 0) return res;
-		}
-
-		res = RangeUtils::createRange(8, HS, cards, own);
-
-		return res;
+		return getRange(v, cards, own, x);
 	}
 
 	bool isRegFish(int v[])
@@ -1991,6 +1934,8 @@ public:
 
 	PlayerRange getRange(int v[], vector<Card>& cards, Hand own, int x)
 	{
+		Logger& logger = Logger::getLogger(RANGE_LOGGER);
+
 		printf("GETTING RANGE\n");
 		PlayerRange res;
 
@@ -2018,22 +1963,40 @@ public:
 			//if (HS[i] < 0) return res;
 		}
 
-		if (v[8] <= 4 && isRegular(v) && v[3] > 3)
+		if (v[2] > 1)
 		{
-			//REGULAR emelet potban nagy call/raise
-			if (v[2] > 2)
+			if (v[8] <= 4 && isRegular(v) && v[3] > 3)
 			{
-				memset(HS, 0, sizeof(HS));
-				HS[0] = 0.9;
-				HS[1] = 0.1;
+				//REGULAR emelet potban nagy call/raise
+				if (v[2] > 2)
+				{
+					memset(HS, 0, sizeof(HS));
+					HS[0] = 1;
+				}
+				else
+				{
+					HS[5] = 0;
+					HS[4] = 0;
+					HS[3] = 0;
+					HS[2] = 0;
+
+					double total = 0;
+					for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+					{
+						total += HS[i];
+					}
+					for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+					{
+						HS[i] = (1 / total) * HS[i]; 
+					}
+				}
 			}
-			else
+			else if (v[8] > 4 && isRegular(v) && v[3] > 3)
 			{
 				HS[5] = 0;
 				HS[4] = 0;
 				HS[3] = 0;
 				HS[2] = 0;
-
 				double total = 0;
 				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
 				{
@@ -2044,42 +2007,58 @@ public:
 					HS[i] = (1 / total) * HS[i]; 
 				}
 			}
+			else if (isRegular(v) && v[4] != 2 && v[3] <= 3)
+			{
+				HS[4] = 0;
+				double total = 0;
+				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+				{
+					total += HS[i];
+				}
+				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+				{
+					HS[i] = (1 / total) * HS[i]; 
+				}
+			}
+			else if (v[8] > 4 && isRegFish(v) && v[3] > 3)
+			{
+				HS[5] = 0;
+				HS[4] = 0;
+				HS[3] = 0;
+				HS[2] = 0;
+				double total = 0;
+				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+				{
+					total += HS[i];
+				}
+				for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+				{
+					HS[i] = (1 / total) * HS[i]; 
+				}
+			}  
+			else if (v[3] > 4)
+			{
+				HS[1] += HS[2];
+				HS[1] += HS[3];
+				HS[1] += HS[4];
+				HS[4] = 0;
+				HS[3] = 0;
+				HS[2] = 0;
+			}
 		}
-		else if (v[8] > 4 && isRegular(v) && v[3] > 3)
+
+		if (v[3] > 3 && v[8] <= 4)
 		{
-			HS[5] = 0;
-			HS[4] = 0;
-			HS[3] = 0;
-			HS[2] = 0;
-			double total = 0;
-			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			if (v[3] == 4)
 			{
-				total += HS[i];
+				HS[4] = 0;
+				HS[2] += HS[4];
 			}
-			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
+			else
 			{
-				HS[i] = (1 / total) * HS[i]; 
+				HS[4] = 0;
 			}
-		}
-		else if (isRegular(v) && v[4] != 2 && v[3] <= 3)
-		{
-			HS[4] = 0;
-			double total = 0;
-			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
-			{
-				total += HS[i];
-			}
-			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
-			{
-				HS[i] = (1 / total) * HS[i]; 
-			}
-		}
-		else if (v[8] > 4 && isRegFish(v) && v[3] > 3)
-		{
-			HS[5] = 0;
-			HS[4] = 0;
-			HS[3] = 0;
-			HS[2] = 0;
+			HS[3] = 0.5 * HS[3];
 			double total = 0;
 			for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
 			{
@@ -2093,35 +2072,17 @@ public:
 
 		if (v[3] >= 0 && v[4] == 0)
 		{
-			HS[2] += HS[4];
+			HS[2] += HS[4] * 0.5;
+			HS[3] += HS[4] * 0.5;
 			HS[4] = 0;
-		}
-
-		if (v[3] > 3)
-		{
-			if (v[3] == 4)
-			{
-				HS[4] = 0;
-				HS[2] += HS[4];
-			}
-			else
-			{
-				HS[4] = 0;
-			}
-			HS[3] = 0.5 * HS[3];
-		}
-
-		if (v[3] > 4)
-		{
-			HS[1] += HS[2];
-			HS[1] += HS[3];
-			HS[1] += HS[4];
-			HS[4] = 0;
-			HS[3] = 0;
-			HS[2] = 0;
-		}
+		} 
 
 		res = RangeUtils::createRange(8, HS, cards, own);
+
+		if (v[8] <= 4 && isRegular(v) && v[3] > 3 && v[2] > 2)
+		{
+			res = RangeUtils::justNutsRange(res, cards);
+		}
 
 		return res;
 	}

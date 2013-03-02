@@ -199,7 +199,7 @@ CurrentPlayerInfo PlusEVBotLogic::setStandardPlayerType(CurrentPlayerInfo& playe
 	}
 	else
 	{
-		result.setVPIP(20);
+		result.setVPIP(18.5);
 		result.setPFR(15);
 		result.setAF(2.5);
 	}

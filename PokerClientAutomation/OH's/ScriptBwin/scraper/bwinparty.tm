@@ -2,7 +2,7 @@
 
 // OpenScrape 2.0.0
 
-// 2013-02-05 22:31:36
+// 2013-03-02 13:48:40
 // 32 bits per pixel
 
 //
@@ -18,7 +18,7 @@ z$clientsize       480  323
 s$activemethod              2
 s$balancenumbersonly        True
 s$buttonclickmethod         Single
-s$handresetmethod           7
+s$handresetmethod           5
 s$nchairs                   6
 s$network                   bwinparty
 s$potmethod                 1
@@ -27,7 +27,7 @@ s$swagconfirmationmethod    Click Bet
 s$swagdeletionmethod        Delete
 s$swagselectionmethod       Dbl Click
 s$swagtextmethod            1
-s$titletext                 Supersonic
+s$titletext                 NL
 s$ttlimits                  ^*$^s/^b
 
 //
@@ -59,49 +59,48 @@ r$i5label            261 284 270 288        0    0 H3
 r$i5state            261 284 270 288        0    0 H2
 r$i861button         172 176 204 185        0    0 N
 r$i861state          169 168 207 183   5f5f5f    0 C
-r$p0active             0   0   0   0   494949    0 C
+r$p0active           306 199 307 200   166cba    1 C
 r$p0balance          261 225 314 231   ffffff    0 T1
 r$p0bet              269 173 310 181   ffffff    0 T2
 r$p0cardface0        275 183 285 212        0    0 H1
 r$p0cardface1        288 183 298 212        0    0 H1
 r$p0dealer           256 174 258 176        0    0 I
 r$p0name             262 215 319 223   ffffff    0 T0
-r$p0seated           321 215 321 217   7d7d7d    1 C
-r$p1active             0   0   0   0   494949    0 C
+r$p1active           204 199 205 200   1355af    1 C
 r$p1balance          158 225 211 231   ffffff    0 T1
 r$p1bet              153 174 196 181   ffffff    0 T2
 r$p1cardback         202 193 209 200        0    0 H3
 r$p1dealer           210 174 212 176        0    0 I
 r$p1name             147 215 228 223   ffffff    0 T0
-r$p1seated             0   0   0   0   494949    0 C
-r$p2active             0   0   0   0   494949    0 C
+r$p1seated           213 230 213 230   afafaf    1 C
+r$p2active            56 108  57 109   1355af    1 C
 r$p2balance            3 134  62 141   ffffff    0 T1
 r$p2bet               76 128 114 136   ffffff    0 T2
 r$p2cardback          54 102  61 109        0    0 H3
 r$p2dealer            75 100  77 102        0    0 I
 r$p2name               0 124  71 132   ffffff    0 T0
-r$p2seated             0   0   0   0   494949    0 C
-r$p3active             0   0   0   0   494949    0 C
+r$p2seated            65 139  65 139   929292    1 C
+r$p3active           188  20 189  21   1355af    1 C
 r$p3balance          143  46 193  52   ffffff    0 T1
 r$p3bet              137  73 182  82   ffffff    0 T2
 r$p3cardback         186  14 193  21        0    0 H3
 r$p3dealer           202  58 204  60        0    0 I
 r$p3name             129  36 211  44   ffffff    0 T0
-r$p3seated             0   0   0   0   494949    0 C
-r$p4active             0   0   0   0   494949    0 C
+r$p3seated           197  51 197  51   6c797d    1 C
+r$p4active           323  20 324  21   1355af    1 C
 r$p4balance          278  46 329  52   ffffff    0 T1
 r$p4bet              277  72 312  82   ffffff    0 T2
 r$p4cardback         321  14 328  21        0    0 H3
 r$p4dealer           267  58 269  60        0    0 I
 r$p4name             268  36 347  44   ffffff    0 T0
-r$p4seated             0   0   0   0   494949    0 C
-r$p5active             0   0   0   0   494949    0 C
+r$p4seated           332  51 332  51   6b787c    1 C
+r$p5active           455 108 456 109   1355af    1 C
 r$p5balance          411 134 461 140   ffffff    0 T1
 r$p5bet              367 128 407 136   ffffff    0 T2
 r$p5cardback         453 102 460 109        0    0 H3
 r$p5dealer           393  99 395 101        0    0 I
 r$p5name             406 124 479 132   ffffff    0 T0
-r$p5seated             0   0   0   0   494949    0 C
+r$p5seated           464 139 464 139   6c797d    1 C
 
 //
 // fonts
