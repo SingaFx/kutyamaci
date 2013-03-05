@@ -2,7 +2,7 @@
 
 // OpenScrape 2.0.0
 
-// 2013-03-02 13:48:40
+// 2013-03-02 15:58:14
 // 32 bits per pixel
 
 //
@@ -59,48 +59,55 @@ r$i5label            261 284 270 288        0    0 H3
 r$i5state            261 284 270 288        0    0 H2
 r$i861button         172 176 204 185        0    0 N
 r$i861state          169 168 207 183   5f5f5f    0 C
-r$p0active           306 199 307 200   166cba    1 C
+r$p0active           298 198 301 201   1e1e1e    1 H0
 r$p0balance          261 225 314 231   ffffff    0 T1
 r$p0bet              269 173 310 181   ffffff    0 T2
 r$p0cardface0        275 183 285 212        0    0 H1
 r$p0cardface1        288 183 298 212        0    0 H1
 r$p0dealer           256 174 258 176        0    0 I
 r$p0name             262 215 319 223   ffffff    0 T0
-r$p1active           204 199 205 200   1355af    1 C
+r$p0seated           316 230 316 230   b0b0b0    1 C
+r$p1active           195 198 198 201   1355af    1 H0
 r$p1balance          158 225 211 231   ffffff    0 T1
 r$p1bet              153 174 196 181   ffffff    0 T2
 r$p1cardback         202 193 209 200        0    0 H3
 r$p1dealer           210 174 212 176        0    0 I
 r$p1name             147 215 228 223   ffffff    0 T0
 r$p1seated           213 230 213 230   afafaf    1 C
-r$p2active            56 108  57 109   1355af    1 C
+r$p2active            47 107  50 110   1355af    1 H0
 r$p2balance            3 134  62 141   ffffff    0 T1
 r$p2bet               76 128 114 136   ffffff    0 T2
 r$p2cardback          54 102  61 109        0    0 H3
 r$p2dealer            75 100  77 102        0    0 I
 r$p2name               0 124  71 132   ffffff    0 T0
 r$p2seated            65 139  65 139   929292    1 C
-r$p3active           188  20 189  21   1355af    1 C
+r$p3active           179  19 182  22   1355af    1 H0
 r$p3balance          143  46 193  52   ffffff    0 T1
 r$p3bet              137  73 182  82   ffffff    0 T2
 r$p3cardback         186  14 193  21        0    0 H3
 r$p3dealer           202  58 204  60        0    0 I
 r$p3name             129  36 211  44   ffffff    0 T0
-r$p3seated           197  51 197  51   6c797d    1 C
-r$p4active           323  20 324  21   1355af    1 C
+r$p3seated           197  51 197  51   abadad    1 C
+r$p4active           314  19 317  22   1355af    1 H0
 r$p4balance          278  46 329  52   ffffff    0 T1
 r$p4bet              277  72 312  82   ffffff    0 T2
 r$p4cardback         321  14 328  21        0    0 H3
 r$p4dealer           267  58 269  60        0    0 I
 r$p4name             268  36 347  44   ffffff    0 T0
-r$p4seated           332  51 332  51   6b787c    1 C
-r$p5active           455 108 456 109   1355af    1 C
+r$p4seated           332  51 332  51   a8a9a9    1 C
+r$p5active           446 107 449 110   1355af    1 H0
 r$p5balance          411 134 461 140   ffffff    0 T1
 r$p5bet              367 128 407 136   ffffff    0 T2
 r$p5cardback         453 102 460 109        0    0 H3
 r$p5dealer           393  99 395 101        0    0 I
 r$p5name             406 124 479 132   ffffff    0 T0
-r$p5seated           464 139 464 139   6c797d    1 C
+r$p5seated           464 139 464 139   acacac    1 C
+r$u0seated           316 230 316 230   6d7a7e    1 C
+r$u1seated           213 230 213 230   6d7a7e    1 C
+r$u2seated            65 139  65 139   647174    1 C
+r$u3seated           197  51 197  51   6c797d    1 C
+r$u4seated           332  51 332  51   6b787c    1 C
+r$u5seated           464 139 464 139   6c797d    1 C
 
 //
 // fonts
@@ -271,6 +278,7 @@ h0$7s                 49ec82de
 h0$5h                 4d1622ad
 h0$Ah                 4d95e36c
 h0$4c                 4f30e72b
+h0$inactive           54df5f27
 h0$Qd                 647bbd6f
 h0$2d                 659b27d9
 h0$7c                 6a66f4d9
@@ -1699,6 +1707,11 @@ fcfdfd00fafcfc00f8fafa00f7fafa00cce0cf002c802c00257c2500a8caab00f3f7f800f2f6f700
 fbfcfc00f9fbfb00f7fafa00f5f8f900f1f6f400e7f0ea00e7f0ea00ecf3f100f1f5f600f0f5f600eff4f500
 fbfcfc00f8fafb00f5f8f900f4f7f800f3f7f800f2f6f700f1f6f700f0f5f600eff5f500eef4f500eef3f400
 fbfcfc00f7fafa00f4f7f800f2f6f700f1f6f700f0f5f600eff4f500eef4f500edf3f400ecf2f300ebf2f300
+i$inactive         4   4  
+02d8ee0008e3f80012d9f3000c72bf00
+04d3ed000dd5ee001193cd000d44a700
+06bfde0010c2e0001077bd00124faa00
+07acd0000eb0d2001598c8000b3b9f00
 i$ralse            10  5  
 15151500151515001515150068ecfd0068ecfd0068ecfd0068ecfd0068ecfd0068ecfd0015151500
 6beffe0015151500151515006beffe001515150015151500151515006beffe006beffe0015151500
