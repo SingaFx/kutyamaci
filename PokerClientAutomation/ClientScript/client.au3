@@ -24,21 +24,13 @@ Global $password = IniRead($datafile, "startup", "password", "-1")
 
 
 ;NOT WORKING?
-_FileCreate("bla.bat")
-FileWriteLine("bla.bat","xcopy " & $startfolder & "* " & $endfolder & " /e")
-FileWriteLine("bla.bat","rd " & $startfolder & " /s /q")
-FileWriteLine("bla.bat","md " & $startfolder)
-
-Run("bla.bat")
-
-Sleep(2000)
-
-Send('a')
 
 Global $g_IP = IniRead($datafile, "connections", "serverip", "-1")
 Global $db_IP = IniRead($datafile, "connections", "databaseip", "-1")
 Global $g_PORT = IniRead($datafile, "connections", "serverport", "-1")
 Global $encrypt_key = "bla"
+
+Sleep(5000)
 
 TCPStartup()
 Local $socket = TCPConnect($g_IP, $g_PORT)
@@ -79,12 +71,14 @@ Global $nrclicks = IniRead($datafile, "startup", "nrclicks", "-1")
 ;~    NOTE: THERE IS NO VALUE IN CONFIG FILE FOR THE NUMBER OF TABLES
 ;~    SINCE THE POKER CLIENT STORES IT, BUT IT HAS TO BE SET LATER :P
 For $i = 1 To $nrclicks
-    ClickRegionWithoutScrape(WinGetHandle($casinoname), IniRead($datafile, "startup", "coord" & $i & "x", "-1"), IniRead($datafile, "startup", "coord" & $i & "y", "-1"), 1)
+    WinActivate($casinoname)
+    ClickRegionWithoutScrape(WinGetHandle($casinoname), IniRead($datafile, "startup", "coord" & $i & "x", "-1"), IniRead($datafile, "startup", "coord" & $i & "y", "-1"), IniRead($datafile, "startup", "click" & $i, "1"))
     sleep(IniRead($datafile, "startup", "sleep" & $i , "-1"))
  Next
  
- Send("{TAB}{TAB}{ENTER}")
-
+Send("{ENTER}")
+Sleep(2000)
+Send("{ENTER}")
 ;~    SO AFTER SITTING TO TABLES THIS SHOULD RESIZE THE WINDOWS, MOVE THEM
 ;~    SO THEY ARE NOT ON EACH OTHER AND ALSO SEND THEIR HANDLES TO THE 
 ;~    SERVER SCRIPT
@@ -200,7 +194,7 @@ Func ClickRegionWithoutScrape($table_handle, $pos_x, $pos_y, $click_number)
    While(WinActive(WinGetTitle($table_handle)) = 0)
 	  WinActivate(WinGetTitle($table_handle))
    WEnd
-   MouseClick("left", $coords[0]+$pos_x, $coords[1]+$pos_y, $click_number, 1)
+   MouseClick("left", $coords[0]+$pos_x, $coords[1]+$pos_y, $click_number, 5)
 EndFunc
 
 Func ScrapeRegion($tableMap, $title_window, $tmRegion, $offset)

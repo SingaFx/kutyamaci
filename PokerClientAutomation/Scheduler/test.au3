@@ -8,6 +8,11 @@
 
 #ce ----------------------------------------------------------------------------
 
+Local $hwnd = WinGetHandle("Party")
+ClickRegionWithoutScrape($hwnd, 446, 580, 1)
+
+EXIT
+
 Global $script[4], $script_dir[4], $start_command[4], $end_command[4], $lobby[4], $oh_dir[4]
 
 Global $Global_Mutex_Handle
@@ -267,3 +272,11 @@ Func _DllScrape_GetCoordRegion($name,$dll)
 	Return $res
 
 EndFunc   ;==>GetCoordRegion
+
+Func ClickRegionWithoutScrape($table_handle, $pos_x, $pos_y, $click_number)
+   $coords = WinGetPos($table_handle)
+   While(WinActive(WinGetTitle($table_handle)) = 0)
+	  WinActivate(WinGetTitle($table_handle))
+   WEnd
+   MouseClick("left", $coords[0]+$pos_x, $coords[1]+$pos_y, $click_number, 5)
+EndFunc

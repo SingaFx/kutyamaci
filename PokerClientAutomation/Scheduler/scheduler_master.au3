@@ -72,7 +72,8 @@ While 1
    FileClose($file)
    Local $sessionTime1 = IniRead("session.ini", "other", "time1", "3600")
    Local $sessionTime2 = IniRead("session.ini", "other", "time2", "3700")
-   
+   DbgOut("Downloaded all files")
+
    playSession($play, Random($sessionTime1, $sessionTime2, 1))
    
    Local $akt = $play
@@ -83,9 +84,10 @@ While 1
 WEnd
 
 Func playSession($id, $time)
-   DbgOut("Starting session: " & $id)
+   DbgOut("Starting session: " & $id & " time: " & $time)
    Run($script_dir[$id] & $script[$id], $script_dir[$id])
    TCPSend($socket, $start_command[$id])
+   ;TCPSend($socket, "SEND_MAIL")
    
    Sleep(60000)
    
@@ -94,7 +96,9 @@ Func playSession($id, $time)
    Local $i
    
    For $i = 1 to $time
+	  DbgOut("Time: " & $i)
 	  Sleep(1000)
+	  ;TCPSend($socket, "CLOSE_CHROME")
 	  if ProcessExists("OpenHoldem.exe") Then
 		 check($id)
 	  EndIf
@@ -118,10 +122,16 @@ Func playSession($id, $time)
    
    ProcessClose($script[$id])
    DbgOut("Finished session: " & $id)
-   RunWait("php sendMail.php")
-   TCPSend($socket, "SEND_MAIL")
-   DirRemove("c:\botting\log\", 1)
-   FileDelete("c:\botting\log.zip")
+   RunWait("php sendMail.php --dllinterface")
+   RunWait("php sendMail.php --botlogic")
+   RunWait("php sendMail.php --rangeLogger")
+   DirRemove("c:\botting\OH\log\", 1)
+   DirCreate("c:\botting\OH\log\dllinterface\")
+   DirCreate("c:\botting\OH\log\botlogic\")
+   DirCreate("c:\botting\OH\log\rangeLogger")
+   FileDelete("dllinterface.zip")
+   FileDelete("botlogic.zip")
+   FileDelete("rangeLogger.zip")
    Sleep(1000)   
 EndFunc
 

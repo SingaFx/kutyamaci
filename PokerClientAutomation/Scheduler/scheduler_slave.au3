@@ -1,6 +1,8 @@
 #include <Crypt.au3>
 #include <Constants.au3>
 #include <Debug.au3>
+#include <File.au3>
+#include <Process.au3>
 
 ;~  _DebugSetup("Log window", True) ; start displaying debug environment
 
@@ -71,8 +73,13 @@
 		 If ($recv == "CHECK_BWIN") Then
 			check("bwin")
 		 EndIf
+		 If ($recv == "CLOSE_CHROME") Then
+			While ProcessExists("chrome.exe")
+			   ProcessClose("chrome.exe")
+			WEnd
+		 EndIf
 		 If ($recv == "SEND_MAIL") Then
-			RunWait("php sendMail.php")
+			RunWait("php sendMail.php --handhistory")
 			DirRemove("c:\handhistory\", 1)
 			FileDelete("handhistory.zip")
 		 EndIf
@@ -147,17 +154,45 @@ Func closeSession($lobby)
    
    Sleep(5000)
    
-   ProcessClose("bwin.exe")
-   ProcessClose("bwincom.exe")
-   ProcessClose("WPT.exe")
-   ProcessClose("PartyGaming.exe")
-   ProcessClose("updater.exe")
-   ProcessClose("client.exe")
+   _RunDos("start taskkill /F /IM bwin.exe")
+   _RunDos("start taskkill /F /IM bwincom.exe")
+   _RunDos("start taskkill /F /IM WPT.exe")
+   _RunDos("start taskkill /F /IM updater.exe")
+   _RunDos("start taskkill /F /IM client.exe")
+   _RunDos("start taskkill /F /IM PartyGaming.exe")
    
    While ProcessExists("chrome.exe")
 	  ProcessClose("chrome.exe")
    WEnd
    
+   
+   Local $i
+   if $lobby = "bwin" Then
+	  $i = 0
+   EndIf
+   if $lobby = "Party" Then
+	  $i = 1
+   EndIf
+   if $lobby = "WPT" Then
+	  $i = 2
+   EndIf
+   
+   Local $datafile = 'slave.ini'
+   
+   _FileCreate("bla.bat")
+   FileWriteLine("bla.bat","xcopy " & IniRead($datafile, "handhistory", "startfolder" & $i , "") & "* " & IniRead($datafile, "handhistory", "endfolder" & $i , "") & " /e")
+   FileWriteLine("bla.bat","rd " & IniRead($datafile, "handhistory", "startfolder" & $i , "") & " /s /q")
+   FileWriteLine("bla.bat","md " & IniRead($datafile, "handhistory", "startfolder" & $i , ""))
+
+   Run("bla.bat")
+   
+   Sleep(3000)
+   
+   Send('a')
+
+   RunWait("php sendMail.php --handhistory")
+   DirRemove("c:\handhistory\", 1)
+   FileDelete("handhistory.zip")
 EndFunc
 
 Func dbgOut($str)
