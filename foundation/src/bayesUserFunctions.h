@@ -815,8 +815,6 @@ public:
 
 	PlayerRange getRange(double VPIP, double PFR, double AF, double stackSize, int line, double betsize, double bblind, double potcommon, vector<Card>& cards, Hand own, int x)
 	{
-		PlayerRange res;
-
 		int v[8];
 		v[1] = normalizePotSize(2, potcommon, bblind);
 		v[2] = normalizeStackSize(stackSize, bblind);
@@ -826,44 +824,30 @@ public:
 		v[6] = normalizePFR(PFR);
 		v[7] = normalizeAF(AF);
 
-		double HS[10];
-		for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
-		{
-			v[0] = i;
-			HS[i] = getProbabilityHS(v, x);
-			//HACK
-			if (HS[i] < 0)
-			{
-				memset(HS, 0, sizeof(HS));
-				if (stackSize < 100 * bblind)
-				{
-					HS[0] = 0.5;
-					HS[1] = 0.5;
-				}
-				else
-				{
-					HS[0] = 1;
-				}
-				break;
-			}
-			//if (HS[i] < 0) return res;
-		}
+		return getRange(v, cards, own, x);
+	}
 
-		res = RangeUtils::createRange(8, HS, cards, own);
+	bool isRegFish(int v[])
+	{
+		return v[5] <= 2;
+	}
 
-		return res;
+	bool isRegular(int v[])
+	{
+		return v[5] <= 2 && !(v[5] == 2 && v[6] == 0) && !(v[5] == 2 && v[6] == 1);
 	}
 
 	PlayerRange getRange(int v[], vector<Card>& cards, Hand own, int x)
 	{
 		PlayerRange res;
+		Logger& logger = Logger::getLogger(RANGE_LOGGER);
 
 		double HS[10];
 		for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
 		{
 			v[0] = i;
 			HS[i] = getProbabilityHS(v, x);
-			//HACK
+
 			if (HS[i] < 0)
 			{
 				memset(HS, 0, sizeof(HS));
@@ -878,7 +862,6 @@ public:
 				}
 				break;
 			}
-			//if (HS[i] < 0) return res;
 		}
 
 		res = RangeUtils::createRange(8, HS, cards, own);
@@ -1308,36 +1291,23 @@ public:
 		v[7] = normalizeAF(AF);
 		v[8] = normalizePotSize(2, flop_potcommon, bblind);
 
-		double HS[10];
-		for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
-		{
-			v[0] = i;
-			HS[i] = getProbabilityHS(v, x);
-			//HACK
-			if (HS[i] < 0)
-			{
-				memset(HS, 0, sizeof(HS));
-				if (stackSize < 100 * bblind)
-				{
-					HS[0] = 0.5;
-					HS[1] = 0.5;
-				}
-				else
-				{
-					HS[0] = 1;
-				}
-				break;
-			}
-			//if (HS[i] < 0) return res;
-		}
+		return getRange(v, cards, own, x);
+	}
 
-		res = RangeUtils::createRange(8, HS, cards, own);
+	bool isRegFish(int v[])
+	{
+		return v[5] <= 2;
+	}
 
-		return res;
+	bool isRegular(int v[])
+	{
+		return v[5] <= 2 && !(v[5] == 2 && v[6] == 0);
 	}
 
 	PlayerRange getRange(int v[], vector<Card>& cards, Hand own, int x)
 	{
+		Logger& logger = Logger::getLogger(RANGE_LOGGER);
+
 		PlayerRange res;
 
 		double HS[10];
@@ -1745,36 +1715,23 @@ public:
 		v[7] = normalizeAF(AF);
 		v[8] = normalizePotSize(2, flop_potcommon, bblind);
 
-		double HS[10];
-		for (int i = 0; i < HAND_STRENGTH_NUM; ++i)
-		{
-			v[0] = i;
-			HS[i] = getProbabilityHS(v, x);
-			//HACK
-			if (HS[i] < 0)
-			{
-				memset(HS, 0, sizeof(HS));
-				if (stackSize < 100 * bblind)
-				{
-					HS[0] = 0.5;
-					HS[1] = 0.5;
-				}
-				else
-				{
-					HS[0] = 1;
-				}
-				break;
-			}
-			//if (HS[i] < 0) return res;
-		}
+		return getRange(v, cards, own, x);
+	}
 
-		res = RangeUtils::createRange(8, HS, cards, own);
+	bool isRegFish(int v[])
+	{
+		return v[5] <= 2;
+	}
 
-		return res;
+	bool isRegular(int v[])
+	{
+		return v[5] <= 2 && !(v[5] == 2 && v[6] == 0);
 	}
 
 	PlayerRange getRange(int v[], vector<Card>& cards, Hand own, int x)
 	{
+		Logger& logger = Logger::getLogger(RANGE_LOGGER);
+
 		printf("GETTING RANGE\n");
 		PlayerRange res;
 
@@ -1803,6 +1760,11 @@ public:
 		}
 
 		res = RangeUtils::createRange(8, HS, cards, own);
+
+		if (v[8] <= 4 && isRegular(v) && v[3] > 3 && v[2] > 2)
+		{
+			res = RangeUtils::justNutsRange(res, cards);
+		}
 
 		return res;
 	}

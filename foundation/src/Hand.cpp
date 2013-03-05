@@ -216,6 +216,13 @@ bool Hand::is100BBStackOff()
 	return false;
 }
 
+bool Hand::isKingsPlus()
+{
+	if ((isPocket() && (card1.getRank() == 'K' || card1.getRank() == 'A'))) return true;
+
+	return false;
+}
+
 bool Hand::isBigSC()
 {
 	if (card1.getSuit() != card2.getSuit()) return false;

@@ -16,6 +16,8 @@ GameStateManager::GameStateManager()
 	, cacheAvalaible(false)
 	, myStackSize(5.0)
 	, bluff(false)
+	, firstHand(true)
+	, dealtbits(0)
 {
 	FILE* f = fopen("dllconfig.ini", "r");
 	char s[100];
@@ -251,6 +253,31 @@ void GameStateManager::setBluff(bool bluff)
 bool GameStateManager::isBluff()
 {
 	return bluff;
+}
+
+void GameStateManager::setFirstHand(bool firstHand)
+{
+	this->firstHand = firstHand;
+}
+
+bool GameStateManager::isFirstHand()
+{
+	return firstHand;
+}
+
+void GameStateManager::setBits(int idx)
+{
+	dealtbits |= 1 << idx;
+}
+
+bool GameStateManager::isBitSet(int idx)
+{
+	return dealtbits & (1 << idx);
+}
+
+void GameStateManager::clearBits()
+{
+	dealtbits = 0;
 }
 
 Database* GameStateManager::getDatabase()

@@ -20,6 +20,9 @@ private:
     int dealerPosition;
     int bettingRound;
     Hand lastHand;
+	int dealtbits;
+
+	bool firstHand;
 
     //vector<double> currentBets;
     vector<string> players;
@@ -99,6 +102,13 @@ public:
 
 	void setBluff(bool);
 	bool isBluff();
+
+	void setFirstHand(bool);
+	bool isFirstHand();
+
+	void setBits(int);
+	bool isBitSet(int);
+	void clearBits();
 
 	Database* getDatabase();
 };

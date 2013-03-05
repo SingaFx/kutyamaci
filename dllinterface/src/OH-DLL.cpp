@@ -263,54 +263,144 @@ char convertRankToChar(int rank)
     return map[rank];
 }
 
+bool isBitSet(int toTest, int bitNumber)
+{
+    int bitposition = 1 << bitNumber;
+    return (toTest & bitposition) == bitposition;
+}
+
 int nextPosition(int position)
 {
+	GameStateManager& gamestateManager = GameStateManager::getGameStateManager();
+
     int result = position + 1;
     if (result >= 6)
     {
         result -= 6;
     }
 
+	while (!gamestateManager.isBitSet(result))
+	{
+		result = result + 1;
+		if (result >= 6)
+		{
+			result -= 6;
+		}
+	}
+
     return result;
 }
 
 void calculateRelativPositions(vector<int>& relativPositions, int dealerPosition, bool usePostFlopRelatives = false)
 {    
-    int absolutePositionsMap[6];
+	GameStateManager& gamestateManager = GameStateManager::getGameStateManager();
+
+    vector<int> absolutePositionsMap;
         
     int pos = dealerPosition;
     for (int idx = 0; idx <= 5; ++idx)
     {
-        absolutePositionsMap[pos] = idx;
+		absolutePositionsMap.push_back(pos);
         pos = nextPosition(pos);        
+    }
+	
+	int numberOfPlayers = 0;
+	for (int idx = 0; idx <= 5; ++idx)
+    {
+		if (gamestateManager.isBitSet(idx))
+		{
+			numberOfPlayers++;
+		}
     }
 
     int relposMap[6];
     if (!usePostFlopRelatives)
     {
-        relposMap[0] = 0;
-        relposMap[1] = 1;
-        relposMap[2] = 2;
-        relposMap[3] = -3;
-        relposMap[4] = -2;
-        relposMap[5] = -1;
+		if (numberOfPlayers == 3)
+		{
+			relposMap[0] = 0;
+			relposMap[1] = 1;
+			relposMap[2] = 2;
+		}
+		else if (numberOfPlayers == 4)
+		{
+			relposMap[0] = 0;
+			relposMap[1] = 1;
+			relposMap[2] = 2;
+			relposMap[3] = -1;
+		}
+		else if (numberOfPlayers == 5)
+		{
+			relposMap[0] = 0;
+			relposMap[1] = 1;
+			relposMap[2] = 2;
+			relposMap[3] = -2;
+			relposMap[4] = -1;
+		}
+		else if (numberOfPlayers == 6)
+		{
+			relposMap[0] = 0;
+			relposMap[1] = 1;
+			relposMap[2] = 2;
+			relposMap[3] = -3;
+			relposMap[4] = -2;
+			relposMap[5] = -1;
+		}
     }
     else
     {
-        relposMap[0] = 0; // bu
-        relposMap[1] = -5; // sb
-        relposMap[2] = -4; // bb
-        relposMap[3] = -3; // utg
-        relposMap[4] = -2; // mp
-        relposMap[5] = -1; // guess what : co
+		if (numberOfPlayers == 3)
+		{
+			relposMap[0] = 0; // bu
+			relposMap[1] = -5; // sb
+			relposMap[2] = -4; // bb
+		}
+		else if (numberOfPlayers == 4)
+		{
+			relposMap[0] = 0; // bu
+			relposMap[1] = -5; // sb
+			relposMap[2] = -4; // bb
+			relposMap[3] = -1; // co
+		}
+		else if (numberOfPlayers == 5)
+		{
+			relposMap[0] = 0; // bu
+			relposMap[1] = -5; // sb
+			relposMap[2] = -4; // bb
+			relposMap[3] = -2; // mp
+			relposMap[4] = -1; // co
+		}
+		else if (numberOfPlayers == 6)
+		{
+			relposMap[0] = 0; // bu
+			relposMap[1] = -5; // sb
+			relposMap[2] = -4; // bb
+			relposMap[3] = -3; // utg
+			relposMap[4] = -2; // mp
+			relposMap[5] = -1; // guess what : co
+		}
     }
 
     relativPositions.clear();
-    for (int idx = 0; idx < 6; ++idx)
+	for (int idx = 0; idx < 6; ++idx)
+	{
+		relativPositions.push_back(-10);
+	}
+
+    for (int idx = 0; idx < numberOfPlayers; ++idx)
     {
         int key = absolutePositionsMap[idx];
-        relativPositions.push_back(relposMap[key]);
+        relativPositions[key] = relposMap[idx];
     }
+
+	Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);
+	logger.logExp("Number of players: ", numberOfPlayers, DLL_INTERFACE_LOGGER);
+
+	for (int i = 0; i < relativPositions.size(); ++i)
+	{
+		logger.logExp("Position: ", i, DLL_INTERFACE_LOGGER);
+		logger.logExp("RelPosition: ", relativPositions[i], DLL_INTERFACE_LOGGER);
+	}
 }
 
 CurrentGameInfo* createCurrentGameInfo(bool& isValid)
@@ -435,11 +525,7 @@ CurrentGameInfo* createCurrentGameInfo(bool& isValid)
     return currentGameInfo;
 }
 
-bool isBitSet(int toTest, int bitNumber)
-{
-    int bitposition = 1 << bitNumber;
-    return (toTest & bitposition) == bitposition;
-}
+
 
 bool isEqual(double d1, double d2)
 {
@@ -638,6 +724,7 @@ void detectMissedCallsAndUpdatePlayerRanges(CurrentGameInfo *old_cgi)
     calculateRelativPositions(relativePositions, gamestateManager.getDealerPosition());
 
     double playersplayingbits = gws("playersplayingbits");
+
     for (int idx = 0; idx < 6; ++idx)
     {        
         if (isBitSet((int)playersplayingbits, idx))
@@ -844,7 +931,7 @@ double AnyVPIP(int index)
 	string name = gamestateManager.getPlayerNameByPos(idx);
 	
 	logger.logExp("DETECTED Query " + name,DLL_DECISION_LOGGER);
-	if (name == "") return 20;
+	if (name == "") return 25;
 
 	double VPIP = 0;
 
@@ -855,7 +942,7 @@ double AnyVPIP(int index)
 	}
 	else
 	{
-		VPIP = 20;
+		VPIP = 25;
 	}
 
 	return VPIP;
@@ -865,7 +952,6 @@ double process_state(holdem_state* pstate);
 
 double process_query(const char* pquery)
 {
-
 	if (!strcmp(pquery,"dll$BUVPIP"))
 	{
 		return AnyVPIP(0);
@@ -885,6 +971,85 @@ double process_query(const char* pquery)
 	{
 		if (scrape_cycle > 3) return 1;
 		return 0;
+	}
+
+	GameStateManager& gamestateManager = GameStateManager::getGameStateManager();
+
+	if (gamestateManager.getDealerPosition() > 5 || gamestateManager.getDealerPosition() < 0)
+	{
+		return 0;
+	}
+
+	if (!strcmp(pquery,"dll$PositionSB"))
+	{
+		if (gamestateManager.getDealerPosition() > 5 || gamestateManager.getDealerPosition() < 0)
+		{
+			return 0;
+		}
+		vector<int> relativePositions;
+		calculateRelativPositions(relativePositions, gamestateManager.getDealerPosition());
+
+		return relativePositions[0] == 1;
+	}
+
+	if (!strcmp(pquery,"dll$PositionBB"))
+	{
+		if (gamestateManager.getDealerPosition() > 5 || gamestateManager.getDealerPosition() < 0)
+		{
+			return 0;
+		}
+		vector<int> relativePositions;
+		calculateRelativPositions(relativePositions, gamestateManager.getDealerPosition());
+
+		return relativePositions[0] == 2;
+	}
+
+	if (!strcmp(pquery,"dll$PositionEP"))
+	{
+		if (gamestateManager.getDealerPosition() > 5 || gamestateManager.getDealerPosition() < 0)
+		{
+			return 0;
+		}
+		vector<int> relativePositions;
+		calculateRelativPositions(relativePositions, gamestateManager.getDealerPosition());
+
+		return relativePositions[0] == -3;
+	}
+
+	if (!strcmp(pquery,"dll$PositionMP"))
+	{
+		if (gamestateManager.getDealerPosition() > 5 || gamestateManager.getDealerPosition() < 0)
+		{
+			return 0;
+		}
+		vector<int> relativePositions;
+		calculateRelativPositions(relativePositions, gamestateManager.getDealerPosition());
+
+		return relativePositions[0] == -2;
+	}
+
+	if (!strcmp(pquery,"dll$PositionCO"))
+	{
+		if (gamestateManager.getDealerPosition() > 5 || gamestateManager.getDealerPosition() < 0)
+		{
+			return 0;
+		}
+		vector<int> relativePositions;
+		calculateRelativPositions(relativePositions, gamestateManager.getDealerPosition());
+
+		return relativePositions[0] == -1;
+	}
+
+	if (!strcmp(pquery,"dll$PositionBU"))
+	{
+		if (gamestateManager.getDealerPosition() > 5 || gamestateManager.getDealerPosition() < 0)
+		{
+			return 0;
+		}
+		vector<int> relativePositions;
+		calculateRelativPositions(relativePositions, gamestateManager.getDealerPosition());
+
+		return relativePositions[0] == 0;
 	}
 
 	Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER); 
@@ -910,12 +1075,16 @@ double process_query(const char* pquery)
     BotManager& botManager = BotManager::getBotManager();
     AbstractBotLogic* botLogic = botManager.getPluggableBot();
 
-    GameStateManager& gamestateManager = GameStateManager::getGameStateManager();
     PlayerRangeManager& playerRangeManager = PlayerRangeManager::getPlayerRangeManager();
 
 	if (!gamestateManager.getHand().valid())
 	{
 		logger.logExp("Hand validation failed. Returning.", DLL_DECISION_LOGGER);
+		return 0;
+	}
+
+	if (gamestateManager.isFirstHand())
+	{
 		return 0;
 	}
 
@@ -950,14 +1119,25 @@ double process_query(const char* pquery)
 	{
 		vector<int> postflopRelatives;
 		calculateRelativPositions(postflopRelatives, gamestateManager.getDealerPosition(), true);
+		bool oop = false;
+
+		for (int idx = 1; idx <=5; ++idx)
+		{
+			if (isBitSet((int)playersplayingbits, idx) && gamestateManager.isCurrentPlayerInfoSet(idx))
+			{
+				if (postflopRelatives[idx] > postflopRelatives[0]) oop = true;
+			}
+		}
 
 		// wait for hero's balance when the action before was raise and we are oop against 1 opponent
-		if (ranges.size() == 1)
+		/*
+		if (ranges.size() == 1 && oop)
 		{
 			logger.logExp("Waiting for hero's balance", DLL_DECISION_LOGGER);
 			Sleep(1000);
 			process_state(NULL);
 		}
+		*/
 
 		// TODO : implement advanced bluffing here
 		if (gamestateManager.isBluff())
@@ -966,6 +1146,7 @@ double process_query(const char* pquery)
 		}
 
 		CurrentGameInfo* cgi = gamestateManager.getCurrentGameInfo();
+		cgi->getOpponentsInfo().clear();
 		vector<double> currentBets(6);
 		getCurrentBets(currentBets, cgi->getBblind());
 		
@@ -1099,8 +1280,6 @@ double process_query(const char* pquery)
 	return 0;
 
 }
-
-
 bool validState(CurrentGameInfo* cgi, vector<double>& currentBets)
 {
 	Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);
@@ -1132,9 +1311,6 @@ bool validState(CurrentGameInfo* cgi, vector<double>& currentBets)
 
 	return true;
 }
-
-
-
 double process_state(holdem_state* pstate)
 {
     Logger& logger = Logger::getLogger(DLL_INTERFACE_LOGGER);
@@ -1173,8 +1349,13 @@ double process_state(holdem_state* pstate)
     gamestateManager.setCurrentGameInfo(cgi);
 
     // testing new hand   
-	if (gamestateManager.IsHandReset(cgi->getHandNumber()))
+	if (gamestateManager.IsHandReset(cgi->getHandNumber())) //|| (gamestateManager.isFirstHand() && (scrape_cycle == 0 || scrape_cycle == 1)))
     {
+		if (old_cgi != NULL && old_cgi->getHand() != cgi->getHand() && gamestateManager.isFirstHand())
+		{
+			gamestateManager.setFirstHand(false);
+		}
+
 		gamestateManager.setCache(false);
 		gamestateManager.setBluff(false);
 		//update database
@@ -1185,9 +1366,18 @@ double process_state(holdem_state* pstate)
 		playerRangeManager.resetRanges(gamestateManager);
 		refreshPlayersName(pstate);
 
+		double playersplayingbits = gws("playersplayingbits");
+		logger.logExp("DEBUGplayersplayingbits: ", playersplayingbits, DLL_INTERFACE_LOGGER);
+		gamestateManager.clearBits();
+		for (int idx = 0; idx < 6; ++idx)
+		{
+			if (isBitSet((int)playersplayingbits, idx))
+			{
+				gamestateManager.setBits(idx);
+			}
+		}
 		//Sleep(3000);
     }
-
 	if (scrape_cycle == 1)
 	{
 		for (int idx = 0; idx < 6; ++idx)
@@ -1239,9 +1429,13 @@ double process_state(holdem_state* pstate)
 		delete old_cgi;
 	}
 
-	//ITS DUMMY HERE
-    vector<int> relativePositions;
-    calculateRelativPositions(relativePositions, gamestateManager.getDealerPosition());
+	vector<int> relativePositions;
+	calculateRelativPositions(relativePositions, gamestateManager.getDealerPosition());
+
+	if (gamestateManager.getDealerPosition() > 5 || gamestateManager.getDealerPosition() < 0)
+	{
+		return 0;
+	}
 
     double playersplayingbits = gws("playersplayingbits");
     logger.logExp("-> playersplayingbits : ", playersplayingbits, DLL_INTERFACE_LOGGER);

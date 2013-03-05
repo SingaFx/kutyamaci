@@ -3,11 +3,11 @@
 #include <sstream>
 #include <time.h>
 
-const string Logger::DLL_INTERFACE_OUTPUT_FILENAME = "../log/dllinterface.log";
-const string Logger::HAND_HISTORY_PARSER_OUTPUT_FILENAME = "../log/handhistoryparser.log";
-const string Logger::BOT_LOGIC_OUTPUT_FILENAME = "../log/botlogic.log";
-const string Logger::DLL_DECISION_OUTPUT_FILENAME = "../log/dlldecision.log";
-const string Logger::RANGE_LOGGER_OUTPUT_FILENAME = "../log/rangeLogger.log";
+const string Logger::DLL_INTERFACE_OUTPUT_FILENAME = "../log/dllinterface/dllinterface.log";
+const string Logger::HAND_HISTORY_PARSER_OUTPUT_FILENAME = "../log/handhistoryparser/handhistoryparser.log";
+const string Logger::BOT_LOGIC_OUTPUT_FILENAME = "../log/botlogic/botlogic.log";
+const string Logger::DLL_DECISION_OUTPUT_FILENAME = "../log/dlldecision/dlldecision.log";
+const string Logger::RANGE_LOGGER_OUTPUT_FILENAME = "../log/rangeLogger/rangeLogger.log";
 
 ofstream* Logger::dllInterfaceLogger_ = 0;
 ofstream* Logger::handHistoryParserLogger_ = 0;

@@ -837,9 +837,21 @@ int main()
 		//testRiverRange4();
 		//testRiverRange5();
 		//testRiverRange6();
-		testRiverRange7();
+		//testRiverRange7();
 
+		vector<Card> board;
+		board.push_back(Card('3', 'd'));
+		board.push_back(Card('Q', 'h'));
+		board.push_back(Card('8', 'c'));
 
+		if (Evaluator::dryBoard(board))
+		{
+			printf("DRY\n");
+		}
+		else
+		{
+			printf("WET\n");
+		}
 
 		//testPreflopRange1();
 		//testPreflopRange2();

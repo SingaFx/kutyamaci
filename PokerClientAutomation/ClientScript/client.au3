@@ -96,6 +96,8 @@ Global $thisrow = 0;
 
 ;~    2 is for substring-search in window title
 
+;~ TODO: HANY ASZTAL?
+
 Do
    AutoItSetOption("WinTitleMatchMode", 2)
    $array = WinList($name)
@@ -167,6 +169,9 @@ for $i = 1 to $array[0][0]
    dbgOut("updater --live "& $updaterfolder & $datestr & " --ip " & $db_IP)
    AutoItSetOption("WinTitleMatchMode", 2)
    WinSetState("updater", "", @SW_HIDE)
+   
+;~ TODO: Keepin up loop
+   
 
 Func dbgOut($str)
 ;~     $curHwnd = WinGetHandle("")

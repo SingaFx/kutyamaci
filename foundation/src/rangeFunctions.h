@@ -479,6 +479,23 @@ public:
 		return res;
 	}
 
+	static PlayerRange justNutsRange(PlayerRange range, std::vector<Card>& v)
+	{
+		PlayerRange res;
+
+		std::set<pair<Hand, double> >::iterator it;
+		for (it = range.range.begin(); it != range.range.end(); ++it)
+		{
+			if (Evaluator::isNuts(it->first.getCard1(), it->first.getCard2(), v))
+			{
+				res.range.insert(*it);
+			}
+		}
+
+		res.normalize();
+		return res;
+	}
+
 	static PlayerRange mergeRange(PlayerRange r1, PlayerRange r2, vector<Card> v, Hand own)
 	{
 		double hsr1[20], hsr2[20];

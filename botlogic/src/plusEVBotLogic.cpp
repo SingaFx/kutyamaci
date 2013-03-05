@@ -154,6 +154,7 @@ PlayerRange PlusEVBotLogic::calculateRange(int id, CurrentGameInfo& gameInfo, Pl
 		return oldPlayerRange;
 	}
 
+	res.setId(id);
 	res.setValid(true);
 	return res;
 }
@@ -166,9 +167,7 @@ Action PlusEVBotLogic::makeDecision(CurrentGameInfo& gameInfo, vector<PlayerRang
 		double currentbet = gameInfo.getOpponentsInfo()[0].getBetsize() * gameInfo.getBblind();
 		if (gameInfo.getOpponentsInfo().size() == 1 && gameInfo.getOpponentsInfo()[0].getPoz() == 1 && currentbet <= gameInfo.getBblind() + 0.01)
 		{
-			if (gameInfo.getHand().isOOP3Bet() || gameInfo.getHand().isAxs() || gameInfo.getHand().isStrongBroadway() || gameInfo.getHand().isSuitedBroadway() || gameInfo.getHand().isPocket() || gameInfo.getHand().isBigSC())
-				return Action('r', 4 * gameInfo.getBblind());
-			return Action('n', 0);
+			return Action('r', 4 * gameInfo.getBblind());
 		}
 
 		logger.logExp("PREFLOP game street: ", gameInfo.getStreet(), LOGGER_TYPE::BOT_LOGIC);
@@ -192,7 +191,7 @@ CurrentPlayerInfo PlusEVBotLogic::setStandardPlayerType(CurrentPlayerInfo& playe
 {
 	CurrentPlayerInfo result = playerInfo;
 
-	if (playerInfo.getStacksize() < 100)
+	if (playerInfo.getStacksize() < 90)
 	{
 		result.setVPIP(40);
 		result.setPFR(10);
@@ -200,7 +199,7 @@ CurrentPlayerInfo PlusEVBotLogic::setStandardPlayerType(CurrentPlayerInfo& playe
 	}
 	else
 	{
-		result.setVPIP(20);
+		result.setVPIP(18.5);
 		result.setPFR(15);
 		result.setAF(2.5);
 	}
